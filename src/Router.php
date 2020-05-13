@@ -4,11 +4,11 @@
 namespace Lobster\Routing;
 
 
-use Lobster\Factory\FactoryException;
 use Lobster\Routing\Contracts\Route;
-use Lobster\Routing\Exceptions\ExceptionFactory;
+use Lobster\Factory\FactoryException;
 use Psr\Http\Message\ServerRequestInterface;
 use Lobster\Routing\Exceptions\RouterException;
+use Lobster\Routing\Exceptions\ExceptionFactory;
 use Lobster\Routing\Exceptions\GeneratorException;
 use Lobster\Routing\Exceptions\RouteNotFoundException;
 use Lobster\Routing\Exceptions\MethodNotAllowedException;
@@ -43,7 +43,7 @@ class Router implements Contracts\Router
      */
     public function match(string $method, string $uri): Route
     {
-        $path = parse_url($uri, PHP_URL_PATH);
+        $path = $this->parseUri($uri);
 
         foreach ($this->routes as $route)
         {
@@ -63,6 +63,27 @@ class Router implements Contracts\Router
 
         ExceptionFactory::notFound()
             ->setPath($path)->throw();
+    }
+
+    /**
+     * @param string $uri
+     * @return string
+     */
+    private function parseUri(string $uri) : string
+    {
+        return $this->filter(parse_url($uri, PHP_URL_PATH));
+    }
+
+    /**
+     * @param $path
+     * @return string
+     */
+    private function filter(string $path): string
+    {
+        return \preg_replace_callback('/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/]++|%(?![A-Fa-f0-9]{2}))/', function (array $match)
+        {
+            return rawurldecode($match[0]);
+        }, $path);
     }
 
     /**
