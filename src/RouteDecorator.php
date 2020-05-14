@@ -54,7 +54,7 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
         {
             public function handle(ServerRequestInterface $request): ResponseInterface
             {
-                ExceptionFactory::emptyHandler();
+                ExceptionFactory::emptyHandler()->throw();
             }
         });
     }
