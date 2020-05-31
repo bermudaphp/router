@@ -80,7 +80,8 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
      */
     public function addPrefix(string $prefix): Contracts\Route
     {
-        return $this->route->addPrefix($prefix);
+        $this->route->addPrefix($prefix);
+        return $this;
     }
 
     /**
@@ -88,7 +89,8 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
      */
     public function addSuffix(string $suffix): Contracts\Route
     {
-        return $this->route->addSuffix($suffix);
+        $this->route->addSuffix($suffix);
+        return $this;
     }
 
     /**
