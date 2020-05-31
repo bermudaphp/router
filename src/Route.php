@@ -148,8 +148,9 @@ class Route implements Contracts\Route
     {
         if($tokens !== null)
         {
-            foreach ($tokens as $token => $v){
-                $this->tokens[$token] = $v;
+            foreach ($tokens as $name => $value)
+            {
+                $this->tokens[$name] = $value;
             }
         }
 
