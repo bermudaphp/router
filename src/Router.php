@@ -199,7 +199,7 @@ class Router implements Contracts\Router
 
                 if(!array_key_exists($attribute, $attributes))
                 {
-                    ExceptionFactory::pathAttributeMissing($attribute);
+                    ExceptionFactory::pathAttributeMissing($attribute)->throw();
                 }
 
                 $path .= $attributes[$attribute];
