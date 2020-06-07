@@ -131,7 +131,7 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
     public function withAttributes(array $attributes): Contracts\Route
     {
         $this->route = $this->route->withAttributes($attributes);
-        return $this;
+        return clone $this;
     }
 
 }
