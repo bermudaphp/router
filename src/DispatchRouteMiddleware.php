@@ -5,13 +5,13 @@ namespace Lobster\Routing;
 
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 
 /**
- * Class DispatchRoute
+ * Class DispatchRouteMiddleware
  * @package Lobster\Routing
  */
 class DispatchRouteMiddleware implements MiddlewareInterface
