@@ -18,7 +18,7 @@ final class ExceptionFactory
      */
     public static function notAllows(string $method, array $allowed) : MethodNotAllowedException
     {
-         return new MethodNotAllowedException(sprintf('The http method : %s not allowed. Allows methods: %s.', $method, implode(', ', $methods)), 405);
+         return new MethodNotAllowedException(sprintf('The http method : %s not allowed. Allows methods: %s.', $method, implode(', ', $allowed)), 405);
     }
 
     /**
