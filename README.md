@@ -1,5 +1,5 @@
  # Router
-  Simple, flexible and very fast http router with support psr-7 and psr-15
+  Simple, flexible and very fast http-router with support psr-7 and psr-15
  
  ## Usage
 
