@@ -1,13 +1,13 @@
 <?php
 
 
-namespace Lobster\Routing\Exceptions;
+namespace Bermuda\Router\Exception;
 
 
 /**
  * Class MethodNotAllowedException
- * @package Lobster\Routing\Exceptions
+ * @package Bermuda\Router\Exception
  */
-class MethodNotAllowedException extends Exception 
+class MethodNotAllowedException extends RouterException 
 {  
 }
