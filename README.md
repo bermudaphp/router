@@ -1,5 +1,7 @@
- # Router
-  Simple, flexible and very fast http-router with support psr-7 and psr-15
+ # Installation
+ ```bash
+ composer require bermudaphp/router
+ ````
  
  ## Usage
 
