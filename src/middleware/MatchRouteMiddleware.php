@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bermuda\Router;
+namespace Bermuda\Router\Middleware;
 
 
 use Psr\Http\Message\ResponseInterface;
