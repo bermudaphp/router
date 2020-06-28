@@ -1,57 +1,45 @@
 <?php
 
 
-namespace Lobster\Routing;
+namespace Bermuda\Router;
 
 
-use Lobster\Resolver\Contracts\Resolver;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Lobster\Routing\Exceptions\RouteNotFoundException;
-use Lobster\Routing\Exceptions\MethodNotAllowedException;
+use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 
 /**
- * Class MatchRoute
- * @package Lobster\Routing
+ * Class MatchRouteMiddleware
+ * @package Bermuda\Router
  */
 class MatchRouteMiddleware implements MiddlewareInterface
 {
-    private Resolver $resolver;
-    private Contracts\Router $router;
+    private RouterInterface $router;
+    private MiddlewareFactoryInterface $factory;
 
-    /**
-     * MatchRoute constructor.
-     * @param Resolver $resolver
-     * @param Router $router
-     */
-    public function __construct(Resolver $resolver, Router $router)
+    public function __construct(MiddlewareFactoryInterface $factory, RouterInterface $router)
     {
         $this->router = $router;
-        $this->resolver = $resolver;
+        $this->factory = $factory;
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
-     * @throws RouteNotFoundException
-     * @throws MethodNotAllowedException
+     * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $route = $this->router->match($request->getMethod(),
-            (string) $request->getUri());
+        $route = $this->router->match($request->getMethod(), (string) $request->getUri());
 
-        foreach ($route->getAttributes() as $name => $v)
+        foreach ($route->getAttributes() as $name => $value)
         {
-            $request = $request->withAttribute($name, $v);
+            $request = $request->withAttribute($name, $value);
         }
 
-        $route = new RouteDecorator($this->resolver, $route);
-        $request = $request->withAttribute(RouteDecorator::class, $route);
+        $route = new RouteMiddleware($this->factory, $route);
+        $request = $request->withAttribute(RouteMiddleware::class, $route);
 
         return $handler->handle($request);
     }
