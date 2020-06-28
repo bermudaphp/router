@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Lobster\Routing\Exceptions;
+namespace Bermuda\Router\Exception;
 
 
 /**
  * Class RouteNotFoundException
- * @package Lobster\Routing\Exceptions
+ * @package Bermuda\Router\Exception
  */
-class RouteNotFoundException extends Exception
+class RouteNotFoundException extends RouterException
 {
     /**
      * @param string $path
