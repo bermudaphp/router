@@ -27,7 +27,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
     /**
      * @return RouteInterface[]
      */
-    public function getIterator() : \Generator
+    public function getIterator(): \Generator
     {
         foreach ($this->routes as $name => $route)
         {
@@ -39,7 +39,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param string $name
      * @return bool
      */
-    public function has(string $name) : bool
+    public function has(string $name): bool
     {
         return array_key_exists($name, $this->routes);
     }
@@ -49,7 +49,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @return RouteInterface
      * @throws Exception\RouteNotFoundException
      */
-    public function route(string $name) : RouteInterface
+    public function route(string $name): RouteInterface
     {
         $route = $this->routes[$name] ?? null;
 
@@ -66,7 +66,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param RouteInterface $route
      * @return RouteInterface
      */
-    public function add(RouteInterface $route) : RouteInterface
+    public function add(RouteInterface $route): RouteInterface
     {
         return $this->routes[$route->getName()] = $route;
     }
@@ -75,48 +75,60 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param string $prefix
      * @return RouteMap
      */
-    public function addPrefix(string $prefix) : self
+    public function addPrefix(string $prefix): self
     {
-        $routes = $this->routes;
-
-        foreach ($routes as $route)
+        foreach ($this->routes as $route)
         {
             $route->addPrefix($prefix);
         }
 
         return $this;
     }
+    
+    /**
+     * @param mixed $middleware
+     * @return RouteMap
+     */
+    public function after($middleware): self
+    {
+        foreach ($this->routes as $route)
+        {
+            $route->after($middleware);
+        }
 
+        return $this;
+    }
+    
+    /**
+     * @param mixed $middleware
+     * @return RouteMap
+     */
+    public function before($middleware): self
+    {
+        foreach ($this->routes as $route)
+        {
+            $route->before($middleware);
+        }
+
+        return $this;
+    }
+    
     /**
      * @param string $prefix
      * @param callable $callback
      * @return RouteMap
      */
-    public function group(string $prefix, callable $callback, array $middleware = []) : self
+    public function group(string $prefix, callable $callback): self
     {
         $routes = new static($this->factory);
 
         $callback($routes);
         
-        $after  = $middleware['after'] ?? [];
-        unset($middleware['after']);
-        $before = $middleware['before'] ?? $middleware;
-
         /**
          * @var RouteInterface $route
          */
         foreach ($routes as $route)
-        {
-            if($after != [])
-            {
-                $route->after($after);
-            }
-            
-            if($before != [])
-            {
-                $route->before($before);
-            }
-            
+        {     
             $this->add($route->addPrefix($prefix));
         }
 
@@ -134,7 +146,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
     /**
      * @return bool
      */
-    public function isEmpty() : bool
+    public function isEmpty(): bool
     {
         return $this->routes == [];
     }
@@ -255,7 +267,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
     /**
      * @return int
      */
-    public function count() : int
+    public function count(): int
     {
         return count($this->routes);
     }
