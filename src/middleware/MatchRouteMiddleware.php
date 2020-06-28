@@ -4,6 +4,7 @@
 namespace Bermuda\Router\Middleware;
 
 
+use Bermuda\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -13,7 +14,7 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 /**
  * Class MatchRouteMiddleware
- * @package Bermuda\Router
+ * @package Bermuda\Router\Middleware
  */
 class MatchRouteMiddleware implements MiddlewareInterface
 {
