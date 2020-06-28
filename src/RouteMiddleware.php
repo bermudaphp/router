@@ -68,7 +68,7 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     /**
      * @inheritDoc
      */
-    public function addPrefix(string $prefix): Contracts\Route
+    public function addPrefix(string $prefix): RouteInterface
     {
         $this->route->addPrefix($prefix);
         return $this;
@@ -77,7 +77,7 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     /**
      * @inheritDoc
      */
-    public function addSuffix(string $suffix): Contracts\Route
+    public function addSuffix(string $suffix): RouteInterface
     {
         $this->route->addSuffix($suffix);
         return $this;
@@ -118,7 +118,7 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     /**
      * @inheritDoc
      */
-    public function withAttributes(array $attributes): Contracts\Route
+    public function withAttributes(array $attributes): RouteInterface
     {
         $this->route = $this->route->withAttributes($attributes);
         return clone $this;
