@@ -12,7 +12,7 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class DispatchRouteMiddleware
- * @package Bermuda\Router;
+ * @package Bermuda\Router\Middleware;
  */
 class DispatchRouteMiddleware implements MiddlewareInterface
 {
