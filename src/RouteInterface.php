@@ -69,12 +69,13 @@ interface RouteInterface
     /**
      * @return array
      */
-    public function tokens(array $tokens = []): array;
+    public function tokens(array $tokens = []): array ;
 
     /**
+     * @param array $methods
      * @return array
      */
-    public function getMethods() : array ;
+    public function methods(array $methods = []) : array ;
 
     /**
      * Route attributes from query string
@@ -87,4 +88,16 @@ interface RouteInterface
      * @return RouteInterface
      */
     public function withAttributes(array $attributes) : RouteInterface ;
+    
+    /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function before($middleware) : RouteInterface ;
+    
+     /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function after($middleware) : RouteInterface ;
 }
