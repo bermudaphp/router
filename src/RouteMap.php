@@ -5,6 +5,8 @@ namespace Bermuda\Router;
 
 
 use Bermuda\Reducible\Arrayble;
+use Fig\Http\Message\RequestMethodInterface;
+
 
 
 /**
@@ -159,12 +161,14 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function get(string $name, string $path, $handler): RouteInterface
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_GET]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_GET]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -175,12 +179,14 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function post(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_POST]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_POST]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -191,12 +197,14 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function delete(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_DELETE]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_DELETE]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -207,12 +215,14 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function put(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_PUT]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_PUT]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -221,14 +231,16 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param $handler
      * @return RouteInterface
      */
-    public function head(string $name, string $path, $handler): self
+    public function patch(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_PATCH]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_HEAD]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -239,12 +251,14 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function options(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+       $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => [RequestMethodInterface::METHOD_OPTIONS]
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods([RequestMethodInterface::METHOD_OPTIONS]);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
@@ -256,12 +270,13 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function any(string $name, string $path, $handler): self
     {
-        $route = $this->add($this->factory->make($name, $path, $handler));
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+        ];
         
-        $route->tokens(RouteInterface::tokens);
-        $route->methods(RouteInterface::http_methods);
-        
-        return $route;
+        return $this->add($this->factory->make($data));
     }
 
     /**
