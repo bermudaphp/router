@@ -9,6 +9,7 @@
   "require": {
     "php": ">= 7.4",
     "bermudaphp/psr15factory": "^v1.0",
-    "bermudaphp/reducible": "^v1.0"
+    "bermudaphp/reducible": "^v1.0",
+    "fig/http-message-util": "^v1.1.4"
   }
 }
