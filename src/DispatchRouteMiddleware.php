@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Lobster\Routing;
+namespace Bermuda\Router;
 
 
 use Psr\Http\Message\ResponseInterface;
@@ -12,22 +12,19 @@ use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class DispatchRouteMiddleware
- * @package Lobster\Routing
+ * @package Bermuda\Router;
  */
 class DispatchRouteMiddleware implements MiddlewareInterface
 {
-
     /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
+     * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         /**
-         * @var RouteDecorator $route
+         * @var RouteMiddleware $route
          */
-        if (($route = $request->getAttribute(RouteDecorator::class)) != null)
+        if (($route = $request->getAttribute(RouteMiddleware::class)) != null)
         {
             return $route->process($request, $handler);
         }
