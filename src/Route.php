@@ -1,70 +1,27 @@
 <?php
 
 
-namespace Lobster\Routing;
-
-
-use Lobster\Resolver\Contracts\Resolver;
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Server\RequestHandlerInterface;
-use Lobster\Resolver\ResolverInterface;
+namespace Bermuda\Router
 
 
 /**
  * Class Route
- * @package Lobster\Routing
+ * @package Bermuda\Router
  */
-class Route implements Contracts\Route
+class Route implements RouteInterface
 {
-    /**
-     * @var mixed
-     */
-    private $handler;
-
-    /**
-     * @var string
-     */
+    private array $handler = [];
     private string $path;
-
-    /**
-     * @var string
-     */
     private string $name;
-
-    /**
-     * @var array
-     */
     private array $tokens = [];
-
-    /**
-     * @var array
-     */
     private array $methods = [];
-
-    /**
-     * @var array
-     */
     private array $attributes = [];
 
-    /**
-     * Route constructor.
-     * @param string $name
-     * @param string $path
-     * @param mixed $handler
-     * @param array $methods
-     * @param array $tokens
-     */
-    public function __construct(
-        string $name, string $path, $handler,
-        array $methods = [], array $tokens = []
-    )
+    public function __construct(string $name, string $path, $handler)
     {
         $this->name = $name;
         $this->path = $path;
-        $this->handler = $handler;
-        $this->methods = $methods;
-        $this->tokens = $tokens;
+        $this->handler['handler'] = $handler;
     }
 
     /**
@@ -93,14 +50,11 @@ class Route implements Contracts\Route
 
     /**
      * @param array $attributes
-     * @return Route
+     * @return RouteInterface
      */
-    public function withAttributes(array $attributes): Route
+    public function withAttributes(array $attributes): RouteInterface
     {
-        $route = clone $this;
-
-        $route->attributes = $attributes;
-
+        ($route = clone $this)->attributes = $attributes;
         return $route;
     }
 
@@ -109,14 +63,20 @@ class Route implements Contracts\Route
      */
     public function getHandler()
     {
-        return $this->handler;
+        $handler = [];
+        
+        $handler[] = $this->handler['before'];
+        $handler[] = $this->handler['handler'];
+        $handler[] = $this->handler['after'];
+        
+        return $handler;
     }
 
     /**
      * @param string $prefix
      * @return Route
      */
-    public function addPrefix(string $prefix) : Route
+    public function addPrefix(string $prefix) : RouteInterface
     {
         $this->path = $prefix . $this->path;
         return $this;
@@ -126,7 +86,7 @@ class Route implements Contracts\Route
      * @param string $suffix
      * @return Route
      */
-    public function addSuffix(string $suffix) : Route
+    public function addSuffix(string $suffix) : RouteInterface
     {
         $this->path .= $suffix;
         return $this;
@@ -135,25 +95,37 @@ class Route implements Contracts\Route
     /**
      * @return array
      */
-    public function getMethods(): array
+    public function methods(array $methods = []): array
     {
-        return $this->methods;
+        return $methods != [] $this->methods = $methods : $methods;
     }
 
     /**
      * @param array|null $tokens
      * @return array
      */
-    public function tokens(array $tokens = null): array
+    public function tokens(array $tokens = []): array
     {
-        if($tokens !== null)
-        {
-            foreach ($tokens as $name => $value)
-            {
-                $this->tokens[$name] = $value;
-            }
-        }
-
-        return $this->tokens;
+        return $tokens != [] $this->tokens = $tokens : $tokens;
+    }
+    
+    /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function before($middleware) : RouteInterface
+    {
+        $this->handler['before'] = $middleware;
+        return $this;
+    }
+    
+     /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function after($middleware) : RouteInterface
+    {
+        $this->handler['after'] = $middleware;
+        return $this;
     }
 }
