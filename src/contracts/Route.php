@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Lobster\Routing\Contracts;
+namespace Bermuda\Router;
 
 
 use Psr\Http\Server\MiddlewareInterface;
@@ -10,10 +10,10 @@ use Fig\Http\Message\RequestMethodInterface;
 
 
 /**
- * Interface Route
- * @package Lobster\Routing\Contracts
+ * Interface RouteInterface
+ * @package Bermuda\Router
  */
-interface Route
+interface RouteInterface
 {
     /**
      * Names of valid http methods
@@ -84,7 +84,7 @@ interface Route
 
     /**
      * @param array $attributes
-     * @return Route
+     * @return RouteInterface
      */
-    public function withAttributes(array $attributes) : Route ;
+    public function withAttributes(array $attributes) : RouteInterface ;
 }
