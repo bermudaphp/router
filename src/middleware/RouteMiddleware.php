@@ -4,11 +4,12 @@
 namespace Bermuda\Router\Middleware;
 
 
+use Bermuda\Router\RouteInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Bermuda\MiddlewareFactory\MidllewareFactoryInterface;
+use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 
 /**
@@ -18,9 +19,9 @@ use Bermuda\MiddlewareFactory\MidllewareFactoryInterface;
 class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
 {
     private RouteInterface $route;
-    private MidllewareFactoryInterface $factory;
+    private MiddlewareFactoryInterface $factory;
 
-    public function __construct(MidllewareFactoryInterface $factory, RouteInterface $route)
+    public function __construct(MiddlewareFactoryInterface $factory, RouteInterface $route)
     {
         $this->route = $route;
         $this->factory = $factory;
