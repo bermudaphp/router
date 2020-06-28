@@ -25,7 +25,7 @@ class Router implements RouterInterface
      * @param string $uri
      * @return RouteInterface
      * @throws Exception\RouteNotFoundException
-     * @throws Exception\RouterException
+     * @throws Exception\MethodNotAllowedException
      */
     public function match(string $method, string $uri): RouteInterface
     {
