@@ -30,14 +30,14 @@
  
  $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
  
- $pipeline->pipe($factory->make(MatchRouteMiddleware::class));
- $pipeline->pipe($factory->make(DispatchRouteMiddleware::class));
+ $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
+ $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class));
  
  $requestHandler = new class implements RequestHandlerInterface
  {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return new TextResponse(sprintf('Hellow, %s!', $request->getAttribute('name')))
+        return new TextResponse(sprintf('Hello, %s!', $request->getAttribute('name')))
     }
  };
  
