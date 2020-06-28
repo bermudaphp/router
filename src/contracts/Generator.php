@@ -1,25 +1,21 @@
 <?php
 
 
-namespace Lobster\Routing\Contracts;
-
-
-use Lobster\Routing\Exceptions\GeneratorException;
-use Lobster\Routing\Exceptions\RouteNotFoundException;
+namespace Bermuda\Router;
 
 
 /**
- * Interface Generator
- * @package Lobster\Routing\Contracts
+ * Interface GeneratorInterface
+ * @package Bermuda\Router
  */
-interface Generator
+interface GeneratorInterface
 {
     /**
      * @param string $name name of route
      * @param array $attributes
      * @return string
-     * @throws RouteNotFoundException
-     * @throws GeneratorException
+     * @throws Exception\RouteNotFoundException
+     * @throws Exception\GeneratorException
      */
     public function generate(string $name, array $attributes = []) : string ;
 }
