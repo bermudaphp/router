@@ -122,16 +122,25 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      */
     public function group(string $prefix, callable $callback): self
     {
-        $routes = new static($this->factory);
-
-        $callback($routes);
-        
-        /**
-         * @var RouteInterface $route
-         */
+        $callback($routes = new static($this->factory));
+     
         foreach ($routes as $route)
         {     
             $this->add($route->addPrefix($prefix));
+        }
+
+        return $this;
+    }
+    
+    /**
+     * @param array $tokens
+     * @return RouteMap
+     */
+    public function tokens(array $tokens): self
+    {    
+        foreach ($this->routes as $route)
+        {     
+            $route->tokens($tokens);
         }
 
         return $this;
