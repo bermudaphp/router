@@ -1,42 +1,33 @@
 <?php
 
 
-namespace Lobster\Routing;
+namespace Bermuda\Router;
 
 
-use Lobster\Resolver\Contracts\Resolver;
-use Lobster\Routing\Contracts\Route;
-use Lobster\Routing\Exceptions\ExceptionFactory;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Bermuda\MiddlewareFactory\MidllewareFactoryInterface;
 
 
 /**
- * Class RouteDecorator
- * @package Lobster\Routing
+ * Class RouteMiddleware
+ * @package Bermuda\Router
  */
-class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Contracts\Route
+class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
 {
-    private Resolver $resolver;
-    private Contracts\Route $route;
+    private RouteInterface $route;
+    private MidllewareFactoryInterface $factory;
 
-    /**
-     * RouteDecorator constructor.
-     * @param Resolver $resolver
-     * @param Contracts\Route $route
-     */
-    public function __construct(Resolver $resolver, Contracts\Route $route)
+    public function __construct(MidllewareFactoryInterface $factory, RouteInterface $route)
     {
         $this->route = $route;
-        $this->resolver = $resolver;
+        $this->factory = $factory;
     }
 
-    /**
-     * @param ServerRequestInterface $request
-     * @param RequestHandlerInterface $handler
-     * @return ResponseInterface
+     /**
+     * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -45,14 +36,13 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @return ResponseInterface
+     * @inheritDoc
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         return $this->process($request, new class implements RequestHandlerInterface
         {
-            public function handle(ServerRequestInterface $request): ResponseInterface
+            public function handle(ServerRequestInterface $req): ResponseInterface
             {
                 ExceptionFactory::emptyHandler()->throw();
             }
@@ -112,9 +102,9 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
     /**
      * @inheritDoc
      */
-    public function getMethods(): array
+    public function methods(array $methods = []): array
     {
-        return $this->route->getMethods();
+        return $this->route->methods($methods);
     }
 
     /**
@@ -133,5 +123,24 @@ class RouteDecorator implements MiddlewareInterface, RequestHandlerInterface, Co
         $this->route = $this->route->withAttributes($attributes);
         return clone $this;
     }
-
+    
+    /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function before($middleware) : RouteInterface
+    {
+        $this->route->before($middleware);
+        return $this;
+    }
+    
+     /**
+     * @param mixed $middleware
+     * @return RouteInterface
+     */
+    public function after($middleware) : RouteInterface
+    {
+        $this->route->after($middleware);
+        return $this;
+    }
 }
