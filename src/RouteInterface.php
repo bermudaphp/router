@@ -18,7 +18,7 @@ interface RouteInterface
     /**
      * Names of valid http methods
      */
-    public const HTTP_METHODS = [
+    public const http_methods = [
         RequestMethodInterface::METHOD_HEAD,
         RequestMethodInterface::METHOD_GET,
         RequestMethodInterface::METHOD_POST,
@@ -31,7 +31,7 @@ interface RouteInterface
         RequestMethodInterface::METHOD_CONNECT
     ];
 
-    public const ROUTE_TOKENS = [
+    public const tokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
         'optional' => '/?(.*)'
