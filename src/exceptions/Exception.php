@@ -1,14 +1,14 @@
 <?php
 
 
-namespace Lobster\Routing\Exceptions;
+namespace Bermuda\Router\Exception;
 
 
 /**
- * Class Exception
- * @package Lobster\Routing\Exceptions
+ * Class RouterException
+ * @package Bermuda\Router\Exception
  */
-class Exception extends \RuntimeException
+class RouterException extends \RuntimeException
 {
     /**
      * @throws static
