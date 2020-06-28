@@ -8,7 +8,7 @@
  
  $routes = $router->getRoutes();
  
- $routes->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hellow, %s!', $name)}])->methods(['GET', 'POST']);
+ $routes->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hello, %s!', $name)}])->methods(['GET', 'POST']);
  
  try
  {
