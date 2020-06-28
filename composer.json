@@ -1,14 +1,14 @@
 {
-  "name": "lobster-php/routing",
+  "name": "bermudaphp/router",
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Lobster\\Routing\\": "src/"
+      "Bermuda\\Router\\": "src/"
     }
   },
   "require": {
     "php": ">= 7.4",
-    "lobster-php/middleware-factory": "^v1.0",
-    "lobster-php/reducible": "^v1.0"
+    "bermudaphp/psr15factory": "^v1.0",
+    "bermudaphp/reducible": "^v1.0"
   }
 }
