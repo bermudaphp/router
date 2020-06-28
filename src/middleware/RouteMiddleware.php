@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bermuda\Router;
+namespace Bermuda\Router\Middleware;
 
 
 use Psr\Http\Message\ResponseInterface;
@@ -13,7 +13,7 @@ use Bermuda\MiddlewareFactory\MidllewareFactoryInterface;
 
 /**
  * Class RouteMiddleware
- * @package Bermuda\Router
+ * @package Bermuda\Router\Middleware
  */
 class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
 {
