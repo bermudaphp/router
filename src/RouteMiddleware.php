@@ -125,8 +125,7 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     }
     
     /**
-     * @param mixed $middleware
-     * @return RouteInterface
+     * @inheritDoc
      */
     public function before($middleware) : RouteInterface
     {
@@ -134,9 +133,8 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
         return $this;
     }
     
-     /**
-     * @param mixed $middleware
-     * @return RouteInterface
+    /**
+     * @inheritDoc
      */
     public function after($middleware) : RouteInterface
     {
