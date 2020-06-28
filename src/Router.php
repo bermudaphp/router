@@ -1,35 +1,21 @@
 <?php
 
 
-namespace Lobster\Routing;
+namespace Bermuda\Router;
 
 
-use Lobster\Routing\Contracts\Route;
-use Lobster\Factory\FactoryException;
 use Psr\Http\Message\ServerRequestInterface;
-use Lobster\Routing\Exceptions\RouterException;
-use Lobster\Routing\Exceptions\ExceptionFactory;
-use Lobster\Routing\Exceptions\GeneratorException;
-use Lobster\Routing\Exceptions\RouteNotFoundException;
-use Lobster\Routing\Exceptions\MethodNotAllowedException;
 
 
 /**
  * Class Router
- * @package Lobster\Routing
+ * @package Bermuda\Router
  */
-class Router implements Contracts\Router
+class Router implements RouterInterface
 {
-    /**
-     * @var RouteMap
-     */
     private RouteMap $routes;
 
-    /**
-     * Router constructor.
-     * @param RouteFactory $factory
-     */
-    public function __construct(Contracts\RouteFactory $factory = null)
+    public function __construct(RouteFactoryInterface $factory = null)
     {
         $this->routes = new RouteMap($factory ?? new RouteFactory());
     }
@@ -37,11 +23,11 @@ class Router implements Contracts\Router
     /**
      * @param string $method
      * @param string $uri
-     * @return Route
-     * @throws RouteNotFoundException
-     * @throws RouterException
+     * @return RouteInterface
+     * @throws Exception\RouteNotFoundException
+     * @throws Exception\RouterException
      */
-    public function match(string $method, string $uri): Route
+    public function match(string $method, string $uri): RouteInterface
     {
         $path = $this->parseUri($uri);
 
@@ -49,10 +35,9 @@ class Router implements Contracts\Router
         {
             if(preg_match($this->regexp($route), $path) === 1)
             {
-
                 if(!in_array($method, $route->getMethods()))
                 {
-                    ExceptionFactory::notAllows($method, $route->getMethods())->throw();
+                    Exception\ExceptionFactory::notAllows($method, $route->getMethods())->throw();
                 }
 
                 return $route->withAttributes(
@@ -61,7 +46,7 @@ class Router implements Contracts\Router
             }
         }
 
-        ExceptionFactory::notFound()
+        Exception\ExceptionFactory::notFound()
             ->setPath($path)->throw();
     }
 
@@ -116,7 +101,8 @@ class Router implements Contracts\Router
                 $pattern .= $route->tokens()[$token] ?? '(.+)';
             }
 
-            else {
+            else 
+            {
                 $pattern .= $segment;
             }
 
@@ -173,8 +159,8 @@ class Router implements Contracts\Router
      * @param string $name
      * @param array $attributes
      * @return string
-     * @throws Exceptions\GeneratorException
-     * @throws RouteNotFoundException
+     * @throws Exception\GeneratorException
+     * @throws Exception\RouteNotFoundException
      */
     public function generate(string $name, array $attributes = []): string
     {
