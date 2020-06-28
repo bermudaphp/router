@@ -1,42 +1,31 @@
 <?php
 
 
-namespace Lobster\Routing;
+namespace Bermuda\Router;
 
 
-use Lobster\Reducible\Arrayble;
-use Lobster\Routing\Exceptions\ExceptionFactory;
-use Lobster\Routing\Exceptions\RouteNotFoundException;
+use Bermuda\Reducible\Arrayble;
 
 
 /**
  * Class RouteMap
- * @package Lobster\Routing
+ * @package Bermuda\Router
  */
 class RouteMap implements \IteratorAggregate, \Countable, Arrayble
 {
-
     /**
-     * @var Contracts\Route[]
+     * @var RouteInterface[]
      */
     private array $routes = [];
+    private RouteFactoryInterface $factory;
 
-    /**
-     * @var Contracts\RouteFactory
-     */
-    private Contracts\RouteFactory $factory;
-
-    /**
-     * RouteMap constructor.
-     * @param RouteFactory $factory
-     */
-    public function __construct(Contracts\RouteFactory $factory)
+    public function __construct(RouteFactoryInterface $factory)
     {
         $this->factory = $factory;
     }
 
     /**
-     * @return Contracts\Route[]
+     * @return RouteInterface[]
      */
     public function getIterator() : \Generator
     {
@@ -57,10 +46,10 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
 
     /**
      * @param string $name
-     * @return Route
-     * @throws RouteNotFoundException
+     * @return RouteInterface
+     * @throws Exception\RouteNotFoundException
      */
-    public function route(string $name) : Route
+    public function route(string $name) : RouteInterface
     {
         $route = $this->routes[$name] ?? null;
 
@@ -74,17 +63,12 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
     }
     
     /**
-     * @param Route $route
-     * @return RouteMap
+     * @param RouteInterface $route
+     * @return RouteInterface
      */
-    public function add(Contracts\Route ...$routes) : self
+    public function add(RouteInterface $route) : RouteInterface
     {
-        foreach ($routes as $route)
-        {
-            $this->routes[$route->getName()] = $route;
-        }
-
-        return $this;
+        return $this->routes[$route->getName()] = $route;
     }
 
     /**
@@ -105,20 +89,34 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
 
     /**
      * @param string $prefix
-     * @param callable $callable
+     * @param callable $callback
      * @return RouteMap
      */
-    public function group(string $prefix, callable $callable) : self
+    public function group(string $prefix, callable $callback, array $middleware = []) : self
     {
         $routes = new static($this->factory);
 
-        $callable($routes);
+        $callback($routes);
+        
+        $after  = $middleware['after'] ?? [];
+        unset($middleware['after']);
+        $before = $middleware['before'] ?? $middleware;
 
         /**
-         * @var Contracts\Route $route
+         * @var RouteInterface $route
          */
         foreach ($routes as $route)
         {
+            if($after != [])
+            {
+                $route->after($after);
+            }
+            
+            if($before != [])
+            {
+                $route->before($before);
+            }
+            
             $this->add($route->addPrefix($prefix));
         }
 
@@ -126,7 +124,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
     }
 
     /**
-     * @return Contracts\Route[]
+     * @return RouteInterface[]
      */
     public function toArray(): array
     {
@@ -145,12 +143,96 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param string $name
      * @param string $path
      * @param $handler
-     * @param array $tokens
-     * @return RouteMap
+     * @return RouteInterface
      */
-    public function get(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
+    public function get(string $name, string $path, $handler): RouteInterface
     {
-        return $this->add($this->factory->get($name, $path, $handler, $tokens));
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_GET]);
+        
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @return RouteInterface
+     */
+    public function post(string $name, string $path, $handler): self
+    {
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_POST]);
+        
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @return RouteInterface
+     */
+    public function delete(string $name, string $path, $handler): self
+    {
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_DELETE]);
+        
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @return RouteInterface
+     */
+    public function put(string $name, string $path, $handler): self
+    {
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_PUT]);
+        
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @return RouteInterface
+     */
+    public function head(string $name, string $path, $handler): self
+    {
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_HEAD]);
+        
+        return $route;
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @return RouteInterface
+     */
+    public function options(string $name, string $path, $handler): self
+    {
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods([RequestMethodInterface::METHOD_OPTIONS]);
+        
+        return $route;
     }
 
     /**
@@ -158,71 +240,16 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayble
      * @param string $path
      * @param $handler
      * @param array $tokens
-     * @return RouteMap
+     * @return RouteInterface
      */
-    public function post(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
+    public function any(string $name, string $path, $handler): self
     {
-        return $this->add($this->factory->post($name, $path, $handler, $tokens));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $tokens
-     * @return RouteMap
-     */
-    public function delete(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
-    {
-        return $this->add($this->factory->delete($name, $path, $handler, $tokens));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $tokens
-     * @return RouteMap
-     */
-    public function put(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
-    {
-        return $this->add($this->factory->put($name, $path, $handler, $tokens));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $tokens
-     * @return RouteMap
-     */
-    public function head(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
-    {
-        return $this->add($this->factory->head($name, $path, $handler, $tokens));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $tokens
-     * @return RouteMap
-     */
-    public function options(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
-    {
-        return $this->add($this->factory->options($name, $path, $handler, $tokens));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $tokens
-     * @return RouteMap
-     */
-    public function any(string $name, string $path, $handler, array $tokens = Contracts\Route::ROUTE_TOKENS): self
-    {
-        return $this->add($this->factory->any($name, $path, $handler, $tokens));
+        $route = $this->add($this->factory->make($name, $path, $handler));
+        
+        $route->tokens(RouteInterface::tokens);
+        $route->methods(RouteInterface::http_methods);
+        
+        return $route;
     }
 
     /**
