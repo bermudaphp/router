@@ -28,7 +28,7 @@
  
  $pipeline = new \Bermuda\Pipeline\Pipeline();
  
- $factory = new Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
+ $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
  
  $pipeline->pipe($factory->make(MatchRouteMiddleware::class));
  $pipeline->pipe($factory->make(DispatchRouteMiddleware::class));
