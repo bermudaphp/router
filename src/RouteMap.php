@@ -4,7 +4,7 @@
 namespace Bermuda\Router;
 
 
-use Bermuda\Reducible\Arrayble;
+use Bermuda\Enumerable\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
 
 
@@ -13,7 +13,7 @@ use Fig\Http\Message\RequestMethodInterface;
  * Class RouteMap
  * @package Bermuda\Router
  */
-class RouteMap implements \IteratorAggregate, \Countable, Arrayble
+class RouteMap implements \IteratorAggregate, \Countable, Arrayable
 {
     /**
      * @var RouteInterface[]
