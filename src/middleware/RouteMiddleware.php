@@ -4,6 +4,7 @@
 namespace Bermuda\Router\Middleware;
 
 
+use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\Router\RouteInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -32,7 +33,7 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->resolver->resolve($this->route->getHandler())
+        return $this->factory->make($this->route->getHandler())
             ->process($request, $handler);
     }
 
