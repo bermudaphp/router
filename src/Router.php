@@ -35,9 +35,9 @@ class Router implements RouterInterface
         {
             if(preg_match($this->regexp($route), $path) === 1)
             {
-                if(!in_array($method, $route->getMethods()))
+                if(!in_array($method, $route->methods()))
                 {
-                    Exception\ExceptionFactory::notAllows($method, $route->getMethods())->throw();
+                    Exception\ExceptionFactory::notAllows($method, $route->methods())->throw();
                 }
 
                 return $route->withAttributes(
@@ -75,7 +75,7 @@ class Router implements RouterInterface
      * @param Route $route
      * @return string
      */
-    private function regexp(Contracts\Route $route) : string
+    private function regexp(RouteInterface $route) : string
     {
         if(($path = $route->getPath()) === '' || $path === '/')
         {
@@ -116,7 +116,7 @@ class Router implements RouterInterface
      * @param string $path
      * @return array
      */
-    private function parseAttributes(Contracts\Route $route, string $path) : array
+    private function parseAttributes(RouteInterface $route, string $path) : array
     {
         $attributes = [];
         $segments = explode('/', $path);

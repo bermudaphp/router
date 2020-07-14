@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Bermuda\Router
+namespace Bermuda\Router;
 
 
 /**
@@ -54,7 +54,8 @@ class Route implements RouteInterface
      */
     public function withAttributes(array $attributes): RouteInterface
     {
-        ($route = clone $this)->attributes = $attributes;
+        $route = clone $this;
+        $route->attributes = $attributes;
         return $route;
     }
 
@@ -64,10 +65,18 @@ class Route implements RouteInterface
     public function getHandler()
     {
         $handler = [];
-        
-        $handler[] = $this->handler['before'];
+
+        if (isset($this->handler['before']))
+        {
+            $handler[] = $this->handler['before'];
+        }
+
         $handler[] = $this->handler['handler'];
-        $handler[] = $this->handler['after'];
+
+        if (isset($this->handler['after']))
+        {
+            $handler[] = $this->handler['after'];
+        }
         
         return $handler;
     }
@@ -97,7 +106,7 @@ class Route implements RouteInterface
      */
     public function methods(array $methods = []): array
     {
-        return $methods != [] $this->methods = $methods : $methods;
+        return $methods != [] ? $this->methods = $methods : $this->methods;
     }
 
     /**
@@ -106,7 +115,7 @@ class Route implements RouteInterface
      */
     public function tokens(array $tokens = []): array
     {
-        return $tokens != [] $this->tokens = $tokens : $tokens;
+        return $tokens != [] ? $this->tokens = $tokens : $this->tokens;
     }
     
     /**

@@ -14,7 +14,7 @@ class RouteFactory implements RouteFactoryInterface
      * @param array $routeData
      * @return RouteInterface
      */
-    public function make(array $routeData) : RouteInterface
+    public function make(array $routeData): RouteInterface
     {
         foreach (['name', 'path', 'handler'] as $key)
         {
@@ -26,10 +26,10 @@ class RouteFactory implements RouteFactoryInterface
             }
         }
 
-        $route = Route($routeData['name'], $routeData['path'], $routeData['handler']);
+        $route = new Route($routeData['name'], $routeData['path'], $routeData['handler']);
         
-        $route->methods($routeData['methods'] ?? Route::HTTP_METHODS);
-        $route->tokens($routeData['tokens'] ?? Route::ROUTE_TOKENS);
+        $route->methods($routeData['methods'] ?? RouteInterface::http_methods);
+        $route->tokens($routeData['tokens'] ?? RouteInterface::tokens);
         
         if(isset($routeData['after']))
         {

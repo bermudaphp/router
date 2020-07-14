@@ -176,7 +176,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             'handler' => $handler,
             'methods' => [RequestMethodInterface::METHOD_GET]
         ];
-        
+
         return $this->add($this->factory->make($data));
     }
 
