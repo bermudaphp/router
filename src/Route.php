@@ -64,21 +64,7 @@ class Route implements RouteInterface
      */
     public function getHandler()
     {
-        $handler = [];
-
-        if (isset($this->handler['before']))
-        {
-            $handler[] = $this->handler['before'];
-        }
-
-        $handler[] = $this->handler['handler'];
-
-        if (isset($this->handler['after']))
-        {
-            $handler[] = $this->handler['after'];
-        }
-        
-        return count($handler) > 0 ? $handler : $handler[0];
+        return count($this->handler) > 1 ? $this->handler : $this->handler[0];
     }
 
     /**
@@ -124,7 +110,7 @@ class Route implements RouteInterface
      */
     public function before($middleware) : RouteInterface
     {
-        $this->handler['before'] = $middleware;
+        array_unshift($this->handler, $middleware);
         return $this;
     }
     
@@ -134,7 +120,7 @@ class Route implements RouteInterface
      */
     public function after($middleware) : RouteInterface
     {
-        $this->handler['after'] = $middleware;
+        array_push($this->handler, $middleware);
         return $this;
     }
 }
