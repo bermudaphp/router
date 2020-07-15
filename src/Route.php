@@ -78,7 +78,7 @@ class Route implements RouteInterface
             $handler[] = $this->handler['after'];
         }
         
-        return $handler;
+        return count($handler) > 0 ? $handler : $handler[0];
     }
 
     /**
