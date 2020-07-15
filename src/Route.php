@@ -10,7 +10,7 @@ namespace Bermuda\Router;
  */
 class Route implements RouteInterface
 {
-    private array $handler = [];
+    private array $handler;
     private string $path;
     private string $name;
     private array $tokens = [];
@@ -21,7 +21,7 @@ class Route implements RouteInterface
     {
         $this->name = $name;
         $this->path = $path;
-        $this->handler['handler'] = $handler;
+        $this->handler = [$handler];
     }
 
     /**
