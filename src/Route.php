@@ -10,9 +10,9 @@ namespace Bermuda\Router;
  */
 class Route implements RouteInterface
 {
-    private array $handler;
-    private string $path;
     private string $name;
+    private string $path;
+    private array $handler; 
     private array $tokens = [];
     private array $methods = [];
     private array $attributes = [];
