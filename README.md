@@ -32,10 +32,7 @@
  
  $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
  
- $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
- $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class));
- 
- $requestHandler = new class implements RequestHandlerInterface
+ class Handler implements RequestHandlerInterface
  {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
@@ -43,9 +40,14 @@
     }
  };
  
+ $routes->get('home', '/{name}', Handler::class);
+ 
+ $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
+ $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class));
+  
  try
  {
-    $response = $pipeline->process($request, $requestHandler);
+    $response = $pipeline->handle($request);
  }
  
  catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException)
