@@ -13,7 +13,7 @@ use Fig\Http\Message\RequestMethodInterface;
  * Class RouteMap
  * @package Bermuda\Router
  */
-class RouteMap implements \IteratorAggregate, \Countable, Arrayable
+final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
 {
     /**
      * @var RouteInterface[]
@@ -122,7 +122,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      */
     public function group(string $prefix, callable $callback): self
     {
-        $callback($routes = new static($this->factory));
+        $callback($routes = new self($this->factory));
      
         foreach ($routes as $route)
         {     
