@@ -129,7 +129,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             $this->add($route->addPrefix($prefix));
         }
 
-        return $this;
+        return $routes;
     }
     
     /**
