@@ -186,7 +186,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param $handler
      * @return RouteInterface
      */
-    public function post(string $name, string $path, $handler): self
+    public function post(string $name, string $path, $handler): RouteInterface
     {
         $data = [
             'name' => $name,
@@ -204,7 +204,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param $handler
      * @return RouteInterface
      */
-    public function delete(string $name, string $path, $handler): self
+    public function delete(string $name, string $path, $handler): RouteInterface
     {
         $data = [
             'name' => $name,
@@ -222,7 +222,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param $handler
      * @return RouteInterface
      */
-    public function put(string $name, string $path, $handler): self
+    public function put(string $name, string $path, $handler): RouteInterface
     {
         $data = [
             'name' => $name,
@@ -240,7 +240,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param $handler
      * @return RouteInterface
      */
-    public function patch(string $name, string $path, $handler): self
+    public function patch(string $name, string $path, $handler): RouteInterface
     {
         $data = [
             'name' => $name,
@@ -258,7 +258,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param $handler
      * @return RouteInterface
      */
-    public function options(string $name, string $path, $handler): self
+    public function options(string $name, string $path, $handler): RouteInterface
     {
        $data = [
             'name' => $name,
@@ -277,7 +277,7 @@ class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param array $tokens
      * @return RouteInterface
      */
-    public function any(string $name, string $path, $handler): self
+    public function any(string $name, string $path, $handler): RouteInterface
     {
         $data = [
             'name' => $name,
