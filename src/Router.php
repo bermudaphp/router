@@ -202,7 +202,7 @@ class Router implements RouterInterface
     /**
      * @return RouteMap
      */
-    public function getRoutes() : RouteMap
+    public function getRoutes(): RouteMap
     {
         return $this->routes;
     }
