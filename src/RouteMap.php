@@ -6,7 +6,7 @@ namespace Bermuda\Router;
 
 use Bermuda\Enumerable\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
-
+use Bermuda\Router\Exception\ExceptionFactory;
 
 
 /**
@@ -43,7 +43,7 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      */
     public function has(string $name): bool
     {
-        return array_key_exists($name, $this->routes);
+        return isset($this->routes[$name]);
     }
 
     /**
@@ -53,15 +53,12 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      */
     public function route(string $name): RouteInterface
     {
-        $route = $this->routes[$name] ?? null;
-
-        if (!$route)
+        if (!$this->has($name))
         {
-            ExceptionFactory::notFound()
-                ->setName($name)->throw();
+            ExceptionFactory::notFound()->setName($name)->throw();
         }
 
-        return $route;
+        return $this->routes[$name];
     }
     
     /**
