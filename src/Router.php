@@ -185,7 +185,7 @@ class Router implements RouterInterface
 
                 if(!array_key_exists($attribute, $attributes))
                 {
-                    ExceptionFactory::pathAttributeMissing($attribute)->throw();
+                    Exception\ExceptionFactory::pathAttributeMissing($attribute)->throw();
                 }
 
                 $path .= $attributes[$attribute];
