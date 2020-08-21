@@ -99,9 +99,14 @@ class Route implements RouteInterface
      * @param array|null $tokens
      * @return array
      */
-    public function tokens(array $tokens = []): array
+    public function tokens(array $tokens = [], bool $replace = false): array
     {
-        return $tokens != [] ? $this->tokens = $tokens : $this->tokens;
+        if($replace)
+        {
+            return $tokens != [] ? $this->tokens = $tokens : $this->tokens;
+        }
+        
+        return $tokens != [] ? $this->tokens = array_merge($this->tokens, $tokens) : $this->tokens;
     }
     
     /**
