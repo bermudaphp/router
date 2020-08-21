@@ -24,7 +24,7 @@ class DispatchRouteMiddleware implements MiddlewareInterface
         /**
          * @var RouteMiddleware $route
          */
-        if (($route = $request->getAttribute(RouteMiddleware::class)) != null)
+        if (($route = $request->getAttribute(RouteMiddleware::class)) instanceof RouteMiddleware)
         {
             return $route->process($request, $handler);
         }
