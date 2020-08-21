@@ -101,33 +101,31 @@ final class Route implements RouteInterface
         if (is_string($methods))
         {
             $methods = strpos($methods, '|') !== false ? 
-                explode('|', $methods) : (array) strtoupper($methods);
-
-            goto setArray;
+                explode('|', $methods) : [$methods];
         }
         
         if (is_array($methods))
         {
-            setArray:
-            
-            foreach ($methods as $method)
+            foreach ($methods as &$method)
             {
-                $this->methods[] = strtoupper($method);
+                $method = strtoupper($method);
             }
-            
-            return $this->methods;
+
+            return $this->methods = $methods;
         }
         
-       if (is_int($methods))
-       {
+        if (is_int($methods))
+        {
             foreach (self::http_methods as $mask => $method)
             {
+                $this->methods = [];
+
                 if ($methods & $mask)
                 {
                     $this->methods[] = $method;
                 }
             }
-       }
+        }
                 
        return $this->methods;
     }
