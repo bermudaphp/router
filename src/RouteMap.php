@@ -158,6 +158,25 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
     {
         return $this->routes == [];
     }
+    
+    /**
+     * @param string $name
+     * @param string $path
+     * @param string $routeNameOrPath
+     * @return RouteInterface
+     */
+    public function redirect(string $name, string $path, string $routeNameOrPath, bool $permanent = false): RouteInterface
+    {
+        return $this->any($name, $path, function(ContainerInterface $c) use ($routeNameOrPath, $permanent): MiddlewareInterface
+        {
+            if ($this->has($routeNameOrPath))
+            {
+                return new RedirectMiddleware($this->route($routeNameOrPath)->getPath(), $c->get(ResponseFactoryInterface::class), $permanent);
+            }
+            
+            return new RedirectMiddleware($routeNameOrPath, $c->get(ResponseFactoryInterface::class), $permanent);
+        });
+    }
 
     /**
      * @param string $name
