@@ -27,12 +27,12 @@ interface RouteInterface
         self::OPTIONS => RequestMethodInterface::METHOD_OPTIONS,
     ];
     
-    public const GET = 1;
-    public const POST = 2;
-    public const PUT = 3;
-    public const PATCH = 4;
-    public const DELETE = 5;
-    public const OPTIONS = 6;
+    public const GET = 0;
+    public const POST = 1;
+    public const PUT = 2;
+    public const PATCH = 3;
+    public const DELETE = 4;
+    public const OPTIONS = 5;
     public const ANY = self::GET|self::POST|self::PUT|self::PATCH|self::DELETE|self::OPTIONS
         
     public const tokens = [
