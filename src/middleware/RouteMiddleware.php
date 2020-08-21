@@ -96,15 +96,15 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     /**
      * @inheritDoc
      */
-    public function tokens(array $tokens = []): array
+    public function tokens(array $tokens = [], bool $replace = false): array
     {
-        return $this->route->tokens($tokens);
+        return $this->route->tokens($tokens, $replace);
     }
 
     /**
      * @inheritDoc
      */
-    public function methods(array $methods = []): array
+    public function methods($methods = null): array
     {
         return $this->route->methods($methods);
     }
