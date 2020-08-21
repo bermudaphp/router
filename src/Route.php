@@ -88,6 +88,7 @@ final class Route implements RouteInterface
     }
 
     /**
+     * @param null $methods
      * @return array
      */
     public function methods($methods = null): array
@@ -119,11 +120,11 @@ final class Route implements RouteInterface
         
        if (is_int($methods))
        {
-            foreach (self::ANY as $mask => $method)
+            foreach (self::http_methods as $mask => $method)
             {
                 if ($methods & $mask)
                 {
-                    $this->methods[] = $method
+                    $this->methods[] = $method;
                 }
             }
        }
@@ -132,7 +133,8 @@ final class Route implements RouteInterface
     }
 
     /**
-     * @param array|null $tokens
+     * @param array $tokens
+     * @param bool $replace
      * @return array
      */
     public function tokens(array $tokens = [], bool $replace = false): array
