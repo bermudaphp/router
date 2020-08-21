@@ -12,7 +12,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 
 /**
- * Class RouteMiddleware
+ * Class RedirectMiddleware
  * @package Bermuda\Router\Middleware
  */
 class RedirectMiddleware implements MiddlewareInterface
