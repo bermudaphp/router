@@ -88,7 +88,7 @@ final class Route implements RouteInterface
     }
 
     /**
-     * @param null $methods
+     * @param array|string|null $methods
      * @return array
      */
     public function methods($methods = null): array
@@ -98,36 +98,17 @@ final class Route implements RouteInterface
             return $this->methods;
         }
         
-        if (is_string($methods))
+        if (is_string($methods) && strpos($methods, '|') !== false)
         {
-            $methods = strpos($methods, '|') !== false ? 
-                explode('|', $methods) : [$methods];
+            $methods = explode('|', $methods);
         }
         
-        if (is_array($methods))
+        foreach ((array) $methods as &$method)
         {
-            foreach ($methods as &$method)
-            {
-                $method = strtoupper($method);
-            }
-
-            return $this->methods = $methods;
+            $method = strtoupper($method);
         }
-        
-        if (is_int($methods))
-        {
-            foreach (self::http_methods as $mask => $method)
-            {
-                $this->methods = [];
 
-                if ($methods & $mask)
-                {
-                    $this->methods[] = $method;
-                }
-            }
-        }
-                
-       return $this->methods;
+        return $this->methods = $methods;
     }
 
     /**
