@@ -33,7 +33,8 @@ interface RouteInterface
     public const PATCH = 3;
     public const DELETE = 4;
     public const OPTIONS = 5;
-    public const ANY = self::GET|self::POST|self::PUT|self::PATCH|self::DELETE|self::OPTIONS
+    public const ANY = self::GET|self::POST|self::PUT
+        |self::PATCH|self::DELETE|self::OPTIONS;
         
     public const tokens = [
         'id' => '\d+',
