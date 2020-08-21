@@ -33,9 +33,9 @@ class Router implements RouterInterface
 
         foreach ($this->routes as $route)
         {
-            if(preg_match($this->regexp($route), $path) === 1)
+            if (preg_match($this->regexp($route), $path) === 1)
             {
-                if(!in_array($method, $route->methods()))
+                if (!in_array(strtoupper($method), $route->methods()))
                 {
                     Exception\ExceptionFactory::notAllows($method, $route->methods())->throw();
                 }
@@ -54,7 +54,7 @@ class Router implements RouterInterface
      * @param string $uri
      * @return string
      */
-    private function parseUri(string $uri) : string
+    private function parseUri(string $uri): string
     {
         return $this->filter(parse_url($uri, PHP_URL_PATH));
     }
@@ -77,7 +77,7 @@ class Router implements RouterInterface
      */
     private function regexp(RouteInterface $route) : string
     {
-        if(($path = $route->getPath()) === '' || $path === '/')
+        if (($path = $route->getPath()) === '' || $path === '/')
         {
             return '#^/$#';
         }
@@ -88,14 +88,14 @@ class Router implements RouterInterface
 
         foreach ($segments as $segment)
         {
-            if(empty($segment))
+            if (empty($segment))
             {
                 continue;
             }
 
             $pattern .= '/';
 
-            if($this->isAttribute($segment))
+            if ($this->isAttribute($segment))
             {
                 $token = $this->normalize($segment);
                 $pattern .= $route->tokens()[$token] ?? '(.+)';
@@ -123,7 +123,7 @@ class Router implements RouterInterface
 
         foreach (explode('/', $route->getPath()) as $i => $segment)
         {
-            if($this->isAttribute($segment))
+            if ($this->isAttribute($segment))
             {
                 $attributes[$this->normalize($segment)] = $segments[$i];
             }
@@ -138,7 +138,7 @@ class Router implements RouterInterface
      */
     private function isAttribute(string $segment) : bool
     {
-        if(empty($segment))
+        if (empty($segment))
         {
             return false;
         }
@@ -150,7 +150,7 @@ class Router implements RouterInterface
      * @param string $placeholder
      * @return string
      */
-    private function normalize(string $placeholder) : string
+    private function normalize(string $placeholder): string
     {
         return trim($placeholder, '{}');
     }
@@ -172,18 +172,18 @@ class Router implements RouterInterface
 
         foreach ($segments as $segment)
         {
-            if(empty($segment))
+            if (empty($segment))
             {
                 continue;
             }
 
             $path .= '/';
 
-            if($this->isAttribute($segment))
+            if ($this->isAttribute($segment))
             {
                 $attribute = $this->normalize($segment);
 
-                if(!array_key_exists($attribute, $attributes))
+                if (!array_key_exists($attribute, $attributes))
                 {
                     Exception\ExceptionFactory::pathAttributeMissing($attribute)->throw();
                 }
