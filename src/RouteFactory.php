@@ -8,11 +8,11 @@ namespace Bermuda\Router;
  * Class RouteFactory
  * @package Bermuda\Router
  */
-class RouteFactory implements RouteFactoryInterface
+final class RouteFactory implements RouteFactoryInterface
 {
     /**
      * @param array $routeData
-     * @return RouteInterface
+     * @return Route
      */
     public function make(array $routeData): RouteInterface
     {
@@ -31,16 +31,25 @@ class RouteFactory implements RouteFactoryInterface
         $route->methods($routeData['methods'] ?? RouteInterface::http_methods);
         $route->tokens($routeData['tokens'] ?? RouteInterface::tokens);
         
-        if(isset($routeData['after']))
+        if (isset($routeData['after']))
         {
             $route->after($routeData['after']);
         }
         
-        if(isset($routeData['before']))
+        if (isset($routeData['before']))
         {
             $route->before($routeData['before']);
         }
         
         return $route;
+    }
+    
+    /**
+     * @param array $routeData
+     * @return Route
+     */
+    public function __invoke(array $routeData): Route
+    {
+        return $this->make($routeData);
     }
 }
