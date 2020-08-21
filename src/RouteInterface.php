@@ -31,13 +31,13 @@ interface RouteInterface
         RequestMethodInterface::METHOD_CONNECT
     ];
     
-    public const GET = RequestMethodInterface::METHOD_GET;
-    public const POST = RequestMethodInterface::METHOD_POST;
-    public const PUT = RequestMethodInterface::METHOD_PUT;
-    public const PATCH = RequestMethodInterface::METHOD_PATCH;
-    public const DELETE = RequestMethodInterface::METHOD_DELETE;
-    public const OPTIONS = RequestMethodInterface::METHOD_OPTIONS;
-    public const ANY = self::GET|self::POST|self::PUT|self::PUTCH|self::DELETE|self::OPTIONS|self::GET
+    public const GET = 1;
+    public const POST = 2;
+    public const PUT = 3;
+    public const PATCH = 4;
+    public const DELETE = 5;
+    public const OPTIONS = 6;
+    public const ANY = self::GET|self::POST|self::PUT|self::PATCH|self::DELETE|self::OPTIONS
         
     public const tokens = [
         'id' => '\d+',
