@@ -28,7 +28,7 @@ class RedirectMiddleware implements MiddlewareInterface
         $this->permanent = $permanent;
     }
 
-     /**
+    /**
      * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
