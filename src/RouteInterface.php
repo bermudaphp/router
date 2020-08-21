@@ -30,7 +30,15 @@ interface RouteInterface
         RequestMethodInterface::METHOD_TRACE,
         RequestMethodInterface::METHOD_CONNECT
     ];
-
+    
+    public const GET = RequestMethodInterface::METHOD_GET;
+    public const POST = RequestMethodInterface::METHOD_POST;
+    public const PUT = RequestMethodInterface::METHOD_PUT;
+    public const PATCH = RequestMethodInterface::METHOD_PATCH;
+    public const DELETE = RequestMethodInterface::METHOD_DELETE;
+    public const OPTIONS = RequestMethodInterface::METHOD_OPTIONS;
+    public const ANY = self::GET|self::POST|self::PUT|self::PUTCH|self::DELETE|self::OPTIONS|self::GET
+        
     public const tokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
@@ -41,7 +49,7 @@ interface RouteInterface
      * Route name
      * @return string
      */
-    public function getName() : string ;
+    public function getName(): string ;
 
     /**
      * @return mixed
@@ -52,52 +60,52 @@ interface RouteInterface
      * @param string $prefix
      * @return Route
      */
-    public function addPrefix(string $prefix) : self ;
+    public function addPrefix(string $prefix): self ;
 
     /**
      * @param string $suffix
      * @return Route
      */
-    public function addSuffix(string $suffix) : self ;
+    public function addSuffix(string $suffix): self ;
 
     /**
      * Route path
      * @return string
      */
-    public function getPath() : string ;
+    public function getPath(): string ;
 
     /**
      * @return array
      */
-    public function tokens(array $tokens = []): array ;
+    public function tokens(array $tokens = [], bool $replace = false): array ;
 
     /**
-     * @param array $methods
+     * @param int|string|null $methods
      * @return array
      */
-    public function methods(array $methods = []) : array ;
+    public function methods($methods = null): array ;
 
     /**
      * Route attributes from query string
      * @return array
      */
-    public function getAttributes() : array ;
+    public function getAttributes(): array ;
 
     /**
      * @param array $attributes
      * @return RouteInterface
      */
-    public function withAttributes(array $attributes) : RouteInterface ;
+    public function withAttributes(array $attributes): RouteInterface ;
     
     /**
      * @param mixed $middleware
      * @return RouteInterface
      */
-    public function before($middleware) : RouteInterface ;
+    public function before($middleware): RouteInterface ;
     
      /**
      * @param mixed $middleware
      * @return RouteInterface
      */
-    public function after($middleware) : RouteInterface ;
+    public function after($middleware): RouteInterface ;
 }
