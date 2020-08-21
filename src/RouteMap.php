@@ -5,9 +5,11 @@ namespace Bermuda\Router;
 
 
 use Bermuda\Enumerable\Arrayable;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Fig\Http\Message\RequestMethodInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
+
 
 
 /**
