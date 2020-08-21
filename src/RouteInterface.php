@@ -19,22 +19,13 @@ interface RouteInterface
      * Names of valid http methods
      */
     public const http_methods = [
-        self::GET => RequestMethodInterface::METHOD_GET,
-        self::POST => RequestMethodInterface::METHOD_POST,
-        self::PUT => RequestMethodInterface::METHOD_PUT,
-        self::PATCH => RequestMethodInterface::METHOD_PATCH,
-        self::DELETE => RequestMethodInterface::METHOD_DELETE,
-        self::OPTIONS => RequestMethodInterface::METHOD_OPTIONS,
+        RequestMethodInterface::METHOD_GET,
+        RequestMethodInterface::METHOD_POST,
+        RequestMethodInterface::METHOD_PUT,
+        RequestMethodInterface::METHOD_PATCH,
+        RequestMethodInterface::METHOD_DELETE,
+        RequestMethodInterface::METHOD_OPTIONS,
     ];
-    
-    public const GET = 0;
-    public const POST = 1;
-    public const PUT = 2;
-    public const PATCH = 3;
-    public const DELETE = 4;
-    public const OPTIONS = 5;
-    public const ANY = self::GET|self::POST|self::PUT
-        |self::PATCH|self::DELETE|self::OPTIONS;
         
     public const tokens = [
         'id' => '\d+',
