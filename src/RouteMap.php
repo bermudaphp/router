@@ -8,8 +8,9 @@ use Bermuda\Enumerable\Arrayable;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Fig\Http\Message\RequestMethodInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
-
+use Bermuda\Router\Middleware\RedirectMiddleware;
 
 
 /**
