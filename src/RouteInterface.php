@@ -19,16 +19,12 @@ interface RouteInterface
      * Names of valid http methods
      */
     public const http_methods = [
-        RequestMethodInterface::METHOD_HEAD,
-        RequestMethodInterface::METHOD_GET,
-        RequestMethodInterface::METHOD_POST,
-        RequestMethodInterface::METHOD_PUT,
-        RequestMethodInterface::METHOD_PATCH,
-        RequestMethodInterface::METHOD_DELETE,
-        RequestMethodInterface::METHOD_PURGE,
-        RequestMethodInterface::METHOD_OPTIONS,
-        RequestMethodInterface::METHOD_TRACE,
-        RequestMethodInterface::METHOD_CONNECT
+        self::GET => RequestMethodInterface::METHOD_GET,
+        self::POST => RequestMethodInterface::METHOD_POST,
+        self::PUT => RequestMethodInterface::METHOD_PUT,
+        self::PATCH => RequestMethodInterface::METHOD_PATCH,
+        self::DELETE => RequestMethodInterface::METHOD_DELETE,
+        self::OPTIONS => RequestMethodInterface::METHOD_OPTIONS,
     ];
     
     public const GET = 1;
