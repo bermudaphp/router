@@ -8,7 +8,7 @@ namespace Bermuda\Router;
  * Class Route
  * @package Bermuda\Router
  */
-class Route implements RouteInterface
+final class Route implements RouteInterface
 {
     private string $name;
     private string $path;
@@ -90,9 +90,45 @@ class Route implements RouteInterface
     /**
      * @return array
      */
-    public function methods(array $methods = []): array
+    public function methods($methods = null): array
     {
-        return $methods != [] ? $this->methods = $methods : $this->methods;
+        if ($methods == null)
+        {
+            return $this->methods;
+        }
+        
+        if (is_string($methods))
+        {
+            $methods = strpos($methods, '|') !== false ? 
+                explode('|', $methods) : (array) $methods;
+
+            goto setArray;
+        }
+        
+        if (is_array($methods))
+        {
+            setArray:
+            
+            foreach ($methods as $method)
+            {
+                $this->methods[] = strtoupper($method);
+            }
+            
+            return $this->methods;
+        }
+        
+       if (is_int($methods))
+       {
+            foreach (self::ANY as $mask => $method)
+            {
+                if ($methods & $mask)
+                {
+                    $this->methods[] = $method
+                }
+            }
+       }
+                
+       return $this->methods;
     }
 
     /**
