@@ -100,7 +100,7 @@ final class Route implements RouteInterface
         if (is_string($methods))
         {
             $methods = strpos($methods, '|') !== false ? 
-                explode('|', $methods) : (array) $methods;
+                explode('|', $methods) : (array) strtoupper($methods);
 
             goto setArray;
         }
