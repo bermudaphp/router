@@ -19,7 +19,7 @@ class RedirectMiddleware implements MiddlewareInterface
 {
     private string $reTo;
     private bool $permanent;
-    private ResponseFactoryInterface;
+    private ResponseFactoryInterface $factory;
     
     public function __construct(string $path, ResponseFactoryInterface $factory, bool $permanent = false)
     {
