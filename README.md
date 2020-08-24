@@ -22,7 +22,7 @@
     // handle exception logics
  }
  
- call_user_func($route->getHandler(), $route->getAttributes('name'));
+ call_user_func($route->getHandler(), $route->getAttributes()['name']);
  ```
  ## Usage with PSR-15
  
