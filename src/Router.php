@@ -65,7 +65,7 @@ class Router implements RouterInterface
      */
     private function filter(string $path): string
     {
-        return \preg_replace_callback('/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/]++|%(?![A-Fa-f0-9]{2}))/', function (array $match)
+        return \preg_replace_callback('/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/]++|%(?![A-Fa-f0-9]{2}))/', static function (array $match)
         {
             return rawurldecode($match[0]);
         }, $path);
@@ -75,7 +75,7 @@ class Router implements RouterInterface
      * @param Route $route
      * @return string
      */
-    private function regexp(RouteInterface $route) : string
+    private function regexp(RouteInterface $route): string
     {
         if (($path = $route->getPath()) === '' || $path === '/')
         {
@@ -116,7 +116,7 @@ class Router implements RouterInterface
      * @param string $path
      * @return array
      */
-    private function parseAttributes(RouteInterface $route, string $path) : array
+    private function parseAttributes(RouteInterface $route, string $path): array
     {
         $attributes = [];
         $segments = explode('/', $path);
@@ -136,7 +136,7 @@ class Router implements RouterInterface
      * @param string $segment
      * @return bool
      */
-    private function isAttribute(string $segment) : bool
+    private function isAttribute(string $segment): bool
     {
         if (empty($segment))
         {
@@ -191,7 +191,8 @@ class Router implements RouterInterface
                 $path .= $attributes[$attribute];
             }
 
-            else {
+            else 
+            {
                 $path .= $segment;
             }
         }
