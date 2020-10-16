@@ -130,7 +130,7 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             $this->add($route->addPrefix($prefix));
         }
 
-        return $this;
+        return $routes;
     }
     
     /**
@@ -144,7 +144,7 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             $route->tokens($tokens);
         }
 
-        return $routes;
+        return $this;
     }
 
     /**
