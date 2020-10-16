@@ -144,7 +144,7 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             $route->tokens($tokens);
         }
 
-        return $this;
+        return $routes;
     }
 
     /**
