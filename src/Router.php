@@ -39,7 +39,12 @@ class Router implements RouterInterface
             {
                 if (!in_array(strtoupper($requestMethod), $route->methods()))
                 {
-                    $e = MethodNotAllowedException::make($route, $requestMethod);
+                    if (!isset($e))
+                    {
+                        $e = MethodNotAllowedException::make($path, $requestMethod);
+                    }
+
+                    $e->addAllowedMethods($route->methods());
                     continue;
                 }
 
@@ -48,14 +53,9 @@ class Router implements RouterInterface
                 );
             }
         }
-        
-        if (isset($e))
-        {
-            throw $e;
-        }
 
-        throw ExceptionFactory::notFound()
-            ->setPath($path);
+        throw $e ?? ExceptionFactory::notFound()
+                ->setPath($path);
     }
 
     /**
