@@ -52,6 +52,9 @@ final class MethodNotAllowedException extends RouterException
     public function addAllowedMethods(array $methods): void
     {
         $this->allowedMethods = array_merge($this->allowedMethods, $methods);
+        $this->message = sprintf('The http method : %s for path: %s not allowed. Allows methods: %s.',
+            $this->requestMethod, $this->path, implode(', ', $this->allowedMethods)
+        );
     }
 
     /**
