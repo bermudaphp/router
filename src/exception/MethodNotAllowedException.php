@@ -14,34 +14,44 @@ use Bermuda\Router\RouteInterface;
  */
 final class MethodNotAllowedException extends RouterException
 {
-    private RouteInterface $route;
+    private string $path;
     private string $requestMethod;
+    private array $allowedMethods = [];
 
-    public function __construct(RouteInterface $route, string $requestMethod)
+    public function __construct(string $path, string $requestMethod, array $allowedMethods)
     {
-        $this->route = $route;
+        $this->path = $path;
         $this->requestMethod = $requestMethod;
-        parent::__construct(sprintf('The http method : %s for path: %s not allowed. Allows methods: %s.', 
-            $requestMethod, $route->getPath(), implode(', ', $route->methods())
+        parent::__construct(sprintf('The http method : %s for path: %s not allowed. Allows methods: %s.',
+            $requestMethod, $path, implode(', ', $allowedMethods)
         ), 405);
     }
 
     /**
-     * @param RouteInterface $route
+     * @param string $path
      * @param string $requestMethod
+     * @param array $allowedMethods
      * @return static
      */
-    public static function make(RouteInterface $route, string $requestMethod): self
+    public static function make(string $path, string $requestMethod, array $allowedMethods = []): self
     {
-        return new self($route, $requestMethod);
+        return new self($route, $requestMethod, $allowedMethods);
     }
 
     /**
-     * @return RouteInterface
+     * @return string
      */
-    public function getRoute(): RouteInterface
+    public function getPath(): string
     {
-        return $this->route;
+        return $this->path;
+    }
+
+    /**
+     * @param array $methods
+     */
+    public function addAllowedMethods(array $methods): void
+    {
+        $this->allowedMethods = array_merge($this->allowedMethods, $methods);
     }
 
     /**
@@ -50,5 +60,13 @@ final class MethodNotAllowedException extends RouterException
     public function getRequestMethod(): string
     {
         return $this->requestMethod;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedMethods(): array
+    {
+        return $this->allowedMethods;
     }
 }
