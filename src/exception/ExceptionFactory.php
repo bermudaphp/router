@@ -11,14 +11,13 @@ namespace Bermuda\Router\Exception;
 final class ExceptionFactory
 {
     /**
-     * @deprecated
      * @param string $method
      * @param array $methods
      * @return MethodNotAllowedException
      */
     public static function notAllows(string $method, array $allowed): MethodNotAllowedException
     {
-         return new MethodNotAllowedException(sprintf('The http method : %s not allowed. Allows methods: %s.', $method, implode(', ', $allowed)), 405);
+        throw new \RuntimeException(sprintf('Method %s is deprecated', __METHOD__));
     }
 
     /**
