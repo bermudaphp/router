@@ -11,6 +11,7 @@ namespace Bermuda\Router\Exception;
 final class ExceptionFactory
 {
     /**
+     * @deprecated
      * @param string $method
      * @param array $methods
      * @return MethodNotAllowedException
