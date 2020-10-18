@@ -5,6 +5,8 @@ namespace Bermuda\Router;
 
 
 use Psr\Http\Message\ServerRequestInterface;
+use Bermuda\Router\Exception\ExceptionFactory;
+use Bermuda\Router\Exception\MethodNotAllowedException;
 
 
 /**
@@ -21,13 +23,13 @@ class Router implements RouterInterface
     }
 
     /**
-     * @param string $method
+     * @param string $requestMethod
      * @param string $uri
      * @return RouteInterface
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $method, string $uri): RouteInterface
+    public function match(string $requestMethod, string $uri): RouteInterface
     {
         $path = $this->parseUri($uri);
 
@@ -35,9 +37,10 @@ class Router implements RouterInterface
         {
             if (preg_match($this->regexp($route), $path) === 1)
             {
-                if (!in_array(strtoupper($method), $route->methods()))
+                if (!in_array(strtoupper($requestMethod), $route->methods()))
                 {
-                    Exception\ExceptionFactory::notAllows($method, $route->methods())->throw();
+                    $e = MethodNotAllowedException::make($route, $requestMethod);
+                    continue;
                 }
 
                 return $route->withAttributes(
@@ -45,9 +48,14 @@ class Router implements RouterInterface
                 );
             }
         }
+        
+        if (isset($e))
+        {
+            throw $e;
+        }
 
-        Exception\ExceptionFactory::notFound()
-            ->setPath($path)->throw();
+        throw ExceptionFactory::notFound()
+            ->setPath($path);
     }
 
     /**
