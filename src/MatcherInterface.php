@@ -14,10 +14,10 @@ use Psr\Http\Message\ServerRequestInterface;
 interface MatcherInterface
 {
     /**
-     * @param string $method
+     * @param string $requestMethod
      * @param string $uri
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $method, string $uri): RouteInterface ;
+    public function match(string $requestMethod, string $uri): RouteInterface ;
 }
