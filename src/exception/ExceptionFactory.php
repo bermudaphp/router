@@ -30,12 +30,11 @@ final class ExceptionFactory
     }
     
     /**
-     * @param string $path
      * @return RouteNotFoundException
      */
     public static function notFound(): RouteNotFoundException
     {
-        return new RouteNotFoundException('', 404);
+        return new RouteNotFoundException();
     }
 
     /**
