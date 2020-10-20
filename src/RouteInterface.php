@@ -31,7 +31,7 @@ interface RouteInterface
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
         'optional' => '/?(.*)',
-        'any' => '/?(.*)'
+        'any' => '.*'
     ];
 
     /**
