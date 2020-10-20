@@ -30,7 +30,8 @@ interface RouteInterface
     public const tokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
-        'optional' => '/?(.*)'
+        'optional' => '/?(.*)',
+        'any' => '/?(.*)'
     ];
 
     /**
