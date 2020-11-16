@@ -62,7 +62,7 @@ class Router implements RouterInterface
      * @param string $uri
      * @return string
      */
-    private function gatPath(string $uri): string
+    private function getPath(string $uri): string
     {
         return rawurldecode(parse_url($uri, PHP_URL_PATH)));
     }
