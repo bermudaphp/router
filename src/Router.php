@@ -62,21 +62,9 @@ class Router implements RouterInterface
      * @param string $uri
      * @return string
      */
-    private function parseUri(string $uri): string
+    private function gatPath(string $uri): string
     {
-        return $this->filter(parse_url($uri, PHP_URL_PATH));
-    }
-
-    /**
-     * @param $path
-     * @return string
-     */
-    private function filter(string $path): string
-    {
-        return \preg_replace_callback('/(?:[^a-zA-Z0-9_\-\.~!\$&\'\(\)\*\+,;=%:@\/]++|%(?![A-Fa-f0-9]{2}))/', static function (array $match)
-        {
-            return rawurldecode($match[0]);
-        }, $path);
+        return rawurldecode(parse_url($uri, PHP_URL_PATH)));
     }
 
     /**
