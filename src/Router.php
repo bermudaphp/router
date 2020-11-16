@@ -31,7 +31,7 @@ class Router implements RouterInterface
      */
     public function match(string $requestMethod, string $uri): RouteInterface
     {
-        $path = $this->parseUri($uri);
+        $path = $this->getPath($uri);
 
         foreach ($this->routes as $route)
         {
