@@ -35,7 +35,7 @@ final class MethodNotAllowedException extends RouterException
      */
     public static function make(string $path, string $requestMethod, array $allowedMethods = []): self
     {
-        return new self($route, $requestMethod, $allowedMethods);
+        return new self($path, $requestMethod, $allowedMethods);
     }
 
     /**
