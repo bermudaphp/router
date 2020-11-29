@@ -15,7 +15,7 @@ use Psr\Http\Message\ResponseFactoryInterface;
  * Class RedirectMiddleware
  * @package Bermuda\Router\Middleware
  */
-class RedirectMiddleware implements MiddlewareInterface
+final class RedirectMiddleware implements MiddlewareInterface
 {
     private string $reTo;
     private bool $permanent;
