@@ -16,7 +16,7 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
  * Class MatchRouteMiddleware
  * @package Bermuda\Router\Middleware
  */
-class MatchRouteMiddleware implements MiddlewareInterface
+final class MatchRouteMiddleware implements MiddlewareInterface
 {
     private RouterInterface $router;
     private MiddlewareFactoryInterface $factory;
