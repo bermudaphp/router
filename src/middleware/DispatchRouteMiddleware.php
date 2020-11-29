@@ -14,7 +14,7 @@ use Psr\Http\Message\ServerRequestInterface;
  * Class DispatchRouteMiddleware
  * @package Bermuda\Router\Middleware;
  */
-class DispatchRouteMiddleware implements MiddlewareInterface
+final class DispatchRouteMiddleware implements MiddlewareInterface
 {
     /**
      * @inheritDoc
