@@ -17,7 +17,7 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
  * Class RouteMiddleware
  * @package Bermuda\Router\Middleware
  */
-class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
+final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
 {
     private RouteInterface $route;
     private MiddlewareFactoryInterface $factory;
@@ -34,7 +34,8 @@ class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, R
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->factory->make($this->route->getHandler())
-            ->process($request, $handler);
+            ->process($request, $handler)
+            ->withHeader('Allow', implode(', ', array_map('strtoupper', $this->route->methods())));
     }
 
     /**
