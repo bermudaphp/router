@@ -71,20 +71,24 @@ final class Route implements RouteInterface
      * @param string $prefix
      * @return Route
      */
-    public function addPrefix(string $prefix) : RouteInterface
+    public function addPrefix(string $prefix): RouteInterface
     {
-        $this->path = $prefix . $this->path;
-        return $this;
+        $route = clone $this;
+        $route->path = $prefix . $this->path;
+        
+        return $route;
     }
 
     /**
      * @param string $suffix
      * @return Route
      */
-    public function addSuffix(string $suffix) : RouteInterface
+    public function addSuffix(string $suffix): RouteInterface
     {
-        $this->path .= $suffix;
-        return $this;
+        $route = clone $this;
+        $route->path .= $suffix;
+        
+        return $route;
     }
 
     /**
@@ -130,19 +134,23 @@ final class Route implements RouteInterface
      * @param mixed $middleware
      * @return RouteInterface
      */
-    public function before($middleware) : RouteInterface
+    public function before($middleware): RouteInterface
     {
-        array_unshift($this->handler, $middleware);
-        return $this;
+        $route = clone $this;
+        array_unshift($route->handler, $middleware);
+        
+        return $route;
     }
     
      /**
      * @param mixed $middleware
      * @return RouteInterface
      */
-    public function after($middleware) : RouteInterface
+    public function after($middleware): RouteInterface
     {
-        array_push($this->handler, $middleware);
-        return $this;
+        $route = clone $this;
+        array_push($route->handler, $middleware);
+        
+        return $route;
     }
 }
