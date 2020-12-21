@@ -294,7 +294,6 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param string $name
      * @param string $path
      * @param $handler
-     * @param array $tokens
      * @return RouteInterface
      */
     public function any(string $name, string $path, $handler): RouteInterface
