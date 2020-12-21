@@ -48,14 +48,12 @@ class Router implements RouterInterface
                     continue;
                 }
 
-                return $route->withAttributes(
-                    $this->parseAttributes($route, $path)
-                );
+                return $route->withAttributes($this->parseAttributes($route, $path));
             }
         }
 
         throw $e ?? ExceptionFactory::notFound()
-                ->setPath($path);
+            ->setPath($path);
     }
 
     /**
