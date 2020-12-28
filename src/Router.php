@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bermuda\Router;
 
 
@@ -35,7 +34,7 @@ class Router implements RouterInterface
 
         foreach ($this->routes as $route)
         {
-            if (preg_match($this->regexp($route), $path) === 1)
+            if (preg_match($this->buildRegexp($route), $path) === 1)
             {
                 if (!in_array(strtoupper($requestMethod), $route->methods()))
                 {
@@ -48,7 +47,7 @@ class Router implements RouterInterface
                     continue;
                 }
 
-                return $route->withAttributes($this->parseAttributes($route, $path));
+                return $this->parseAttributes($route, $path);
             }
         }
 
@@ -69,7 +68,7 @@ class Router implements RouterInterface
      * @param Route $route
      * @return string
      */
-    private function regexp(RouteInterface $route): string
+    private function buildRegexp(RouteInterface $route): string
     {
         if (($path = $route->getPath()) === '' || $path === '/')
         {
@@ -110,7 +109,7 @@ class Router implements RouterInterface
      * @param string $path
      * @return array
      */
-    private function parseAttributes(RouteInterface $route, string $path): array
+    private function parseAttributes(RouteInterface $route, string $path): RouteInterface
     {
         $attributes = [];
         $segments = explode('/', $path);
@@ -123,7 +122,7 @@ class Router implements RouterInterface
             }
         }
 
-        return $attributes;
+        return $route->withAttributes($attributes);
     }
 
     /**
