@@ -54,7 +54,7 @@ class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
      * @return RouteInterface
      * @throws Exception\RouteNotFoundException
      */
-    public function route(string $name): RouteInterface
+    public function getRoute(string $name): RouteInterface
     {
         if (!$this->has($name))
         {
@@ -68,7 +68,7 @@ class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
      * @param RouteInterface $route
      * @return RouteInterface
      */
-    public function add(RouteInterface $route): RouteInterface
+    public function addRoute(RouteInterface $route): RouteInterface
     {
         return $this->routes[$route->getName()] = $route;
     }
@@ -120,16 +120,10 @@ class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
      * @param callable $callback
      * @return RouteMap
      */
-    public function group(string $prefix, callable $callback): self
+    public function group(string $prefix, callable $callback, array $options = []): void
     {
-        $callback($routes = new self($this->factory));
-     
-        foreach ($routes as $route)
-        {     
-            $this->add($route->addPrefix($prefix));
-        }
-
-        return $routes;
+        $callback($group = new self($this->factory, $options));
+        $this->routes = array_merge($this->routes, $group->routes);
     }
     
     /**
