@@ -17,5 +17,5 @@ interface GeneratorInterface
      * @throws Exception\RouteNotFoundException
      * @throws Exception\GeneratorException
      */
-    public function generate(string $name, array $attributes = []) : string ;
+    public function generate(string $name, array $attributes = []): string ;
 }
