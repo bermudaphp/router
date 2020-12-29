@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bermuda\Router;
 
 
@@ -8,20 +7,34 @@ namespace Bermuda\Router;
  * Class Route
  * @package Bermuda\Router
  */
-final class Route implements RouteInterface
+ class Route
 {
-    private string $name;
-    private string $path;
-    private array $handler; 
-    private array $tokens = [];
-    private array $methods = [];
-    private array $attributes = [];
+    protected string $name;
+    protected string $path;
+    protected array $handler; 
+    protected array $tokens = [];
+    protected array $methods = [];
+    protected array $attributes = [];
 
-    public function __construct(string $name, string $path, $handler)
+    public function __construct(
+        string $name, string $path, 
+        $handler, ?$methods = null, 
+        ?array $middleware = null,
+        ?array $tokens = null,
+    )
     {
         $this->name = $name;
         $this->path = $path;
         $this->handler = [$handler];
+        
+        $this->methods($methods);
+        $this->tokens($tokens);
+        
+        if ($middleware != null)
+        {
+            !isset($middleware['after']) ?: $this->after($middleware['after']);
+            !isset($middleware['before']) ?: $this->before($middleware['before']);
+        }
     }
 
     /**
@@ -50,12 +63,13 @@ final class Route implements RouteInterface
 
     /**
      * @param array $attributes
-     * @return RouteInterface
+     * @return self
      */
-    public function withAttributes(array $attributes): RouteInterface
+    public function withAttributes(array $attributes): self
     {
         $route = clone $this;
         $route->attributes = $attributes;
+        
         return $route;
     }
 
@@ -69,9 +83,9 @@ final class Route implements RouteInterface
 
     /**
      * @param string $prefix
-     * @return Route
+     * @return self
      */
-    public function addPrefix(string $prefix): RouteInterface
+    public function withPrefix(string $prefix): self
     {
         $route = clone $this;
         $route->path = $prefix . $this->path;
@@ -80,61 +94,48 @@ final class Route implements RouteInterface
     }
 
     /**
-     * @param string $suffix
-     * @return Route
+     * @param array|string|null $methods
+     * @return array|self
      */
-    public function addSuffix(string $suffix): RouteInterface
+    public function methods($methods = null)
     {
+        if ($methods != null)
+        {
+            if (is_string($methods) && strpos($methods, '|') !== false)
+            {
+                $methods = explode('|', $methods);
+            }
+            
+            $route = clone $this;
+            $route->methods = array_map('strtoupper', (array) $methods);
+        
+            return $route;
+        }
+        
+        return $this->methods;
+    }
+
+    /**
+     * @return array|self
+     */
+    public function tokens(?array $tokens = null)
+    {
+        if ($tokens == null)
+        {
+            return $this->tokens;
+        }
+        
         $route = clone $this;
-        $route->path .= $suffix;
+        $route->tokens = array_merge($this->tokens, $tokens);
         
         return $route;
-    }
-
-    /**
-     * @param array|string|null $methods
-     * @return array
-     */
-    public function methods($methods = null): array
-    {
-        if ($methods == null)
-        {
-            return $this->methods;
-        }
-        
-        if (is_string($methods) && strpos($methods, '|') !== false)
-        {
-            $methods = explode('|', $methods);
-        }
-        
-        foreach ((array) $methods as &$method)
-        {
-            $method = strtoupper($method);
-        }
-
-        return $this->methods = $methods;
-    }
-
-    /**
-     * @param array $tokens
-     * @param bool $replace
-     * @return array
-     */
-    public function tokens(array $tokens = [], bool $replace = false): array
-    {
-        if($replace)
-        {
-            return $tokens != [] ? $this->tokens = $tokens : $this->tokens;
-        }
-        
-        return $tokens != [] ? $this->tokens = array_merge($this->tokens, $tokens) : $this->tokens;
     }
     
     /**
      * @param mixed $middleware
-     * @return RouteInterface
+     * @return self
      */
-    public function before($middleware): RouteInterface
+    public function before($middleware): self
     {
         $route = clone $this;
         array_unshift($route->handler, $middleware);
@@ -144,13 +145,30 @@ final class Route implements RouteInterface
     
      /**
      * @param mixed $middleware
-     * @return RouteInterface
+     * @return self
      */
-    public function after($middleware): RouteInterface
+    public function after($middleware): self
     {
         $route = clone $this;
         array_push($route->handler, $middleware);
         
         return $route;
+    }
+    
+    /**
+     * @param array $data
+     * @return self
+     */
+    public static function makeOf(array $data): self
+    {
+        foreach (['name', 'path', 'handler'] as $key)
+        {
+            if (!array_key_exists($key, $data))
+            {
+                throw new \InvalidArgumentException(sprintf('Missing %s $data[\'%s\']', __METHOD__, $key));
+            }
+        }
+        
+        return new Route($data['name'], $data['path'], $data['handler'], $data['methods'] ?? self::http_methods, $data['middleware'] ?? null, $data['tokens'] ?? self::tokens);
     }
 }
