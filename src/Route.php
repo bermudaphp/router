@@ -7,7 +7,7 @@ namespace Bermuda\Router;
  * Class Route
  * @package Bermuda\Router
  */
- class Route
+class Route
 {
     protected string $name;
     protected string $path;
