@@ -181,7 +181,7 @@ namespace Bermuda\Router;
     {
         if (is_string($methods) && strpos($methods, '|') !== false)
         {
-                $methods = explode('|', $methods);
+            $methods = explode('|', $methods);
         }
         
         $this->methods = array_map('strtoupper', (array) $methods);
