@@ -15,6 +15,22 @@ namespace Bermuda\Router;
     protected array $tokens = [];
     protected array $methods = [];
     protected array $attributes = [];
+  
+    public static default_http_methods = [
+        RequestMethodInterface::METHOD_GET,
+        RequestMethodInterface::METHOD_POST,
+        RequestMethodInterface::METHOD_PUT,
+        RequestMethodInterface::METHOD_PATCH,
+        RequestMethodInterface::METHOD_DELETE,
+        RequestMethodInterface::METHOD_OPTIONS,
+    ];
+        
+    public static default_route_tokens = [
+        'id' => '\d+',
+        'action' => '(create|read|update|delete)',
+        'optional' => '/?(.*)',
+        'any' => '.*'
+    ];
 
     public function __construct(
         string $name, string $path, 
@@ -27,13 +43,13 @@ namespace Bermuda\Router;
         $this->path = $path;
         $this->handler = [$handler];
         
-        $this->methods($methods);
-        $this->tokens($tokens);
+        $this->setTokens($tokens);
+        $this->setMethods($methods);
         
         if ($middleware != null)
         {
-            !isset($middleware['after']) ?: $this->after($middleware['after']);
-            !isset($middleware['before']) ?: $this->before($middleware['before']);
+            !isset($middleware['after']) ?: $this->setAfterMiddleware($middleware['after']);
+            !isset($middleware['before']) ?: $this->setBeforeMiddleware($middleware['before']);
         }
     }
 
@@ -99,20 +115,12 @@ namespace Bermuda\Router;
      */
     public function methods($methods = null)
     {
-        if ($methods != null)
+        if ($methods == null)
         {
-            if (is_string($methods) && strpos($methods, '|') !== false)
-            {
-                $methods = explode('|', $methods);
-            }
-            
-            $route = clone $this;
-            $route->methods = array_map('strtoupper', (array) $methods);
-        
-            return $route;
+            return $this->methods;
         }
-        
-        return $this->methods;
+     
+        return (clone $this)->setMethods($methods);
     }
 
     /**
@@ -125,10 +133,7 @@ namespace Bermuda\Router;
             return $this->tokens;
         }
         
-        $route = clone $this;
-        $route->tokens = array_merge($this->tokens, $tokens);
-        
-        return $route;
+        return (clone $this)->setTokens($tokens);
     }
     
     /**
@@ -137,10 +142,7 @@ namespace Bermuda\Router;
      */
     public function before($middleware): self
     {
-        $route = clone $this;
-        array_unshift($route->handler, $middleware);
-        
-        return $route;
+        return (clone $this)->setBeforeMiddleware($middleware);
     }
     
      /**
@@ -149,10 +151,7 @@ namespace Bermuda\Router;
      */
     public function after($middleware): self
     {
-        $route = clone $this;
-        array_push($route->handler, $middleware);
-        
-        return $route;
+        return (clone $this)->setAfterMiddleware($middleware);
     }
     
     /**
@@ -169,6 +168,36 @@ namespace Bermuda\Router;
             }
         }
         
-        return new Route($data['name'], $data['path'], $data['handler'], $data['methods'] ?? self::http_methods, $data['middleware'] ?? null, $data['tokens'] ?? self::tokens);
+        return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::default_tokens);
+    }
+    
+    protected function setTokens(?array $tokens): self
+    {
+        $this->tokens = array_merge($this->tokens, (array) $tokens);
+        return $this;
+    }
+  
+    protected function setMethods($methods): self
+    {
+        if (is_string($methods) && strpos($methods, '|') !== false)
+        {
+                $methods = explode('|', $methods);
+        }
+        
+        $this->methods = array_map('strtoupper', (array) $methods);
+     
+        return $this;
+    }
+    
+    protected function setAfterMiddleware($middleware): self
+    {
+        array_push($this->handler, $middleware);
+        return $this;
+    }
+    
+    protected function setBeforeMiddleware($methods): self
+    {
+        array_unshift($this->handler, $middleware);
+        return $this;
     }
 }
