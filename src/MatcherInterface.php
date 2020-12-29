@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bermuda\Router;
 
 
