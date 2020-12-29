@@ -3,11 +3,14 @@
 namespace Bermuda\Router;
 
 
+use Bermuda\Arrayable;
+
+
 /**
  * Class Route
  * @package Bermuda\Router
  */
-class Route
+class Route implements Arrayable
 {
     protected string $name;
     protected string $path;
@@ -75,6 +78,21 @@ class Route
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+    
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return [
+            'name' => $this->name,
+            'handler' => $this->handler,
+            'path' => $this->path,
+            'attributes' => $this->attributes,
+            'methods' => 'methods',
+            'tokens' => 'tokens',
+        ];
     }
 
     /**
