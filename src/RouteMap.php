@@ -65,12 +65,19 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
     }
     
     /**
-     * @param RouteInterface $route
-     * @return RouteInterface
+     * @param Route|array $route
+     * @return self
      */
-    public function add(RouteInterface $route): RouteInterface
+    public function add($route): self
     {
-        return $this->routes[$route->getName()] = $route;
+        if (is_array($route))
+        {
+            $route = Route::makeOf($route);
+        }
+        
+        $this->routes[$route->getName()] = $route;
+        
+        return $this;
     }
 
     /**
@@ -203,9 +210,9 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
      * @param string $name
      * @param string $path
      * @param $handler
-     * @return RouteInterface
+     * @return self
      */
-    public function post(string $name, string $path, $handler): RouteInterface
+    public function post(string $name, string $path, $handler): self
     {
         $data = [
             'name' => $name,
@@ -214,7 +221,7 @@ final class RouteMap implements \IteratorAggregate, \Countable, Arrayable
             'methods' => [RequestMethodInterface::METHOD_POST]
         ];
         
-        return $this->add($this->factory->make($data));
+        return $this->add($data);
     }
 
     /**
