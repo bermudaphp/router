@@ -201,8 +201,7 @@ final class Router implements RouterInterface, RouteMap
             }
         }
 
-        throw $e ?? ExceptionFactory::notFound()
-                ->setPath($path);
+        throw $e ?? (new RouteNotFoundException())->setPath($path);
     }
 
     /**
