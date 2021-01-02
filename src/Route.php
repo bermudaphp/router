@@ -48,12 +48,7 @@ class Route implements Arrayable
         
         $this->setTokens($tokens);
         $this->setMethods($methods);
-        
-        if ($middleware != null)
-        {
-            !isset($middleware['after']) ?: $this->setAfterMiddleware($middleware['after']);
-            !isset($middleware['before']) ?: $this->setBeforeMiddleware($middleware['before']);
-        }
+        $this->setMiddleware($middleware);
     }
 
     /**
@@ -185,7 +180,7 @@ class Route implements Arrayable
                 throw new \InvalidArgumentException(sprintf('Missing %s $data[\'%s\']', __METHOD__, $key));
             }
         }
-        
+                
         return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::default_tokens);
     }
     
@@ -210,6 +205,23 @@ class Route implements Arrayable
     private function setAfterMiddleware($middleware): self
     {
         array_push($this->handler, $middleware);
+        return $this;
+    }
+    
+    private function setMiddleware($middleware): self
+    {
+        if ($middleware != null)
+        {
+            if ($before = !isset($middleware['before']) && $after = !isset($middleware['after']))
+            {
+                $this->setAfterMiddleware($middleware);
+                return $this;
+            }
+            
+            $after ?: $this->setAfterMiddleware($middleware['after']);
+            $before ?: $this->setBeforeMiddleware($middleware['before']);
+        }
+        
         return $this;
     }
     
