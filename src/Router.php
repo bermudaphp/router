@@ -189,7 +189,7 @@ final class Router implements RouterInterface, RouteMap
     {
         foreach ($this->routes as $route)
         {
-            if (preg_match($this->regexp($route), $path = $this->getPath($uri), $matches) === 1)
+            if (preg_match($this->buildRegexp($route), $path = $this->getPath($uri), $matches) === 1)
             {
                 if (in_array(strtoupper($requestMethod), $route->methods()))
                 {
