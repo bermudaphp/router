@@ -4,6 +4,7 @@ namespace Bermuda\Router;
 
 
 use Bermuda\Arrayable;
+use Fig\Http\Message\RequestMethodInterface;
 
 
 /**
@@ -19,7 +20,7 @@ class Route implements Arrayable
     protected array $methods = [];
     protected array $attributes = [];
   
-    public static default_http_methods = [
+    public static $default_http_methods = [
         RequestMethodInterface::METHOD_GET,
         RequestMethodInterface::METHOD_POST,
         RequestMethodInterface::METHOD_PUT,
@@ -28,7 +29,7 @@ class Route implements Arrayable
         RequestMethodInterface::METHOD_OPTIONS,
     ];
         
-    public static default_route_tokens = [
+    public static $default_route_tokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
         'optional' => '/?(.*)',
@@ -37,9 +38,9 @@ class Route implements Arrayable
 
     public function __construct(
         string $name, string $path, 
-        $handler, ?$methods = null, 
+        $handler, $methods = null,
         ?array $middleware = null,
-        ?array $tokens = null,
+        ?array $tokens = null
     )
     {
         $this->name = $name;
@@ -181,7 +182,7 @@ class Route implements Arrayable
             }
         }
                 
-        return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::default_tokens);
+        return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::$default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::$default_route_tokens);
     }
     
     private function setTokens(?array $tokens): self
