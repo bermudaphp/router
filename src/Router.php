@@ -12,13 +12,170 @@ use Bermuda\Router\Exception\MethodNotAllowedException;
  * Class Router
  * @package Bermuda\Router
  */
-class Router implements RouterInterface, RouteMap
+final class Router implements RouterInterface, RouteMap
 {
-    private RouteMap $routes;
+    private array $routes = [];
 
-    public function __construct(RouteFactoryInterface $factory = null)
+    public static function makeOf(array $routes): self
     {
-        $this->routes = new RouteMap($factory ?? new RouteFactory());
+        $self = new self;
+        
+        foreach($routes as $route)
+        {
+            $self->add($route);
+        }
+        
+        return $self;
+    }
+    
+    /**
+     * @return RouteInterface[]
+     */
+    public function toArray(): array 
+    {
+        return $this->getRoutes();
+    }
+    
+    /**
+     * @return RouteInterface[]
+     */
+    public function getRoutes(): array 
+    {
+        return $this->routes;
+    }
+    
+    /**
+     * @param Route|array $route
+     * @return $this
+     */
+    public function add($route): RouteMap 
+    {
+        if (is_array($route))
+        {
+            $route = Route::makeOf($route);
+        }
+        
+        $this->routes[$route->getName()] = $route;
+        
+        return $this;
+    }
+     
+    /**
+     * @param string $prefix
+     * @param callable $callback
+     * @param array $options
+     * @return $this
+     */
+    public function group(string $prefix, callable $callback, array $options = []): RouteMap
+    {
+        $callback($map = new self);
+        
+        if ($options != [])
+        {
+            foreach($map->routes as $route)
+            {
+                foreach($options as $mutator)
+                {
+                    $route = $route->{$mutator}();
+                }
+                
+                $this->add($route->withPrefix($prefix))
+            }
+        }
+        
+        else
+        {
+            foreach($map->routes as $route)
+            {
+                $this->add($route->withPrefix($prefix))
+            }
+        }
+        
+        return $this;
+    }
+    
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function get(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'GET']));
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function post(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'POST']));
+    }
+  
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function delete(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'DELETE']));
+    }
+    
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function put(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'PUT']));
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function patch(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'PATCH']));
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function options(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'OPTIONS']));
+    }
+
+    /**
+     * @param string $name
+     * @param string $path
+     * @param $handler
+     * @param array $mutators
+     * @return RouteMap
+     */
+    public function any(string $name, string $path, $handler, array $mutators = []): RouteMap
+    {
+        return $this->add(array_merge(compact('name', 'path', 'handler'), ['methods' => Route::default_http_methods], $mutators));
     }
 
     /**
@@ -30,11 +187,9 @@ class Router implements RouterInterface, RouteMap
      */
     public function match(string $requestMethod, string $uri): RouteInterface
     {
-        $path = $this->getPath($uri);
-
         foreach ($this->routes as $route)
         {
-            if (preg_match($this->buildRegexp($route), $path) === 1)
+            if (preg_match($this->buildRegexp($route),  $path = $this->getPath($uri)) === 1)
             {
                 if (!in_array(strtoupper($requestMethod), $route->methods()))
                 {
