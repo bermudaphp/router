@@ -79,7 +79,7 @@ final class Router implements RouterInterface, RouteMap
                     $route = $route->{$mutator}();
                 }
                 
-                $this->add($route->withPrefix($prefix))
+                $this->add($route->withPrefix($prefix));
             }
         }
         
@@ -87,7 +87,7 @@ final class Router implements RouterInterface, RouteMap
         {
             foreach($map->routes as $route)
             {
-                $this->add($route->withPrefix($prefix))
+                $this->add($route->withPrefix($prefix));
             }
         }
         
@@ -185,7 +185,7 @@ final class Router implements RouterInterface, RouteMap
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $requestMethod, string $uri): RouteInterface
+    public function match(string $requestMethod, string $uri): Route
     {
         foreach ($this->routes as $route)
         {
@@ -264,7 +264,7 @@ final class Router implements RouterInterface, RouteMap
      * @param string $path
      * @return array
      */
-    private function parseAttributes(RouteInterface $route, string $path): RouteInterface
+    private function parseAttributes(RouteInterface $route, string $path): Route
     {
         $attributes = [];
         $segments = explode('/', $path);
