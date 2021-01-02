@@ -18,5 +18,5 @@ interface MatcherInterface
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $requestMethod, string $uri): RouteInterface ;
+    public function match(string $requestMethod, string $uri): Route ;
 }
