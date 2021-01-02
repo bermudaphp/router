@@ -1,15 +1,14 @@
 <?php
 
-
 namespace Bermuda\Router\Middleware;
 
 
-use Bermuda\Router\Exception\ExceptionFactory;
-use Bermuda\Router\RouteInterface;
+use Bermuda\Router\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 
@@ -17,12 +16,12 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
  * Class RouteMiddleware
  * @package Bermuda\Router\Middleware
  */
-final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface, RouteInterface
+final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
-    private RouteInterface $route;
+    private Route $route;
     private MiddlewareFactoryInterface $factory;
 
-    public function __construct(MiddlewareFactoryInterface $factory, RouteInterface $route)
+    public function __construct(MiddlewareFactoryInterface $factory, Route $route)
     {
         $this->route = $route;
         $this->factory = $factory;
@@ -51,97 +50,12 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
             }
         });
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function getName(): string
-    {
-        return $this->route->getName();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHandler()
-    {
-        return $this->route->getHandler();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addPrefix(string $prefix): RouteInterface
-    {
-        $this->route->addPrefix($prefix);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function addSuffix(string $suffix): RouteInterface
-    {
-        $this->route->addSuffix($suffix);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPath(): string
-    {
-        return $this->route->getPath();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function tokens(array $tokens = [], bool $replace = false): array
-    {
-        return $this->route->tokens($tokens, $replace);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function methods($methods = null): array
-    {
-        return $this->route->methods($methods);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAttributes(): array
-    {
-       return $this->route->getAttributes();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function withAttributes(array $attributes): RouteInterface
-    {
-        $this->route = $this->route->withAttributes($attributes);
-        return clone $this;
-    }
     
     /**
      * @inheritDoc
      */
-    public function before($middleware) : RouteInterface
+    public function getRoute(): Route
     {
-        $this->route->before($middleware);
-        return $this;
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function after($middleware) : RouteInterface
-    {
-        $this->route->after($middleware);
-        return $this;
+        return $this->route;
     }
 }
