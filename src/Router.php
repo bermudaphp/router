@@ -4,7 +4,7 @@ namespace Bermuda\Router;
 
 
 use Psr\Http\Message\ServerRequestInterface;
-use Bermuda\Router\Exception\ExceptionFactory;
+use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
 
 
@@ -63,20 +63,20 @@ final class Router implements RouterInterface, RouteMap
     /**
      * @param string $prefix
      * @param callable $callback
-     * @param array $options
+     * @param array $mutators
      * @return $this
      */
-    public function group(string $prefix, callable $callback, array $options = []): RouteMap
+    public function group(string $prefix, callable $callback, array $mutators = []): RouteMap
     {
         $callback($map = new self);
         
-        if ($options != [])
+        if ($mutators != [])
         {
             foreach($map->routes as $route)
             {
-                foreach($options as $mutator)
+                foreach($mutators as $mutator => $v)
                 {
-                    $route = $route->{$mutator}();
+                    $route = $route->{$mutator}($v);
                 }
                 
                 $this->add($route->withPrefix($prefix));
@@ -206,8 +206,7 @@ final class Router implements RouterInterface, RouteMap
             }
         }
 
-        throw $e ?? ExceptionFactory::notFound()
-            ->setPath($path);
+        throw $e ?? (new RouteNotFoundException())->setPath($path);
     }
 
     /**
@@ -312,9 +311,7 @@ final class Router implements RouterInterface, RouteMap
      */
     public function generate(string $name, array $attributes = []): string
     {
-        $segments = explode('/',
-            $this->routes->route($name)->getPath()
-        );
+        $segments = explode('/', $this->getRoute($name)->getPath());
 
         $path = '';
 
@@ -346,5 +343,17 @@ final class Router implements RouterInterface, RouteMap
         }
 
         return empty($path) ? '/' : $path;
+    }
+    
+    private function getRoute(string $name): Route
+    {
+        $route = $this->routes[$name] ?? null;
+        
+        if ($route)
+        {
+            return $route;
+        }
+        
+        throw (new RouteNotFoundException())->setName($name);
     }
 }
