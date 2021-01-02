@@ -185,28 +185,24 @@ final class Router implements RouterInterface, RouteMap
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $requestMethod, string $uri): Route
+    public function match(string $requestMethod, string $uri): RouteInterface
     {
         foreach ($this->routes as $route)
         {
-            if (preg_match($this->buildRegexp($route),  $path = $this->getPath($uri)) === 1)
+            if (preg_match($this->regexp($route), $path = $this->getPath($uri), $matches) === 1)
             {
-                if (!in_array(strtoupper($requestMethod), $route->methods()))
+                if (in_array(strtoupper($requestMethod), $route->methods()))
                 {
-                    if (!isset($e))
-                    {
-                        $e = MethodNotAllowedException::make($path, $requestMethod);
-                    }
-
-                    $e->addAllowedMethods($route->methods());
-                    continue;
+                    return $this->parseAttributes($route, $matches);
                 }
 
-                return $this->parseAttributes($route, $path);
+                ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
+                    ->addAllowedMethods($route->methods());
             }
         }
 
-        throw $e ?? (new RouteNotFoundException())->setPath($path);
+        throw $e ?? ExceptionFactory::notFound()
+                ->setPath($path);
     }
 
     /**
@@ -222,7 +218,7 @@ final class Router implements RouterInterface, RouteMap
      * @param Route $route
      * @return string
      */
-    private function buildRegexp(RouteInterface $route): string
+    private function buildRegexp(Route $route): string
     {
         if (($path = $route->getPath()) === '' || $path === '/')
         {
@@ -263,16 +259,16 @@ final class Router implements RouterInterface, RouteMap
      * @param string $path
      * @return array
      */
-    private function parseAttributes(RouteInterface $route, string $path): Route
+    private function parseAttributes(Route $route, array $matches): Route
     {
+        unset($matches[0]);
         $attributes = [];
-        $segments = explode('/', $path);
 
         foreach (explode('/', $route->getPath()) as $i => $segment)
         {
             if ($this->isAttribute($segment))
             {
-                $attributes[$this->normalize($segment)] = $segments[$i];
+                $attributes[$this->normalize($segment)] = array_shift($matches);
             }
         }
 
