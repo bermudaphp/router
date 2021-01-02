@@ -12,7 +12,7 @@ use Bermuda\Router\Exception\MethodNotAllowedException;
  * Class Router
  * @package Bermuda\Router
  */
-class Router implements RouterInterface
+class Router implements RouterInterface, RouteMap
 {
     private RouteMap $routes;
 
@@ -191,13 +191,5 @@ class Router implements RouterInterface
         }
 
         return empty($path) ? '/' : $path;
-    }
-
-    /**
-     * @return RouteMap
-     */
-    public function getRoutes(): RouteMap
-    {
-        return $this->routes;
     }
 }
