@@ -181,11 +181,11 @@ final class Router implements RouterInterface, RouteMap
     /**
      * @param string $requestMethod
      * @param string $uri
-     * @return RouteInterface
+     * @return Route
      * @throws Exception\RouteNotFoundException
      * @throws Exception\MethodNotAllowedException
      */
-    public function match(string $requestMethod, string $uri): RouteInterface
+    public function match(string $requestMethod, string $uri): Route
     {
         foreach ($this->routes as $route)
         {
