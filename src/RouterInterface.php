@@ -11,7 +11,7 @@ namespace Bermuda\Router;
 interface RouterInterface extends MatcherInterface, GeneratorInterface
 {
     /**
-     * @return RouteMap
+     * @return Route[]
      */
-    public function getRoutes() : RouteMap;
+    public function getRoutes(): array ;
 }
