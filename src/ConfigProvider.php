@@ -16,7 +16,7 @@ final class ConfigProvider
                 'aliases' => [
                     GeneratorInterface::class => RouterInterface::class,
                     MatcherInterface::class => RouterInterface::class,
-                    RouteMap => RouterInterface::class
+                    RouteMap::class => RouterInterface::class
                 ]
             ]
         ];
