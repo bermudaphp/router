@@ -99,7 +99,7 @@ class Route implements Arrayable
      * @param array $attributes
      * @return self
      */
-    public function withAttributes(array $attributes): self
+    final public function withAttributes(array $attributes): self
     {
         $route = clone $this;
         $route->attributes = $attributes;
@@ -119,7 +119,7 @@ class Route implements Arrayable
      * @param string $prefix
      * @return self
      */
-    public function withPrefix(string $prefix): self
+    final public function withPrefix(string $prefix): self
     {
         $route = clone $this;
         $route->path = $prefix . $this->path;
@@ -131,7 +131,7 @@ class Route implements Arrayable
      * @param array|string|null $methods
      * @return array|self
      */
-    public function methods($methods = null)
+    final public function methods($methods = null)
     {
         if ($methods == null)
         {
@@ -144,7 +144,7 @@ class Route implements Arrayable
     /**
      * @return array|self
      */
-    public function tokens(?array $tokens = null)
+    final public function tokens(?array $tokens = null)
     {
         if ($tokens == null)
         {
@@ -158,7 +158,7 @@ class Route implements Arrayable
      * @param mixed $middleware
      * @return self
      */
-    public function before($middleware): self
+    final public function before($middleware): self
     {
         return (clone $this)->setBeforeMiddleware($middleware);
     }
@@ -167,7 +167,7 @@ class Route implements Arrayable
      * @param mixed $middleware
      * @return self
      */
-    public function after($middleware): self
+    final public function after($middleware): self
     {
         return (clone $this)->setAfterMiddleware($middleware);
     }
@@ -189,13 +189,13 @@ class Route implements Arrayable
         return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::default_tokens);
     }
     
-    protected function setTokens(?array $tokens): self
+    private function setTokens(?array $tokens): self
     {
         $this->tokens = array_merge($this->tokens, (array) $tokens);
         return $this;
     }
   
-    protected function setMethods($methods): self
+    private function setMethods($methods): self
     {
         if (is_string($methods) && strpos($methods, '|') !== false)
         {
@@ -207,13 +207,13 @@ class Route implements Arrayable
         return $this;
     }
     
-    protected function setAfterMiddleware($middleware): self
+    private function setAfterMiddleware($middleware): self
     {
         array_push($this->handler, $middleware);
         return $this;
     }
     
-    protected function setBeforeMiddleware($methods): self
+    private function setBeforeMiddleware($methods): self
     {
         array_unshift($this->handler, $middleware);
         return $this;
