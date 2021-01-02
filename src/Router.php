@@ -175,7 +175,7 @@ final class Router implements RouterInterface, RouteMap
      */
     public function any(string $name, string $path, $handler, array $mutators = []): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), ['methods' => Route::default_http_methods], $mutators));
+        return $this->add(array_merge(compact('name', 'path', 'handler'), ['methods' => Route::$default_http_methods], $mutators));
     }
 
     /**
