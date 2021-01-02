@@ -14,7 +14,7 @@ final class RouteNotFoundException extends RouterException
     private ?string $name = null;
     
     public function __construct()
-    {;
+    {
         parent::__construct('', 404);
     }
     
