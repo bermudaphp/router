@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Bermuda\Router\Middleware;
 
 
@@ -15,15 +14,15 @@ use Psr\Http\Message\ResponseFactoryInterface;
  * Class RedirectMiddleware
  * @package Bermuda\Router\Middleware
  */
-final class RedirectMiddleware implements MiddlewareInterface
+final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
     private string $reTo;
     private bool $permanent;
     private ResponseFactoryInterface $factory;
     
-    public function __construct(string $path, ResponseFactoryInterface $factory, bool $permanent = false)
+    public function __construct(string $uri, ResponseFactoryInterface $factory, bool $permanent = false)
     {
-        $this->reTo = $path;
+        $this->reTo = $uri;
         $this->factory = $factory;
         $this->permanent = $permanent;
     }
@@ -33,6 +32,27 @@ final class RedirectMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
+        return $this->handle($request);
+    }
+    
+    /**
+     * @inheritDoc
+     */
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
         return $this->factory->createResponse($this->permanent ? 301 : 302)->withHeader('Location', $this->reTo);
+    }
+    
+    /**
+     * @param string $uri
+     * @param bool $permanent
+     * @return callable
+     */
+    public static function lazy(string $uri, bool $permanent = false): callable
+    {
+        return static function(ContainerInterface $container) use ($uri, $permanent): MiddlewareInterface
+        {         
+            return new RedirectMiddleware($uri, $container->get(ResponseFactoryInterface::class), $permanent);
+        }
     }
 }
