@@ -9,7 +9,7 @@ use Fig\Http\Message\RequestMethodInterface;
  * Class Route
  * @package Bermuda\Router
  */
-final class Route implements Arrayable
+class Route implements Arrayable
 {
     protected string $name;
     protected string $path;
