@@ -2,9 +2,7 @@
 
 namespace Bermuda\Router;
 
-
 use Psr\Http\Message\ServerRequestInterface;
-
 
 /**
  * Interface MatcherInterface
