@@ -85,6 +85,6 @@
  {
     $routes->get('index', '/', $handler);
     $routes->get('users', '/users', $handler);
-    $routes->post('add.user', '/add/user', $handler);
+    $routes->post('user.add', '/add/user', $handler);
  });
  ```
