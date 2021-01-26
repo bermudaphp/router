@@ -151,6 +151,19 @@ class Route implements Arrayable
     }
     
     /**
+     * @return array|self
+     */
+    final public function midleware(?array $tokens = null)
+    {
+        if ($tokens == null)
+        {
+            return $this->tokens;
+        }
+        
+        return (clone $this)->setTokens($tokens);
+    }
+    
+    /**
      * @param mixed $middleware
      * @return self
      */
@@ -209,7 +222,7 @@ class Route implements Arrayable
         return $this;
     }
     
-    private function setMiddleware($middleware): self
+    final public function middleware($middleware): self
     {
         if ($middleware != null)
         {
@@ -226,7 +239,7 @@ class Route implements Arrayable
         return $this;
     }
     
-    private function setBeforeMiddleware($methods): self
+    private function setBeforeMiddleware($middleware): self
     {
         array_unshift($this->handler, $middleware);
         return $this;
