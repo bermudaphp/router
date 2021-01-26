@@ -49,7 +49,7 @@ final class Router implements RouterInterface, RouteMap
      */
     public function add($route): RouteMap 
     {
-        !is_array($route) :? $route = Route::makeOf($route);
+        !is_array($route) ?: $route = Route::makeOf($route);
         $this->routes[$route->getName()] = $route;
         
         return $this;
@@ -341,7 +341,7 @@ final class Router implements RouterInterface, RouteMap
         throw (new RouteNotFoundException())->setName($name);
     }
     
-    private function merge($name, $path, $handler, array $methods = Route::$requestMethods): self
+    private function merge($name, $path, $handler, ?array $methods = null): self
     {
         $data = [];
         
@@ -365,6 +365,6 @@ final class Router implements RouterInterface, RouteMap
             $data = compact('name', 'path', 'handler');
         }
         
-        return $this->add(array_merge($data, compact('methods')));
+        return $this->add(array_merge($data, ['methods' => $methods ?? Route::$requestMethods]));
     }
 }
