@@ -2,9 +2,7 @@
 
 namespace Bermuda\Router;
 
-
 use Bermuda\Arrayable;
-
 
 /**
  * Interface RouteMap
@@ -24,12 +22,12 @@ interface RouteMap extends Arrayable
     public function add($route): RouteMap ;
      
     /**
-     * @param string $prefix
+     * @param string|array $prefix
      * @param callable $callback
      * @param array $mutators
      * @return RouteMap
      */
-    public function group(string $prefix, callable $callback, array $mutators = []): RouteMap ;
+    public function group($prefix, callable $callback): RouteMap ;
     
     /**
      * @param string $name
