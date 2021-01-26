@@ -18,7 +18,7 @@ class Route implements Arrayable
     protected array $methods = [];
     protected array $attributes = [];
   
-    public static $default_http_methods = [
+    public static $requestMethods = [
         RequestMethodInterface::METHOD_GET,
         RequestMethodInterface::METHOD_POST,
         RequestMethodInterface::METHOD_PUT,
@@ -27,14 +27,14 @@ class Route implements Arrayable
         RequestMethodInterface::METHOD_OPTIONS,
     ];
         
-    public static $default_route_tokens = [
+    public static $routeTokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
         'optional' => '/?(.*)',
         'any' => '.*'
     ];
 
-    public function __construct(array $routeData)
+    private function __construct(array $routeData)
     {
         $this->name = $routeData['name'];
         $this->path = $routeData['path'];
@@ -157,8 +157,18 @@ class Route implements Arrayable
                 throw new \InvalidArgumentException(sprintf('Missing %s $data[\'%s\']', __METHOD__, $key));
             }
         }
+        
+        if (!isset($data['methods']))
+        {
+            $data['methods'] = static::$requestMethods;
+        }
+        
+        if (!isset($data['tokens']))
+        {
+            $data['tokens'] = static::$routeTokens;
+        }
                 
-        return new static($data['name'], $data['path'], $data['handler'], $data['methods'] ?? static::$default_http_methods, $data['middleware'] ?? null, $data['tokens'] ?? static::$default_route_tokens);
+        return new static($data);
     }
     
     private function setTokens(?array $tokens): self
