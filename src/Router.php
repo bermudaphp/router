@@ -2,11 +2,9 @@
 
 namespace Bermuda\Router;
 
-
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
-
 
 /**
  * Class Router
@@ -66,12 +64,15 @@ final class Router implements RouterInterface, RouteMap
      * @param array $mutators
      * @return $this
      */
-    public function group(string $prefix, callable $callback, array $mutators = []): RouteMap
+    public function group($prefix, callable $callback): RouteMap
     {
         $callback($map = new self);
         
-        if ($mutators != [])
+        if (is_array($prefix))
         {
+            $mutators = $prefix;
+            $prefix = array_pull($mutators, 'prefix');
+            
             foreach($map->routes as $route)
             {
                 foreach($mutators as $mutator => $v)
@@ -81,14 +82,13 @@ final class Router implements RouterInterface, RouteMap
                 
                 $this->add($route->withPrefix($prefix));
             }
+            
+            return $this;
         }
         
-        else
+        foreach($map->routes as $route)
         {
-            foreach($map->routes as $route)
-            {
-                $this->add($route->withPrefix($prefix));
-            }
+            $this->add($route->withPrefix($prefix));
         }
         
         return $this;
