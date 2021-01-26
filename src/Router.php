@@ -48,20 +48,15 @@ final class Router implements RouterInterface, RouteMap
      */
     public function add($route): RouteMap 
     {
-        if (is_array($route))
-        {
-            $route = Route::makeOf($route);
-        }
-        
+        !is_array($route) :? $route = Route::makeOf($route);
         $this->routes[$route->getName()] = $route;
         
         return $this;
     }
      
     /**
-     * @param string $prefix
+     * @param string|array $prefix
      * @param callable $callback
-     * @param array $mutators
      * @return $this
      */
     public function group($prefix, callable $callback): RouteMap
@@ -95,87 +90,80 @@ final class Router implements RouterInterface, RouteMap
     }
     
     /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
      * @return RouteMap
      */
-    public function get(string $name, string $path, $handler, array $mutators = []): RouteMap
+    public function get($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'GET']));
-    }
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
-     * @return RouteMap
-     */
-    public function post(string $name, string $path, $handler, array $mutators = []): RouteMap
-    {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'POST']));
-    }
-  
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
-     * @return RouteMap
-     */
-    public function delete(string $name, string $path, $handler, array $mutators = []): RouteMap
-    {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'DELETE']));
+        return $this->merge($name, $path, $handler, ['GET']);
     }
     
     /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
      * @return RouteMap
      */
-    public function put(string $name, string $path, $handler, array $mutators = []): RouteMap
+    public function post($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'PUT']));
+        return $this->merge($name, $path, $handler, ['POST']);
+    }
+  
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
+     * @return RouteMap
+     */
+    public function delete($name, ?string $path = null, $handler = null): RouteMap
+    {
+        return $this->merge($name, $path, $handler, ['DELETE']);
+    }
+    
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
+     * @return RouteMap
+     */
+    public function put($name, ?string $path = null, $handler = null): RouteMap
+    {
+        return $this->merge($name, $path, $handler, ['PUT']);
     }
 
     /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
      * @return RouteMap
      */
-    public function patch(string $name, string $path, $handler, array $mutators = []): RouteMap
+    public function patch($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'PATCH']));
+        return $this->merge($name, $path, $handler, ['PATCH']);
     }
 
     /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
      * @return RouteMap
      */
-    public function options(string $name, string $path, $handler, array $mutators = []): RouteMap
+    public function options($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), $mutators, ['methods' => 'OPTIONS']));
+        return $this->merge($name, $path, $handler, ['OPTIONS']);
     }
 
     /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @param array $mutators
+     * @param string|array $name
+     * @param string|null $path
+     * @param mixed|null $handler
      * @return RouteMap
      */
-    public function any(string $name, string $path, $handler, array $mutators = []): RouteMap
+    public function any($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->add(array_merge(compact('name', 'path', 'handler'), ['methods' => Route::$default_http_methods], $mutators));
+        return $this->merge($name, $path, $handler);
     }
 
     /**
@@ -350,5 +338,32 @@ final class Router implements RouterInterface, RouteMap
         }
         
         throw (new RouteNotFoundException())->setName($name);
+    }
+    
+    private function merge($name, $path, $handler, array $methods = Route::$requestMethods): self
+    {
+        $data = [];
+        
+        if (is_array($name))
+        {
+            $data = $name;
+            
+            if ($path != null)
+            {
+                $data['path'] = $path;
+            }
+            
+            if ($handler != null)
+            {
+                $data['handler'] = $handler;
+            }
+        }
+        
+        else 
+        {
+            $data = compact('name', 'path', 'handler');
+        }
+        
+        return $this->add(array_merge($data, compact('methods')));
     }
 }
