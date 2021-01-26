@@ -11,7 +11,7 @@ use Bermuda\Arrayable;
 interface RouteMap extends Arrayable
 {
     /**
-     * @return RouteInterface[]
+     * @return Route[]
      */
     public function toArray(): array ;
     
@@ -24,71 +24,63 @@ interface RouteMap extends Arrayable
     /**
      * @param string|array $prefix
      * @param callable $callback
-     * @param array $mutators
      * @return RouteMap
      */
     public function group($prefix, callable $callback): RouteMap ;
     
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function get(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function get($name, ?string $path = null, $handler = null): RouteMap ;
 
     /**
      * @param string $name
      * @param string $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function post(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function post($name, ?string $path = null, $handler = null): RouteMap ;
   
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function delete(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function delete($name, ?string $path = null, $handler = null): RouteMap ;
     
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function put(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function put($name, ?string $path = null, $handler = null): RouteMap ;
 
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function patch(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function patch($name, ?string $path = null, $handler = null): RouteMap ;
 
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function options(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function options($name, ?string $path = null, $handler = null): RouteMap ;
 
     /**
-     * @param string $name
-     * @param string $path
+     * @param string|array $name
+     * @param string|null $path
      * @param $handler
-     * @param array $mutators
      * @return RouteMap
      */
-    public function any(string $name, string $path, $handler, array $mutators = []): RouteMap ;
+    public function any($name, ?string $path = null, $handler = null): RouteMap ;
 }
