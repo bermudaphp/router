@@ -81,7 +81,7 @@
  
  or
  
- $routes->group(['prefix' => 'admin', 'tokens' => ['id' => 'd+'], 'middleware' => MyAdminGroupMiddleware::class], static function(RouteMap $routes)
+ $routes->group(['prefix' => '/admin', 'tokens' => ['id' => 'd+'], 'middleware' => MyAdminGroupMiddleware::class], static function(RouteMap $routes)
  {
     $routes->get('index', '/', $handler);
     $routes->get('users', '/users', $handler);
