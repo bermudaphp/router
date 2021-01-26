@@ -2,7 +2,6 @@
 
 namespace Bermuda\Router;
 
-
 /**
  * Interface GeneratorInterface
  * @package Bermuda\Router
