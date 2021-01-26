@@ -59,22 +59,29 @@
  ## RouteMap HTTP Methods
  
  ```php
- 
- $mutators = ['tokens' => ['id' => 'd+'], 'middleware' => [MyMiddleware::class]];
- 
- $routes->get($name, $path, $handler, $mutators);
- $routes->post($name, $path, $handler, $mutators);
- $routes->patch($name, $path, $handler, $mutators);
- $routes->put($name, $path, $handler, $mutators);
- $routes->delete($name, $path, $handler, $mutators);
- $routes->options($name, $path, $handler, $mutators);
- $routes->any($name, $path, $handler, array_merge($mutators, ['methods' => ['GET', 'POST']]));
+  
+ $routes->get($name, $path, $handler);
+ $routes->post(['name' => $name', 'middleware' => [MyFirstMiddleware::class, MySecondMiddleware::class]], $path, $handler);
+ $routes->patch(compact('name', 'handler', 'path'));
+ $routes->put($name, $path, $handler);
+ $routes->delete($name, $path, $handler);
+ $routes->options($name, $path, $handler);
+ $routes->any($name, $path, $handler);
  ```
   
  ## Routes Group
  
  ```php
  $routes->group('/admin', static function(RouteMap $routes)
+ {
+    $routes->get('index', '/', $handler);
+    $routes->get('users', '/users', $handler);
+    $routes->post('add.user', '/add/user', $handler);
+ });
+ 
+ or
+ 
+ $routes->group(['prefix' => 'admin', 'tokens' => ['id' => 'd+'], 'middleware' => MyAdminGroupMiddleware::class], static function(RouteMap $routes)
  {
     $routes->get('index', '/', $handler);
     $routes->get('users', '/users', $handler);
