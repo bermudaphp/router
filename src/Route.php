@@ -2,10 +2,8 @@
 
 namespace Bermuda\Router;
 
-
 use Bermuda\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
-
 
 /**
  * Class Route
@@ -36,20 +34,15 @@ class Route implements Arrayable
         'any' => '.*'
     ];
 
-    public function __construct(
-        string $name, string $path, 
-        $handler, $methods = null,
-        ?array $middleware = null,
-        ?array $tokens = null
-    )
+    public function __construct(array $routeData)
     {
-        $this->name = $name;
-        $this->path = $path;
-        $this->handler = [$handler];
+        $this->name = $routeData['name'];
+        $this->path = $routeData['path'];
+        $this->handler = [$routeData['$handler']];
         
-        $this->setTokens($tokens);
-        $this->setMethods($methods);
-        $this->setMiddleware($middleware);
+        $this->setTokens($routeData['tokens']);
+        $this->setMethods($routeData['methods']);
+        $this->setMiddleware($routeData['middleware']);
     }
 
     /**
@@ -81,14 +74,7 @@ class Route implements Arrayable
      */
     public function toArray(): array
     {
-        return [
-            'name' => $this->name,
-            'handler' => $this->handler,
-            'path' => $this->path,
-            'attributes' => $this->attributes,
-            'methods' => 'methods',
-            'tokens' => 'tokens',
-        ];
+        return get_object_vars($this);
     }
 
     /**
