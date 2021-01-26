@@ -38,11 +38,11 @@ class Route implements Arrayable
     {
         $this->name = $routeData['name'];
         $this->path = $routeData['path'];
-        $this->handler = [$routeData['$handler']];
+        $this->handler = [$routeData['handler']];
         
-        $this->setTokens($routeData['tokens']);
-        $this->setMethods($routeData['methods']);
-        $this->setMiddleware($routeData['middleware']);
+        $this->setTokens($routeData['tokens'] ?? self::$routeTokens);
+        $this->setMethods($routeData['methods'] ?? self::$requestMethods);
+        $this->setMiddleware($routeData['middleware'] ?? null);
     }
 
     /**
