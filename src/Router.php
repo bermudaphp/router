@@ -28,7 +28,7 @@ final class Router implements RouterInterface, RouteMap
     }
     
     /**
-     * @return RouteInterface[]
+     * @return Route[]
      */
     public function toArray(): array 
     {
