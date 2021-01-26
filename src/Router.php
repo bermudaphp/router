@@ -2,6 +2,7 @@
 
 namespace Bermuda\Router;
 
+use Bermuda\Arr;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
@@ -66,7 +67,7 @@ final class Router implements RouterInterface, RouteMap
         if (is_array($prefix))
         {
             $mutators = $prefix;
-            $prefix = array_pull($mutators, 'prefix');
+            $prefix = Arr::pull($mutators, 'prefix');
             
             foreach($map->routes as $route)
             {
