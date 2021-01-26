@@ -9,7 +9,7 @@ use Fig\Http\Message\RequestMethodInterface;
  * Class Route
  * @package Bermuda\Router
  */
-class Route implements Arrayable
+final class Route implements Arrayable
 {
     protected string $name;
     protected string $path;
@@ -81,7 +81,7 @@ class Route implements Arrayable
      * @param array $attributes
      * @return self
      */
-    final public function withAttributes(array $attributes): self
+    public function withAttributes(array $attributes): self
     {
         $route = clone $this;
         $route->attributes = $attributes;
@@ -101,7 +101,7 @@ class Route implements Arrayable
      * @param string $prefix
      * @return self
      */
-    final public function withPrefix(string $prefix): self
+    public function withPrefix(string $prefix): self
     {
         $route = clone $this;
         $route->path = $prefix . $this->path;
@@ -113,7 +113,7 @@ class Route implements Arrayable
      * @param array|string|null $methods
      * @return array|self
      */
-    final public function methods($methods = null)
+    public function methods($methods = null)
     {
         if ($methods == null)
         {
@@ -126,7 +126,7 @@ class Route implements Arrayable
     /**
      * @return array|self
      */
-    final public function tokens(?array $tokens = null)
+    public function tokens(?array $tokens = null)
     {
         if ($tokens == null)
         {
@@ -139,7 +139,7 @@ class Route implements Arrayable
     /**
      * @return self
      */
-    final public function middleware($midleware): self
+    public function middleware($midleware): self
     {
         return (clone $this)->setMiddleware($middleware);
     }
@@ -160,15 +160,15 @@ class Route implements Arrayable
         
         if (!isset($data['methods']))
         {
-            $data['methods'] = static::$requestMethods;
+            $data['methods'] = self::$requestMethods;
         }
         
         if (!isset($data['tokens']))
         {
-            $data['tokens'] = static::$routeTokens;
+            $data['tokens'] = self::$routeTokens;
         }
                 
-        return new static($data);
+        return new self($data);
     }
     
     private function setTokens(?array $tokens): self
