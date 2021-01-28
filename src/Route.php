@@ -201,7 +201,7 @@ class Route implements Arrayable
         {
             if ($before = !isset($middleware['before']) && $after = !isset($middleware['after']))
             {
-                $this->setAfterMiddleware($middleware);
+                $this->setBeforeMiddleware($middleware);
                 return $this;
             }
             
