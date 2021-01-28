@@ -139,7 +139,7 @@ class Route implements Arrayable
     /**
      * @return self
      */
-    public function middleware($midleware): self
+    public function middleware($middleware): self
     {
         return (clone $this)->setMiddleware($middleware);
     }
