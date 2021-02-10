@@ -30,7 +30,6 @@ class Route implements Arrayable
     public static $routeTokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
-        'optional' => '/?(.*)',
         'any' => '.*'
     ];
 
