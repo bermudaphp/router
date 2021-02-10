@@ -278,10 +278,10 @@ final class Router implements RouterInterface, RouteMap
      */
     private function parseAttributes(Route $route, array $matches): Route
     {
-        unset($matches[0]);
         $attributes = [];
-
-        foreach (explode('/', $route->getPath()) as $i => $segment)
+        array_shift($matches)
+       
+        foreach (explode('/', $route->getPath()) as $segment)
         {
             if ($this->isAttribute($segment))
             {
