@@ -68,6 +68,12 @@
  $routes->options($name, $path, $handler);
  $routes->any($name, $path, $handler);
  ```
+ 
+  ## Optional attribute
+ 
+ ```php
+ $routes->get($name, 'api/v1/users/?{id}', $handler);
+ ```
   
  ## Routes Group
  
