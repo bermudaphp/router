@@ -72,7 +72,7 @@
   ## Optional attribute
  
  ```php
- $routes->get($name, 'api/v1/users/?{id}', $handler);
+ $routes->get('users.get, 'api/v1/users/?{id}', $handler);
  ```
   
  ## Routes Group
