@@ -236,7 +236,6 @@ final class Router implements RouterInterface, RouteMap
 
             if ($this->isOptional($segment))
             {
-                $segment = trim($segment, '?');
                 $pattern .= '/??(';
 
                 if ($this->isAttribute($segment))
