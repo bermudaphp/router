@@ -3,6 +3,7 @@
 namespace Bermuda\Router;
 
 use Bermuda\Arr;
+use Bermuda\String\Str;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
@@ -194,6 +195,15 @@ final class Router implements RouterInterface, RouteMap
     }
 
     /**
+     * @param string $segment
+     * @return bool
+     */
+    private function isOptional(string $segment): bool
+    {
+        return Str::contains($segment, '?');
+    }
+
+    /**
      * @param string $uri
      * @return string
      */
@@ -221,6 +231,26 @@ final class Router implements RouterInterface, RouteMap
         {
             if (empty($segment))
             {
+                continue;
+            }
+
+            if ($this->isOptional($segment))
+            {
+                $segment = trim($segment, '?');
+                $pattern .= '/??(';
+
+                if ($this->isAttribute($segment))
+                {
+                    $token = $this->normalize($segment);
+                    $pattern .= $route->tokens()[$token] ?? '';
+                }
+
+                else
+                {
+                    $pattern .= $segment;
+                }
+
+                $pattern .= ')??';
                 continue;
             }
 
@@ -273,8 +303,8 @@ final class Router implements RouterInterface, RouteMap
         {
             return false;
         }
-        
-        return $segment[0] === '{' && $segment[strlen($segment) - 1] === '}';
+
+        return ($segment[0] === '{' || $segment[0] === '?') && $segment[strlen($segment) - 1] === '}';
     }
 
     /**
@@ -283,7 +313,7 @@ final class Router implements RouterInterface, RouteMap
      */
     private function normalize(string $placeholder): string
     {
-        return trim($placeholder, '{}');
+        return trim($placeholder, '?{}');
     }
 
     /**
@@ -312,12 +342,20 @@ final class Router implements RouterInterface, RouteMap
             {
                 $attribute = $this->normalize($segment);
 
-                if (!array_key_exists($attribute, $attributes))
+                if (!$this->isOptional($segment))
                 {
-                    Exception\ExceptionFactory::pathAttributeMissing($attribute)->throw();
+                    if (!array_key_exists($attribute, $attributes))
+                    {
+                        Exception\ExceptionFactory::pathAttributeMissing($attribute)->throw();
+                    }
+
+                    $path .= $attributes[$attribute];
                 }
 
-                $path .= $attributes[$attribute];
+                elseif(array_key_exists($attribute, $attributes))
+                {
+                    $path .= $attributes[$attribute];
+                }
             }
 
             else 
