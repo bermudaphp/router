@@ -285,7 +285,7 @@ final class Router implements RouterInterface, RouteMap
         {
             if ($this->isAttribute($segment))
             {
-                $attributes[$this->normalize($segment)] = array_shift($matches);
+                $attributes[$this->normalize($segment)] = ltrim(array_shift($matches), '/');
             }
         }
 
