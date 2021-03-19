@@ -241,7 +241,7 @@ final class Router implements RouterInterface, RouteMap
                 if ($this->isAttribute($segment))
                 {
                     $token = $this->normalize($segment);
-                    $pattern .= $route->tokens()[$token] ?? '';
+                    $pattern .= $route->tokens()[$token] ?? '(.+)';
                 }
 
                 else
