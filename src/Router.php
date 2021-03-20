@@ -363,7 +363,7 @@ final class Router implements RouterInterface, RouteMap
             }
         }
 
-        return empty($path) ? '/' : $path;
+        return empty($path) ? '/' : rtrim($path, '/');
     }
     
     private function getRoute(string $name): Route
