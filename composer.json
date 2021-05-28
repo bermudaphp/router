@@ -7,8 +7,8 @@
     }
   },
   "require": {
-    "php": ">= 7.4",
-    "bermudaphp/psr15factory": "^v1.0",
+    "php": ">= 7.4 | >= 8.0",
+    "bermudaphp/psr15factory": "^v2.0",
     "bermudaphp/arrayable": "^v1.1",
     "fig/http-message-util": "^v1.1.4"
   }
