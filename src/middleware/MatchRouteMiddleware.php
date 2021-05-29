@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Router\Middleware;
-
 
 use Bermuda\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -10,7 +8,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
-
 
 /**
  * Class MatchRouteMiddleware
