@@ -2,7 +2,6 @@
 
 namespace Bermuda\Router\Middleware;
 
-
 use Bermuda\Router\Route;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -10,7 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
-
 
 /**
  * Class RouteMiddleware
