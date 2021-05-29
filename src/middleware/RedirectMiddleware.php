@@ -2,13 +2,11 @@
 
 namespace Bermuda\Router\Middleware;
 
-
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
-
 
 /**
  * Class RedirectMiddleware
@@ -50,9 +48,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
      */
     public static function lazy(string $uri, bool $permanent = false): callable
     {
-        return static function(ContainerInterface $container) use ($uri, $permanent): MiddlewareInterface
-        {         
-            return new RedirectMiddleware($uri, $container->get(ResponseFactoryInterface::class), $permanent);
-        }
+        return static fn(ContainerInterface $container): MiddlewareInterface => 
+            new RedirectMiddleware($uri, $container->get(ResponseFactoryInterface::class), $permanent);
     }
 }
