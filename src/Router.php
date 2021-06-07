@@ -160,7 +160,7 @@ final class Router implements RouterInterface, RouteMap
 
         if (!is_subclass_of($route['handler'], ResourceInterface::class))
         {
-            throw new \RuntimeException(sprintf('Handler must be subclass of %s', Resource::class));
+            throw new \RuntimeException(sprintf('Handler must be subclass of %s', ResourceInterface::class));
         }
 
         $showHandler = !is_string($resource) ? [$route['handler'], 'show'] : $route['handler'] . '@show';
