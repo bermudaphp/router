@@ -83,4 +83,12 @@ interface RouteMap extends Arrayable
      * @return RouteMap
      */
     public function any($name, ?string $path = null, $handler = null): RouteMap ;
+    
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param ResourceInterface|string $resource
+     * @return RouteMap
+     */
+    public function resource($name, ?string $path = null, $resource = null): RouteMap ;
 }
