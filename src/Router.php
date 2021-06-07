@@ -4,6 +4,7 @@ namespace Bermuda\Router;
 
 use Bermuda\Arr;
 use Bermuda\String\Str;
+use Fig\Http\Message\RequestMethodInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
@@ -14,6 +15,9 @@ use Bermuda\Router\Exception\MethodNotAllowedException;
  */
 final class Router implements RouterInterface, RouteMap
 {
+    /**
+     * @var Route
+     */
     private array $routes = [];
 
     public static function makeOf(array $routes): self
@@ -37,7 +41,7 @@ final class Router implements RouterInterface, RouteMap
     }
     
     /**
-     * @return RouteInterface[]
+     * @return Route[]
      */
     public function getRoutes(): array 
     {
@@ -90,82 +94,86 @@ final class Router implements RouterInterface, RouteMap
         
         return $this;
     }
-    
+
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function get($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['GET']);
+        return $this->add($this->merge($name, $path, $handler, ['GET']));
     }
-    
+
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function post($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['POST']);
+        return $this->add($this->merge($name, $path, $handler, ['POST']));
     }
-  
+
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function delete($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['DELETE']);
+        return $this->add($this->merge($name, $path, $handler, ['DELETE']));
     }
-    
+
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function put($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['PUT']);
+        return $this->add($this->merge($name, $path, $handler, ['PUT']));
     }
 
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function patch($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['PATCH']);
+        return $this->add($this->merge($name, $path, $handler, ['PATCH']));
     }
 
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function options($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler, ['OPTIONS']);
+        return $this->add($this->merge($name, $path, $handler, ['OPTIONS']));
     }
 
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param mixed|null $handler
-     * @return RouteMap
+     * @inheritDoc
      */
     public function any($name, ?string $path = null, $handler = null): RouteMap
     {
-        return $this->merge($name, $path, $handler);
+        return $this->add($this->merge($name, $path, $handler));
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function resource($name, ?string $path = null, $resource = null): RouteMap
+    {
+        $route = $this->merge($name, $path, $resource, []);
+
+        if (!is_subclass_of($route['handler'], ResourceInterface::class))
+        {
+            throw new \RuntimeException(sprintf('Handler must be subclass of %s', Resource::class));
+        }
+
+        $showHandler = !is_string($resource) ? [$route['handler'], 'show'] : $route['handler'] . '@show';
+        $createHandler = !is_string($resource) ? [$route['handler'], 'create'] : $route['handler'] . '@create';
+        $updateHandler = !is_string($resource) ? [$route['handler'], 'update'] : $route['handler'] . '@update';
+        $deleteHandler = !is_string($resource) ? [$route['handler'], 'delete'] : $route['handler'] . '@delete';
+
+        $this->add(array_merge($route, ['name' => $route['name'] . '.create', 'handler' => $createHandler, 'methods' => [RequestMethodInterface::METHOD_POST]]));
+        $this->add(array_merge($route, ['name' => $route['name'] . '.show', 'handler' => $showHandler, 'path' => $route['path'] . '/?{id}', 'methods' => [RequestMethodInterface::METHOD_GET]]));
+        $this->add(array_merge($route, ['name' => $route['name'] . '.delete', 'handler' => $deleteHandler, 'path' => $route['path'] . '/{id}', 'methods' => [RequestMethodInterface::METHOD_DELETE]]));
+        $this->add(array_merge($route, ['name' => $route['name'] . '.update', 'handler' => $updateHandler, 'path' => $route['path'] . '/{id}', 'methods' => [RequestMethodInterface::METHOD_PUT]]));
+
+        return $this;
     }
 
     /**
@@ -378,9 +386,9 @@ final class Router implements RouterInterface, RouteMap
         throw (new RouteNotFoundException())->setName($name);
     }
     
-    private function merge($name, $path, $handler, ?array $methods = null): self
+    private function merge($name, $path, $handler, ?array $methods = null): array
     {
-        $data = [];
+        $methods != null ?: $methods = Route::$requestMethods;
         
         if (is_array($name))
         {
@@ -395,13 +403,12 @@ final class Router implements RouterInterface, RouteMap
             {
                 $data['handler'] = $handler;
             }
+
+            $data['methods'] = $methods;
+
+            return $data;
         }
-        
-        else 
-        {
-            $data = compact('name', 'path', 'handler');
-        }
-        
-        return $this->add(array_merge($data, ['methods' => $methods ?? Route::$requestMethods]));
+
+        return compact('name', 'path', 'handler', 'methods');
     }
 }
