@@ -199,7 +199,7 @@ final class Router implements RouterInterface, RouteMap
             }
         }
 
-        throw $e ?? (new RouteNotFoundException())->setPath($path);
+        throw $e ?? (new RouteNotFoundException())->setPath($path ?? $this->getPath($uri));
     }
 
     /**
