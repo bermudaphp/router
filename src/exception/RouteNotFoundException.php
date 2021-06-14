@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Bermuda\Router\Exception;
-
 
 /**
  * Class RouteNotFoundException
