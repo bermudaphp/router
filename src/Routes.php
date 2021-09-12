@@ -151,31 +151,19 @@ final class Routes implements RouteMap
     /**
      * @inheritDoc
      */
-    public function resource($name, ?string $path = null, $resource = null): RouteMap
+    public function resource(string $resource): RouteMap
     {
-        $route = $this->merge($name, $path, $resource, []);
-
-        if (!is_subclass_of($route['handler'], Resource::class)) {
-            throw new RuntimeException(sprintf('Handler must be subclass of %s', Resource::class));
+        if (!is_subclass_of($resource, Resource::class)) {
+            throw new RuntimeException(sprintf('Resource must be subclass of %s', Resource::class));
         }
 
-        $showHandler = !is_string($resource) ? [$route['handler'], 'show'] : $route['handler'] . '@show';
-        $createHandler = !is_string($resource) ? [$route['handler'], 'create'] : $route['handler'] . '@create';
-        $updateHandler = !is_string($resource) ? [$route['handler'], 'update'] : $route['handler'] . '@update';
-        $deleteHandler = !is_string($resource) ? [$route['handler'], 'delete'] : $route['handler'] . '@delete';
-
-        $this->add(array_merge($route, ['name' => $route['name'] . '.create', 'handler' => $createHandler, 'methods' => [RequestMethodInterface::METHOD_POST]]));
-        $this->add(array_merge($route, ['name' => $route['name'] . '.show', 'handler' => $showHandler, 'path' => $route['path'] . '/?{id}', 'methods' => [RequestMethodInterface::METHOD_GET]]));
-        $this->add(array_merge($route, ['name' => $route['name'] . '.delete', 'handler' => $deleteHandler, 'path' => $route['path'] . '/{id}', 'methods' => [RequestMethodInterface::METHOD_DELETE]]));
-        $this->add(array_merge($route, ['name' => $route['name'] . '.update', 'handler' => $updateHandler, 'path' => $route['path'] . '/{id}', 'methods' => [RequestMethodInterface::METHOD_PUT]]));
-
-        return $this;
+        return $resource::register($this);
     }
 
     /**
      * @inheritDoc
      */
-    public function getRoute(string $name): Route
+    public function route(string $name): Route
     {
         $route = $this->routes[$name] ?? null;
 
