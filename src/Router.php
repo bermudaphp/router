@@ -4,9 +4,8 @@ namespace Bermuda\Router;
 
 final class Router
 {
-    public function __construct(
-        private Matcher  $matcher, private Generator $generator,
-        private RouteMap $routes
+    public function __construct(private Matcher  $matcher, 
+        private Generator $generator, private RouteMap $routes
     ){
     }
 
