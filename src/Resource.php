@@ -14,6 +14,4 @@ interface Resource
     public function edit(ServerRequestInterface $request): ResponseInterface ;
     public function get(ServerRequestInterface $request): ResponseInterface ;
     public function store(ServerRequestInterface $request): ResponseInterface ;
-    public function names(?array $names = null): array ;
-    public function paths(?array $paths = null): array ;
 }
