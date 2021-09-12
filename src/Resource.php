@@ -26,12 +26,12 @@ abstract class Resource
 
     public static function getName(): string
     {
-        throw new \RuntimeException('Overwrite current method');
+        throw new \RuntimeException('Overwrite '. __METHOD__);
     }
 
     public static function getPathPrefix(): string
     {
-        throw new \RuntimeException('Overwrite current method');
+        throw new \RuntimeException('Overwrite '. __METHOD__);
     }
 
     /**
