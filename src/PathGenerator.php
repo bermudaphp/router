@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router;
 
-final class RouteGenerator implements Generator
+final class PathGenerator implements Generator
 {
     use AttributeNormalizer;
 
