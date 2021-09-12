@@ -2,8 +2,9 @@
 
 namespace Bermuda\Router;
 
-use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\{
+    ServerRequestInterface, ResponseInterface
+};
 
 abstract class Resource
 {
