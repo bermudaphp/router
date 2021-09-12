@@ -2,18 +2,15 @@
 
 namespace Bermuda\Router;
 
-/**
- * Interface GeneratorInterface
- * @package Bermuda\Router
- */
-interface GeneratorInterface
+interface Generator
 {
     /**
-     * @param string $name name of route
+     * @param RouteMap $routes
+     * @param string $name
      * @param array $attributes
      * @return string
      * @throws Exception\RouteNotFoundException
      * @throws Exception\GeneratorException
      */
-    public function generate(string $name, array $attributes = []): string ;
+    public function generate(RouteMap $routes, string $name, array $attributes = []): string ;
 }
