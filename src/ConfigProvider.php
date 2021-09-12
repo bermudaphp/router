@@ -2,21 +2,13 @@
 
 namespace Bermuda\Router;
 
-final class ConfigProvider
+final class ConfigProvider extends \Bermuda\Config\ConfigProvider
 {
-    public function __invoke(): array
+    /**
+     * @inheritDoc
+     */
+    protected function getFactories(): array
     {
-        return [
-            'dependencies' => [
-                'invokables' => [
-                    RouterInterface::class => Router::class
-                ],
-                'aliases' => [
-                    GeneratorInterface::class => RouterInterface::class,
-                    MatcherInterface::class => RouterInterface::class,
-                    RouteMap::class => RouterInterface::class
-                ]
-            ]
-        ];
+        return [Router::class => RouterFactory::class];
     }
 }
