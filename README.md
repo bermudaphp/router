@@ -6,7 +6,7 @@
  ## Usage
 
  ```php
- $router = new Router();
+ $router = Router::defaults();
  
  $router->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hello, %s!', $name)}, ['methods' => ['GET|POST']]]);
  
