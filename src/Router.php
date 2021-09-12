@@ -2,11 +2,32 @@
 
 namespace Bermuda\Router;
 
+/**
+ * @mixin RouteMap
+ */
 final class Router
 {
-    public function __construct(private Matcher  $matcher, 
-        private Generator $generator, private RouteMap $routes
+    public function __construct(private Matcher  $matcher,
+                                private Generator $generator, private RouteMap $routes
     ){
+    }
+
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return false|mixed
+     * @throws \BadMethodCallException
+     */
+    public function __call(string $name, array $arguments)
+    {
+        if (method_exists($this->routes, $name))
+        {
+            return call_user_func_array([$this->routes, $name], $arguments);
+        }
+
+        throw new \BadMethodCallException(
+            sprintf('Method %s does not exist from %s', __METHOD__, self::class)
+        );
     }
 
     /**
@@ -39,7 +60,7 @@ final class Router
     {
         return $this->routes;
     }
-    
+
     public static function defaults(): self
     {
         return new self(new RouteMatcher, new PathGenerator, new Routes);
