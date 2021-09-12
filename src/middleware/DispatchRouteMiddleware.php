@@ -7,10 +7,6 @@ use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * Class DispatchRouteMiddleware
- * @package Bermuda\Router\Middleware;
- */
 final class DispatchRouteMiddleware implements MiddlewareInterface
 {
     /**
@@ -18,9 +14,6 @@ final class DispatchRouteMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        /**
-         * @var RouteMiddleware $route
-         */
         if (($route = $request->getAttribute(RouteMiddleware::class)) instanceof RouteMiddleware)
         {
             return $route->process($request, $handler);
