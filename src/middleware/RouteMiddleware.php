@@ -10,10 +10,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
-/**
- * Class RouteMiddleware
- * @package Bermuda\Router\Middleware
- */
 final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
     private Route $route;
