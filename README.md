@@ -10,13 +10,9 @@
  
  $router->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hello, %s!', $name)}, ['methods' => ['GET|POST']]]);
  
- try
- {
+ try {
     $route = $router->match($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
- }
- 
- catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException)
- {
+ } catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException) {
     // handle exception logics
  }
  
@@ -27,7 +23,6 @@
  ```php
  
  $pipeline = new \Bermuda\Pipeline\Pipeline();
- 
  $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
  
  class Handler implements RequestHandlerInterface
@@ -43,13 +38,9 @@
  $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
  $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class));
   
- try
- {
+ try {
     $response = $pipeline->handle($request);
- }
- 
- catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException)
- {
+ } catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException) {
     // handle exception logics
  }
 
