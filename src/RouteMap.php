@@ -17,7 +17,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @return Route
      * @throws Exception\RouteNotFoundException
      */
-    public function getRoute(string $name): Route;
+    public function route(string $name): Route;
 
     /**
      * @param Route|array $route
@@ -89,10 +89,9 @@ interface RouteMap extends Arrayable, IteratorAggregate
     public function any(string|array $name, ?string $path = null, $handler = null): RouteMap;
 
     /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param Resource|string $resource
+     * @param string $resource must be subclass of Resource
      * @return RouteMap
+     * @throws \RuntimeException
      */
-    public function resource(string|array $name, ?string $path = null, Resource|string $resource = null): RouteMap;
+    public function resource(string $resource): RouteMap;
 }
