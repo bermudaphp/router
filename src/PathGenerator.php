@@ -32,7 +32,7 @@ final class PathGenerator implements Generator
 
                 if (!$this->isOptional($segment)) {
                     if (!array_key_exists($attribute, $attributes)) {
-                        Exception\ExceptionFactory::pathAttributeMissing($attribute)->throw();
+                        return new Exception\GeneratorException('Missing attribute with name: ' . $attribute);
                     }
 
                     $path .= $attributes[$attribute];
