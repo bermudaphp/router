@@ -2,8 +2,6 @@
 
 namespace Bermuda\Router;
 
-use Bermuda\String\Str;
-
 trait AttributeNormalizer
 {
     /**
@@ -12,7 +10,7 @@ trait AttributeNormalizer
      */
     private function isOptional(string $segment): bool
     {
-        return Str::contains($segment, '?');
+        return str_contains($segment, '?');
     }
 
     /**
