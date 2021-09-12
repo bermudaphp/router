@@ -5,10 +5,6 @@ namespace Bermuda\Router\Exception;
 use Throwable;
 use Bermuda\Router\RouteInterface;
 
-/**
- * Class MethodNotAllowedException
- * @package Bermuda\Router\Exception
- */
 final class MethodNotAllowedException extends RouterException
 {
     private string $path;
