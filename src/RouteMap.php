@@ -3,62 +3,34 @@
 namespace Bermuda\Router;
 
 use Bermuda\Arrayable;
+use IteratorAggregate;
 
-/**
- * Interface RouteMap
- * @package Bermuda\Router
- */
-interface RouteMap extends Arrayable
+interface RouteMap extends Arrayable, IteratorAggregate
 {
     /**
      * @return Route[]
      */
-    public function toArray(): array ;
-    
+    public function toArray(): array;
+
+    /**
+     * @param string $name
+     * @return Route
+     * @throws Exception\RouteNotFoundException
+     */
+    public function getRoute(string $name): Route;
+
     /**
      * @param Route|array $route
      * @return RouteMap
      */
-    public function add($route): RouteMap ;
-     
+    public function add(Route|array $route): RouteMap;
+
     /**
      * @param string|array $prefix
      * @param callable $callback
      * @return RouteMap
      */
-    public function group($prefix, callable $callback): RouteMap ;
-    
-    /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param $handler
-     * @return RouteMap
-     */
-    public function get($name, ?string $path = null, $handler = null): RouteMap ;
-
-    /**
-     * @param string $name
-     * @param string $path
-     * @param $handler
-     * @return RouteMap
-     */
-    public function post($name, ?string $path = null, $handler = null): RouteMap ;
-  
-    /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param $handler
-     * @return RouteMap
-     */
-    public function delete($name, ?string $path = null, $handler = null): RouteMap ;
-    
-    /**
-     * @param string|array $name
-     * @param string|null $path
-     * @param $handler
-     * @return RouteMap
-     */
-    public function put($name, ?string $path = null, $handler = null): RouteMap ;
+    public function group(string|array $prefix, callable $callback): RouteMap;
 
     /**
      * @param string|array $name
@@ -66,7 +38,7 @@ interface RouteMap extends Arrayable
      * @param $handler
      * @return RouteMap
      */
-    public function patch($name, ?string $path = null, $handler = null): RouteMap ;
+    public function get(string|array $name, ?string $path = null, $handler = null): RouteMap;
 
     /**
      * @param string|array $name
@@ -74,7 +46,7 @@ interface RouteMap extends Arrayable
      * @param $handler
      * @return RouteMap
      */
-    public function options($name, ?string $path = null, $handler = null): RouteMap ;
+    public function post(string|array $name, ?string $path = null, $handler = null): RouteMap;
 
     /**
      * @param string|array $name
@@ -82,13 +54,45 @@ interface RouteMap extends Arrayable
      * @param $handler
      * @return RouteMap
      */
-    public function any($name, ?string $path = null, $handler = null): RouteMap ;
-    
+    public function delete(string|array $name, ?string $path = null, $handler = null): RouteMap;
+
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param ResourceInterface|string $resource
+     * @param $handler
      * @return RouteMap
      */
-    public function resource($name, ?string $path = null, $resource = null): RouteMap ;
+    public function put(string|array $name, ?string $path = null, $handler = null): RouteMap;
+
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param $handler
+     * @return RouteMap
+     */
+    public function patch(string|array $name, ?string $path = null, $handler = null): RouteMap;
+
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param $handler
+     * @return RouteMap
+     */
+    public function options(string|array $name, ?string $path = null, $handler = null): RouteMap;
+
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param $handler
+     * @return RouteMap
+     */
+    public function any(string|array $name, ?string $path = null, $handler = null): RouteMap;
+
+    /**
+     * @param string|array $name
+     * @param string|null $path
+     * @param Resource|string $resource
+     * @return RouteMap
+     */
+    public function resource(string|array $name, ?string $path = null, Resource|string $resource = null): RouteMap;
 }
