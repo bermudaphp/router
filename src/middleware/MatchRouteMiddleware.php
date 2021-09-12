@@ -22,7 +22,7 @@ final class MatchRouteMiddleware implements MiddlewareInterface
         $this->factory = $factory;
     }
 
-    public static function getRoute(): ?Route
+    public static function getRoute():? Route
     {
         return self::$route;
     }
