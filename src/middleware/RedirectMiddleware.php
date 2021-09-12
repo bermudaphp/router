@@ -8,10 +8,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 
-/**
- * Class RedirectMiddleware
- * @package Bermuda\Router\Middleware
- */
 final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
     private string $reTo;
