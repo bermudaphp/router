@@ -13,20 +13,10 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 final class MatchRouteMiddleware implements MiddlewareInterface
 {
     private static ?Route $route = null;
-    private RouterInterface $router;
-    private MiddlewareFactoryInterface $factory;
-
-    public function __construct(MiddlewareFactoryInterface $factory, RouterInterface $router)
+    public function __construct(private MiddlewareFactoryInterface $factory, private Router $router)
     {
-        $this->router = $router;
-        $this->factory = $factory;
     }
-
-    public static function getRoute():? Route
-    {
-        return self::$route;
-    }
-
+    
     /**
      * @inheritDoc
      */
@@ -42,5 +32,10 @@ final class MatchRouteMiddleware implements MiddlewareInterface
         $request = $request->withAttribute(RouteMiddleware::class, $route);
 
         return $handler->handle($request);
+    }
+    
+    public static function getRoute():? Route
+    {
+        return self::$route;
     }
 }
