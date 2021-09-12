@@ -5,11 +5,7 @@ namespace Bermuda\Router;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
-/**
- * Interface ResourceInterface
- * @package Bermuda\Router
- */
-interface ResourceInterface
+interface Resource
 {
     public function show(ServerRequestInterface $request): ResponseInterface ;
     public function create(ServerRequestInterface $request): ResponseInterface ;
@@ -18,6 +14,6 @@ interface ResourceInterface
     public function edit(ServerRequestInterface $request): ResponseInterface ;
     public function get(ServerRequestInterface $request): ResponseInterface ;
     public function store(ServerRequestInterface $request): ResponseInterface ;
-    public function getNames(): array;
-    public function getPaths(): array;
+    public function names(?array $names = null): array ;
+    public function paths(?array $paths = null): array ;
 }
