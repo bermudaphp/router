@@ -14,9 +14,10 @@ final class MethodNotAllowedException extends RouterException
     public function __construct(string $path, string $requestMethod, array $allowedMethods)
     {
         $this->path = $path;
-        $this->requestMethod = $requestMethod;
+        $this->requestMethod = strtoupper($requestMethod);
+        $this->allowedMethods = array_map('strtoupper', $allowedMethods);
         parent::__construct(sprintf('The http method : %s for path: %s not allowed. Allows methods: %s.',
-            $requestMethod, $path, implode(', ', $allowedMethods)
+            $requestMethod, $path, implode(', ', $this->allowedMethods)
         ), 405);
     }
 
@@ -44,7 +45,7 @@ final class MethodNotAllowedException extends RouterException
      */
     public function addAllowedMethods(array $methods): void
     {
-        $this->allowedMethods = array_unique(array_merge($this->allowedMethods, $methods));
+        $this->allowedMethods = array_unique(array_merge($this->allowedMethods, array_map('strtoupper', $methods)));
         $this->message = sprintf('The http method : %s for path: %s not allowed. Allows methods: %s.',
             $this->requestMethod, $this->path, implode(', ', $this->allowedMethods)
         );
