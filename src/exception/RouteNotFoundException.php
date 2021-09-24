@@ -1,13 +1,7 @@
 <?php
 
-
 namespace Bermuda\Router\Exception;
 
-
-/**
- * Class RouteNotFoundException
- * @package Bermuda\Router\Exception
- */
 final class RouteNotFoundException extends RouterException
 {
     private ?string $path = null;
