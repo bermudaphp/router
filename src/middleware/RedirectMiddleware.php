@@ -10,15 +10,16 @@ use Psr\Http\Message\ResponseFactoryInterface;
 
 final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
-    private string $reTo;
-    private bool $permanent;
-    private ResponseFactoryInterface $factory;
-    
-    public function __construct(string $uri, ResponseFactoryInterface $factory, bool $permanent = false)
+    private $verifier;
+    public function __construct(
+        private string $location, 
+        private ResponseFactoryInterface $responseFactory,
+        callable $verifier,
+        private bool $permanent = false)
     {
-        $this->reTo = $uri;
-        $this->factory = $factory;
-        $this->permanent = $permanent;
+        $this->$verifier = static fn(ServerRequestInterface $request, ... $arguments) use ($verifier): bool {
+            return $verifier($request, ... $arguments);
+        };
     }
 
     /**
@@ -39,12 +40,13 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
     
     /**
      * @param string $uri
+     * @param callable $verifier
      * @param bool $permanent
      * @return callable
      */
-    public static function lazy(string $uri, bool $permanent = false): callable
+    public static function lazy(string $location, callable $verifier, bool $permanent = false): callable
     {
         return static fn(ContainerInterface $container): MiddlewareInterface => 
-            new RedirectMiddleware($uri, $container->get(ResponseFactoryInterface::class), $permanent);
+            new RedirectMiddleware($location, $container->get(ResponseFactoryInterface::class), $verifier, $permanent);
     }
 }
