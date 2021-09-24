@@ -23,7 +23,7 @@ trait AttributeNormalizer
             return false;
         }
 
-        return ($segment[0] === '{' || $segment[0] === '?') && $segment[strlen($segment) - 1] === '}';
+        return ($segment[0] === '{' || $segment[0] === '?') && $segment[mb_strlen($segment) - 1] === '}';
     }
 
     /**
