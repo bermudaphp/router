@@ -13,7 +13,7 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 final class MatchRouteMiddleware implements MiddlewareInterface
 {
     private static ?Route $route = null;
-    public function __construct(private MiddlewareFactoryInterface $factory, private Router $router)
+    public function __construct(private MiddlewareFactoryInterface $middlewareFactory, private Router $router)
     {
     }
     
@@ -22,13 +22,13 @@ final class MatchRouteMiddleware implements MiddlewareInterface
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $route = $this->router->match($request->getMethod(), (string)$request->getUri());
+        $route = $this->router->match($request->getMethod(), (string) $request->getUri());
 
         foreach ($route->getAttributes() as $name => $value) {
             $request = $request->withAttribute($name, $value);
         }
 
-        $route = new RouteMiddleware($this->factory, $route);
+        $route = new RouteMiddleware($this->middlewareFactory, $route);
         $request = $request->withAttribute(RouteMiddleware::class, $route);
 
         return $handler->handle($request);
