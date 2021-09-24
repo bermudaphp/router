@@ -11,9 +11,14 @@ final class Routes implements RouteMap
 {
     private array $routes = [];
 
-    public function getIterator(): ArrayIterator
+    /**
+     * @return Route[]
+     */
+    public function getIterator(): Generator
     {
-        return new ArrayIterator($this->routes);
+        foreach ($this->routes as $route) {
+            yield $route
+        }
     }
 
     /**
@@ -56,8 +61,7 @@ final class Routes implements RouteMap
     }
 
     /**
-     * @param Route|array $route
-     * @return $this
+     * @inheritDoc
      */
     public function add(Route|array $route): RouteMap
     {
