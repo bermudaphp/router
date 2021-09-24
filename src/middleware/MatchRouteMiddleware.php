@@ -3,7 +3,7 @@
 namespace Bermuda\Router\Middleware;
 
 use Bermuda\Router\Route;
-use Bermuda\Router\RouterInterface;
+use Bermuda\Router\Router;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
