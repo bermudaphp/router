@@ -30,9 +30,7 @@ final class Routes implements RouteMap
     }
 
     /**
-     * @param string|array $prefix
-     * @param callable $callback
-     * @return $this
+     * @inheritDoc
      */
     public function group(string|array $prefix, callable $callback): RouteMap
     {
