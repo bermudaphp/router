@@ -9,10 +9,6 @@ use Psr\Http\Message\ServerRequestInterface;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
 
-/**
- * Class Router
- * @package Bermuda\Router
- */
 final class Router implements RouterInterface, RouteMap
 {
     /**
