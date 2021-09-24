@@ -12,13 +12,8 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
-    private Route $route;
-    private MiddlewareFactoryInterface $factory;
-
-    public function __construct(MiddlewareFactoryInterface $factory, Route $route)
+    public function __construct(private MiddlewareFactoryInterface $middlewareFactory, private Route $route)
     {
-        $this->route = $route;
-        $this->factory = $factory;
     }
 
      /**
@@ -26,9 +21,8 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->factory->make($this->route->getHandler())
-            ->process($request, $handler)
-            ->withHeader('Allow', implode(', ', array_map('strtoupper', $this->route->methods())));
+        return $this->middlewareFactory->make($this->route->getHandler())
+            ->process($request, $handler);
     }
 
     /**
