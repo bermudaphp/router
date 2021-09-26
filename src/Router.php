@@ -15,7 +15,7 @@ final class Router
     /**
      * @param string $name
      * @param array $arguments
-     * @return false|mixed
+     * @return mixed
      * @throws \BadMethodCallException
      */
     public function __call(string $name, array $arguments)
