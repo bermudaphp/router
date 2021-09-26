@@ -20,14 +20,11 @@ final class Router
      */
     public function __call(string $name, array $arguments)
     {
-        if (method_exists($this->routes, $name))
-        {
+        try {
             return call_user_func_array([$this->routes, $name], $arguments);
+        } catch(\Throwable){
+            throw new \BadMethodCallException('Bad method call:'. $name);
         }
-
-        throw new \BadMethodCallException(
-            sprintf('Method %s does not exist from %s', __METHOD__, self::class)
-        );
     }
 
     /**
