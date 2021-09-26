@@ -21,7 +21,7 @@ final class Router
     public function __call(string $name, array $arguments)
     {
         try {
-            return call_user_func_array([$this->routes, $name], $arguments);
+            return $this->routes->{$name}(... $arguments);
         } catch(\Throwable){
             throw new \BadMethodCallException('Bad method call:'. $name);
         }
