@@ -10,19 +10,28 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
+/**
+ * @mixin Route
+ */
 final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
     public function __construct(private MiddlewareFactoryInterface $middlewareFactory, private Route $route)
     {
     }
 
-     /**
-     * @inheritDoc
+    /**
+     * @param string $name
+     * @param array $arguments
+     * @return mixed
+     * @throws \BadMethodCallException
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
+    public function __call(string $name, array $arguments)
     {
-        return $this->middlewareFactory->make($this->route->getHandler())
-            ->process($request, $handler);
+        try {
+            return $this->route->{$name}(...$arguments);
+        } catch (\Throwable) {
+            throw new \BadMethodCallException('Bad method call: '. $name);
+        }
     }
 
     /**
@@ -30,20 +39,20 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        return $this->process($request, new class implements RequestHandlerInterface
-        {
+        return $this->process($request, new class implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $req): ResponseInterface
             {
                 ExceptionFactory::emptyHandler()->throw();
             }
         });
     }
-    
+
     /**
      * @inheritDoc
      */
-    public function getRoute(): Route
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->route;
+        return $this->middlewareFactory->make($this->route->getHandler())
+            ->process($request, $handler);
     }
 }
