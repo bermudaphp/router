@@ -27,14 +27,15 @@ final class MatchRouteMiddleware implements MiddlewareInterface
         foreach (self::$route->getAttributes() as $name => $value) {
             $request = $request->withAttribute($name, $value);
         }
-        
-        $request = $request->withAttribute(RouteMiddleware::class, 
-            new RouteMiddleware($this->middlewareFactory, self::$route)
-        );
+
+        $request = RouteMiddleware::modify($this->middlewareFactory, $request, self::$route);
 
         return $handler->handle($request);
     }
 
+    /**
+     * @return Route|null
+     */
     public static function getRoute():? Route
     {
         return self::$route;
