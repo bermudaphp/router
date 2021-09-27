@@ -22,6 +22,7 @@ final class Route implements Arrayable
         'action' => '(create|read|update|delete)',
         'any' => '.*'
     ];
+    
     private string $name;
     private string $path;
     private array $handler;
