@@ -55,4 +55,15 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
         return $this->middlewareFactory->make($this->route->getHandler())
             ->process($request, $handler);
     }
+
+    /**
+     * @param MiddlewareFactoryInterface $middlewareFactory
+     * @param ServerRequestInterface $request
+     * @param Route $route
+     * @return ServerRequestInterface
+     */
+    public static function modify(MiddlewareFactoryInterface $middlewareFactory, ServerRequestInterface $request, Route $route): ServerRequestInterface
+    {
+        return $request->withAttribute(self::class, new self($middlewareFactory, $route));
+    }
 }
