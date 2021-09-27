@@ -6,7 +6,7 @@ use Bermuda\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
 use InvalidArgumentException;
 
-class Route implements Arrayable
+final class Route implements Arrayable
 {
     public static array $requestMethods = [
         RequestMethodInterface::METHOD_GET,
@@ -22,20 +22,22 @@ class Route implements Arrayable
         'action' => '(create|read|update|delete)',
         'any' => '.*'
     ];
+    private string $name;
+    private string $path;
+    private array $handler;
+    private array $tokens = [];
+    private array $methods = [];
+    private array $attributes = [];
 
-    protected array $tokens = [];
-    protected array $methods = [];
-    protected array $attributes = [];
-
-    private function __construct(protected string $name,
-                                 protected string $path, protected array $handler,
-                                 array            $tokens = [], array $methods = [],
-                                 ?array           $middleware = null
-    )
+    private function __construct(array $routeData)
     {
-        $this->setTokens($tokens);
-        $this->setMethods($methods);
-        $this->setMiddleware($middleware);
+        $this->name = $routeData['name'];
+        $this->path = $routeData['path'];
+        $this->handler = [$routeData['handler']];
+
+        $this->setTokens($routeData['tokens']);
+        $this->setMethods($routeData['methods']);
+        $this->setMiddleware($routeData['middleware'] ?? null);
     }
 
     private function setTokens(?array $tokens): self
@@ -46,47 +48,51 @@ class Route implements Arrayable
 
     private function setMethods($methods): self
     {
-        if (is_string($methods) && str_contains($methods, '|')) {
+        if ($needConvertToArray = is_string($methods) && str_contains($methods, '|')) {
             $methods = explode('|', $methods);
+        } elseif ($needConvertToArray ?? false) {
+            $methods = [$methods];
         }
 
-        $this->methods = array_map('strtoupper', (array)$methods);
+        $this->methods = array_map('strtoupper', $methods);
 
         return $this;
     }
 
     private function setMiddleware($middleware): self
     {
-        if ($middleware != null) {
-            if ($before = !isset($middleware['before']) && $after = !isset($middleware['after'])) {
+        if ($middleware !== null) {
+            if (!isset($middleware['before']) && !isset($middleware['after'])) {
                 $this->setBeforeMiddleware($middleware);
                 return $this;
             }
 
-            $after ?: $this->setAfterMiddleware($middleware['after']);
-            $before ?: $this->setBeforeMiddleware($middleware['before']);
+            $this->setAfterMiddleware($middleware['after'] ?? null);
+            $this->setBeforeMiddleware($middleware['before'] ?? null);
         }
 
         return $this;
     }
 
-    private function setBeforeMiddleware($middleware): self
+    private function setBeforeMiddleware($middleware): void
     {
-        array_unshift($this->handler, $middleware);
-        return $this;
+        if ($middleware !== null) {
+            array_unshift($this->handler, $middleware);
+        }
     }
 
-    private function setAfterMiddleware($middleware): self
+    private function setAfterMiddleware($middleware): void
     {
-        array_push($this->handler, $middleware);
-        return $this;
+        if ($middleware !== null) {
+            array_push($this->handler, $middleware);
+        }
     }
 
     /**
      * @param array $data
      * @return self
      */
-    public static function fromArray(array $data): self
+    public static function makeOf(array $data): self
     {
         foreach (['name', 'path', 'handler'] as $key) {
             if (!array_key_exists($key, $data)) {
@@ -94,13 +100,15 @@ class Route implements Arrayable
             }
         }
 
-        return new self(
-            $data['name'], $data['path'],
-            $data['handler'],
-            $data['tokens'] ?? self::$routeTokens,
-            $data['methods'] ?? self::$requestMethods,
-            $data['middleware'] ?? null
-        );
+        if (!isset($data['methods'])) {
+            $data['methods'] = self::$requestMethods;
+        }
+
+        if (!isset($data['tokens'])) {
+            $data['tokens'] = self::$routeTokens;
+        }
+
+        return new self($data);
     }
 
     /**
@@ -171,9 +179,9 @@ class Route implements Arrayable
      * @param array|string|null $methods
      * @return array|self
      */
-    public function methods($methods = null): array|Route
+    public function methods(array|string|null $methods = null): array|self
     {
-        if ($methods == null) {
+        if ($methods === null) {
             return $this->methods;
         }
 
@@ -181,11 +189,12 @@ class Route implements Arrayable
     }
 
     /**
+     * @param array|null $tokens
      * @return array|self
      */
-    public function tokens(?array $tokens = null): array|Route
+    public function tokens(?array $tokens = null): array|self
     {
-        if ($tokens == null) {
+        if ($tokens === null) {
             return $this->tokens;
         }
 
@@ -193,6 +202,7 @@ class Route implements Arrayable
     }
 
     /**
+     * @param $middleware
      * @return self
      */
     public function middleware($middleware): self
