@@ -18,9 +18,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
         private bool $permanent = false)
     {
         if ($verifier !== null) {
-            $this->verifier = static fn(ServerRequestInterface $request) use ($verifier): bool {
-                return $verifier($request);
-            };
+            $this->verifier = static fn(ServerRequestInterface $request): bool => $verifier($request);
         }
     }
 
@@ -41,7 +39,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
         if ($permanent !== null) {
             $old = $this->permanent;
             $this->permanent = $permanent;
-            return $permanent;
+            return $old;
         }
         
         return $this->permanent;
