@@ -10,6 +10,7 @@
     "php": "^8.0.0",
     "bermudaphp/psr15factory": "^v2.0.2",
     "bermudaphp/arrayable": "^v1.1",
+    "bermudaphp/config": "^1.1",
     "fig/http-message-util": "^v1.1.4"
   }
 }
