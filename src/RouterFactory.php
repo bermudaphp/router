@@ -22,7 +22,7 @@ final class RouterFactory
                 cget($container, Matcher::class, static fn() => new RouteMatcher, true),
                 cget($container, Generator::class, static fn() => new PathGenerator, true),
                 cget($container, RouteMap::class, static fn() => new Routes, true)
-        )
+        );
     }
 }
 
