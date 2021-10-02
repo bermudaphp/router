@@ -2,9 +2,6 @@
 
 namespace Bermuda\Router;
 
-use function Bermuda\Config\cget;
-use Psr\Container\ContainerInterface;
-
 final class ConfigProvider extends \Bermuda\Config\ConfigProvider
 {
     /**
