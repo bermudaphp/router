@@ -4,6 +4,7 @@ namespace Bermuda\Router;
 
 use Bermuda\Arrayable;
 use IteratorAggregate;
+use RuntimeException;
 
 interface RouteMap extends Arrayable, IteratorAggregate
 {
@@ -35,63 +36,112 @@ interface RouteMap extends Arrayable, IteratorAggregate
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function get(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function get(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function post(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function post(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function delete(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function delete(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function put(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function put(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function patch(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function patch(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function options(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function options(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string|array $name
      * @param string|null $path
-     * @param $handler
+     * @param mixed $handler
+     * @param array|null $tokens
+     * @param array|null $middleware
      * @return RouteMap
      */
-    public function any(string|array $name, ?string $path = null, $handler = null): RouteMap;
+    public function any(
+        string|array $name,
+        ?string      $path = null,
+                     $handler = null,
+        ?array       $tokens = null,
+        ?array       $middleware = null): RouteMap;
 
     /**
      * @param string $resource must be subclass of Resource
      * @return RouteMap
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function resource(string $resource): RouteMap;
 }
