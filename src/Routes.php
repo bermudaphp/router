@@ -2,9 +2,8 @@
 
 namespace Bermuda\Router;
 
-use ArrayIterator;
 use Bermuda\Arr;
-use Fig\Http\Message\RequestMethodInterface;
+use Generator;
 use RuntimeException;
 
 final class Routes implements RouteMap
@@ -17,7 +16,7 @@ final class Routes implements RouteMap
     public function getIterator(): Generator
     {
         foreach ($this->routes as $route) {
-            yield $route
+            yield $route;
         }
     }
 
@@ -66,7 +65,7 @@ final class Routes implements RouteMap
         if (is_array($route)) {
             $route = Route::fromArray($route);
         }
-      
+
         $this->routes[$route->getName()] = $route;
         return $this;
     }
@@ -74,80 +73,115 @@ final class Routes implements RouteMap
     /**
      * @inheritDoc
      */
-    public function get(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function get(
+        string|array $name, 
+        ?string $path = null, 
+        $handler = null, 
+        string|array $methods = null, 
+        ?array $tokens = null, 
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['GET']));
+        return $this->add($this->merge($name, $path, $handler, 'GET', $tokens, $middleware));
     }
 
-    private function merge(string|array $name, $path, $handler, ?array $methods = null): array
+    private function merge(string|array $name, $path, $handler, 
+                           array|string $methods = null, ?array $tokens = null,
+                           ?array $middleware = null): array
     {
-        $methods != null ?: $methods = Route::$requestMethods;
-
+        
         if (is_array($name)) {
-            $data = $name;
-
-            if ($path != null) {
-                $data['path'] = $path;
-            }
-
-            if ($handler != null) {
-                $data['handler'] = $handler;
-            }
-
-            $data['methods'] = $methods;
-
-            return $data;
+            $data = array_merge($name, 
+                compact('path', 'methods', 'tokens', 'middleware')
+            );
+        } else {
+            $data = compact('name', 'path', 'handler', 'methods', 'tokens', 'middleware');
         }
 
-        return compact('name', 'path', 'handler', 'methods');
+        return $data;
     }
 
     /**
      * @inheritDoc
      */
-    public function post(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function post(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['POST']));
+        return $this->add($this->merge($name, $path, $handler, 'POST', $tokens, $middleware));
     }
 
     /**
      * @inheritDoc
      */
-    public function delete(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function delete(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['DELETE']));
+        return $this->add($this->merge($name, $path, $handler, 'DELETE', $tokens, $middleware));
     }
 
     /**
      * @inheritDoc
      */
-    public function put(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function put(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['PUT']));
+        return $this->add($this->merge($name, $path, $handler, 'PUT', $tokens, $middleware));
     }
 
     /**
      * @inheritDoc
      */
-    public function patch(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function patch(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['PATCH']));
+        return $this->add($this->merge($name, $path, $handler, 'PATCH', $tokens, $middleware));
     }
 
     /**
      * @inheritDoc
      */
-    public function options(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function options(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, ['OPTIONS']));
+        return $this->add($this->merge($name, $path, $handler, 'OPTIONS', $tokens, $middleware));
     }
 
     /**
      * @inheritDoc
      */
-    public function any(string|array $name, ?string $path = null, $handler = null): RouteMap
+    public function any(
+        string|array $name,
+        ?string $path = null,
+                     $handler = null,
+        string|array $methods = null,
+        ?array $tokens = null,
+        ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler));
+        return $this->add($this->merge($name, $path, $handler, $methods, $tokens, $middleware));
     }
 
     /**
