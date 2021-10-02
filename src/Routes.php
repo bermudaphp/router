@@ -77,7 +77,6 @@ final class Routes implements RouteMap
         string|array $name, 
         ?string $path = null, 
         $handler = null, 
-        string|array $methods = null, 
         ?array $tokens = null, 
         ?array $middleware = null): RouteMap
     {
@@ -106,8 +105,7 @@ final class Routes implements RouteMap
     public function post(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
@@ -120,8 +118,7 @@ final class Routes implements RouteMap
     public function delete(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
@@ -134,8 +131,7 @@ final class Routes implements RouteMap
     public function put(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
@@ -148,8 +144,7 @@ final class Routes implements RouteMap
     public function patch(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
@@ -162,8 +157,7 @@ final class Routes implements RouteMap
     public function options(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
@@ -176,12 +170,11 @@ final class Routes implements RouteMap
     public function any(
         string|array $name,
         ?string $path = null,
-                     $handler = null,
-        string|array $methods = null,
+        $handler = null,
         ?array $tokens = null,
         ?array $middleware = null): RouteMap
     {
-        return $this->add($this->merge($name, $path, $handler, $methods, $tokens, $middleware));
+        return $this->add($this->merge($name, $path, $handler, null, $tokens, $middleware));
     }
 
     /**
