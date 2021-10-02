@@ -93,7 +93,7 @@ final class Route implements Arrayable
      * @param array $data
      * @return self
      */
-    public static function makeOf(array $data): self
+    public static function fromArray(array $data): self
     {
         foreach (['name', 'path', 'handler'] as $key) {
             if (!array_key_exists($key, $data)) {
