@@ -3,41 +3,26 @@
 namespace Bermuda\Router;
 
 use Psr\Container\ContainerInterface;
+use function Bermuda\Config\cget;
 
 final class RouterFactory
 {
-    public function __invoke(ContainerInterface $container): Router
+    public function __invoke(ContainerInterface $container = null): Router
     {
-        return new Router($this->matcher($container),
-            $this->generator($container), $this->routeMap($container)
-        );
+        return self::createRouter($container);
     }
-
-    private function matcher(ContainerInterface $container): Matcher
+    
+    public static function createRouter(ContainerInterface $container = null): Router
     {
-        if ($container->has(Matcher::class)) {
-            return $container->get(Matcher::class);
+        if ($container === null) {
+            return Router::withDefaults();
         }
-
-        return new RouteMatcher();
-    }
-
-    private function generator(ContainerInterface $container): Matcher
-    {
-        if ($container->has(Generator::class)) {
-            return $container->get(Generator::class);
-        }
-
-        return new PathGenerator();
-    }
-
-    private function routeMap(ContainerInterface $container): Matcher
-    {
-        if ($container->has(RouteMap::class)) {
-            return $container->get(RouteMap::class);
-        }
-
-        return new Routes();
+        
+        return new Router(
+                cget($container, Matcher::class, static fn() => new RouteMatcher, true),
+                cget($container, Generator::class, static fn() => new PathGenerator, true),
+                cget($container, RouteMap::class, static fn() => new Routes, true)
+        )
     }
 }
 
