@@ -6,9 +6,9 @@
  ## Usage
 
  ```php
- $router = Router::defaults();
+ $router = Router::withDefaults();
  
- $router->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hello, %s!', $name)}, ['methods' => ['GET|POST']]]);
+ $router->add(['name' => 'home', 'path' => '/home/{name}', 'handler' => function(string $name){echo sprintf('Hello, %s!', $name)}, ['methods' => 'GET|POST']]);
  
  try {
     $route = $router->match($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
