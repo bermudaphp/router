@@ -10,7 +10,7 @@ trait AttributeNormalizer
      */
     private function isOptional(string $segment): bool
     {
-        return str_contains($segment, '?');
+        return $segment[0] === '?';
     }
 
     /**
@@ -23,7 +23,7 @@ trait AttributeNormalizer
             return false;
         }
 
-        return ($segment[0] === '{' || $segment[0] === '?') && $segment[mb_strlen($segment) - 1] === '}';
+        return ($segment[0] === '{' || ($segment[0] === '?' && $segment[1] === '{')) && $segment[mb_strlen($segment) - 1] === '}';
     }
 
     /**
