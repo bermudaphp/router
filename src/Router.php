@@ -58,7 +58,7 @@ final class Router
         return $this->routes;
     }
 
-    public static function defaults(): self
+    public static function withDefaults(): self
     {
         return new self(new RouteMatcher, new PathGenerator, new Routes);
     }
