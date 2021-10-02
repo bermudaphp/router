@@ -22,7 +22,7 @@ final class Route implements Arrayable
         'action' => '(create|read|update|delete)',
         'any' => '.*'
     ];
-    
+
     private string $name;
     private string $path;
     private array $handler;
@@ -101,11 +101,11 @@ final class Route implements Arrayable
             }
         }
 
-        if (!isset($data['methods'])) {
+        if (!isset($data['methods']) || $data['methods'] === null) {
             $data['methods'] = self::$requestMethods;
         }
 
-        if (!isset($data['tokens'])) {
+        if (!isset($data['tokens']) || $data['tokens'] === null) {
             $data['tokens'] = self::$routeTokens;
         }
 
