@@ -58,13 +58,13 @@
  
  ```php
   
- $routes->get($name, $path, $handler);
+ $routes->get(string|array $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
  $routes->post(['name' => $name', 'middleware' => [MyFirstMiddleware::class, MySecondMiddleware::class]], $path, $handler);
  $routes->patch(compact('name', 'handler', 'path'));
- $routes->put($name, $path, $handler);
- $routes->delete($name, $path, $handler);
- $routes->options($name, $path, $handler);
- $routes->any($name, $path, $handler);
+ $routes->put(string|array $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
+ $routes->delete(string|array $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
+ $routes->options(string|array $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
+ $routes->any(string|array $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
  ```
  
   ## Optional attribute
