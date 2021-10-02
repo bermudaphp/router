@@ -49,7 +49,7 @@ final class Route implements Arrayable
 
     private function setMethods($methods): self
     {
-        if ($needConvertToArray = is_string($methods) && str_contains($methods, '|')) {
+        if (true === $needConvertToArray = (is_string($methods) && str_contains($methods, '|'))) {
             $methods = explode('|', $methods);
         } elseif ($needConvertToArray ?? false) {
             $methods = [$methods];
