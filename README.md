@@ -12,7 +12,7 @@
      'name' => 'home',
      'path' => '/home/{name}',
      'handler' => static function(string $name){echo sprintf('Hello, %s!', $name)}, 
-     ['methods' => 'GET|POST']
+     'methods' => 'GET|POST'
  ];
  
  $router->add($route);
