@@ -16,7 +16,7 @@ final class PathGenerator implements Generator
      */
     public function generate(RouteMap $routes, string $name, array $attributes = []): string
     {
-        $segments = explode('/', $routes->getRoute($name)->getPath());
+        $segments = explode('/', $routes->route($name)->getPath());
 
         $path = '';
 
