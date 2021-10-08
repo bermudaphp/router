@@ -88,8 +88,11 @@ final class RouteMatcher implements Matcher
 
     private function parseAttributes(Route $route, array $matches): Route
     {
-        $attributes = [];
-        array_shift($matches);
+        if (count($matches) > 1) {
+            array_shift($matches);
+        } else {
+            return $route;
+        }
 
         foreach (explode('/', $route->getPath()) as $segment) {
             if ($this->isAttribute($segment)) {
