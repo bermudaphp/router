@@ -9,6 +9,6 @@ final class ConfigProvider extends \Bermuda\Config\ConfigProvider
      */
     protected function getFactories(): array
     {
-        return [Router::class => '\Bermuda\Router\RouterFactory::createRouter'];
+        return [Router::class => '\Bermuda\Router\Router::withDefaults'];
     }
 }
