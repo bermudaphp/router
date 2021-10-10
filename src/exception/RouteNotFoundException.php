@@ -25,6 +25,24 @@ final class RouteNotFoundException extends RouterException
 
     /**
      * @param string $name
+     * @return static
+     */
+    public static function forName(string $name): self
+    {
+        return (new self)->setName($name);
+    }
+
+    /**
+     * @param string $path
+     * @return static
+     */
+    public static function forPath(string $path): self
+    {
+        return (new self)->setPath($path);
+    }
+
+    /**
+     * @param string $name
      * @return $this
      */
     public function setName(string $name): self
