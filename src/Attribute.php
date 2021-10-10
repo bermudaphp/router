@@ -8,7 +8,7 @@ class Attribute
      * @param string $segment
      * @return bool
      */
-    public function isOptional(string $segment): bool
+    public static function isOptional(string $segment): bool
     {
         return $segment[0] === '?';
     }
@@ -17,7 +17,7 @@ class Attribute
      * @param string $segment
      * @return bool
      */
-    public function isAttribute(string $segment): bool
+    public static function isAttribute(string $segment): bool
     {
         if (empty($segment)) {
             return false;
@@ -30,7 +30,7 @@ class Attribute
      * @param string $placeholder
      * @return string
      */
-    public function trim(string $placeholder): string
+    public static function trim(string $placeholder): string
     {
         return trim($placeholder, '?{}');
     }
