@@ -17,7 +17,7 @@ class Attribute
      * @param string $segment
      * @return bool
      */
-    public static function isAttribute(string $segment): bool
+    public static function is(string $segment): bool
     {
         if (empty($segment)) {
             return false;
