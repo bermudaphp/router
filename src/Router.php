@@ -2,33 +2,13 @@
 
 namespace Bermuda\Router;
 
-use App\RoutesCache;
-
-/**
- * @mixin RouteMap
- */
 final class Router
 {
     public function __construct(private Matcher  $matcher,
         private Generator $generator, private RouteMap $routes
     ){
     }
-
-    /**
-     * @param string $name
-     * @param array $arguments
-     * @return mixed
-     * @throws \BadMethodCallException
-     */
-    public function __call(string $name, array $arguments)
-    {
-        try {
-            return $this->routes->{$name}(... $arguments);
-        } catch(\Throwable){
-            throw new \BadMethodCallException('Bad method call:'. $name);
-        }
-    }
-
+    
     /**
      * @param string $requestMethod
      * @param string $uri
@@ -39,7 +19,7 @@ final class Router
     {
         return $this->matcher->match($this->routes, $requestMethod, $uri);
     }
-    
+
     /**
      * @param string $name
      * @param array $attributes
@@ -60,6 +40,9 @@ final class Router
         return $this->routes;
     }
 
+    /**
+     * @return static
+     */
     public static function withDefaults(): self
     {
         return new self($routes = new Routes(), $routes, $routes);
