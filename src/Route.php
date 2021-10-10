@@ -6,7 +6,7 @@ use Bermuda\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
 use InvalidArgumentException;
 
-final class Route implements Arrayable
+final class Route implements Arrayable, \ArrayAccess
 {
     public static array $requestMethods = [
         RequestMethodInterface::METHOD_GET,
@@ -23,27 +23,13 @@ final class Route implements Arrayable
         'any' => '.*'
     ];
 
-    private string $name;
-    private string $path;
-    private array $handler;
-    private array $tokens = [];
-    private array $methods = [];
-    private array $attributes = [];
-
-    private function __construct(array $routeData)
+    private function __construct(private array $routeData)
     {
-        $this->name = $routeData['name'];
-        $this->path = $routeData['path'];
-        $this->handler = [$routeData['handler']];
-
-        $this->setTokens($routeData['tokens']);
-        $this->setMethods($routeData['methods']);
-        $this->setMiddleware($routeData['middleware'] ?? null);
     }
 
     private function setTokens(?array $tokens): self
     {
-        $this->tokens = array_merge($this->tokens, (array)$tokens);
+        $this->routeData['tokens'] = array_merge($this->routeData['tokens'] ?? [], (array)$tokens);
         return $this;
     }
 
@@ -55,7 +41,7 @@ final class Route implements Arrayable
             $methods = [$methods];
         }
         
-        $this->methods = array_map('strtoupper', $methods);
+        $this->routeData['methods'] = array_map('strtoupper', $methods);
 
         return $this;
     }
@@ -78,14 +64,14 @@ final class Route implements Arrayable
     private function setBeforeMiddleware($middleware): void
     {
         if ($middleware !== null) {
-            array_unshift($this->handler, $middleware);
+            array_unshift($this->routeData['handler'], $middleware);
         }
     }
 
     private function setAfterMiddleware($middleware): void
     {
         if ($middleware !== null) {
-            array_push($this->handler, $middleware);
+            array_push($this->routeData['handler'], $middleware);
         }
     }
 
@@ -101,15 +87,35 @@ final class Route implements Arrayable
             }
         }
 
-        if (!isset($data['methods']) || $data['methods'] === null) {
-            $data['methods'] = self::$requestMethods;
+        $route = new self([
+            'name' => $data['name'],
+            'path' => $data['path'],
+            'handler' => [$data['handler']],
+        ]);
+
+        if ((is_array($data['methods'] ?? null)
+                || is_string($data['methods'] ?? null))
+            && !empty($data['methods'])) {
+            $route->setMethods($data['methods']);
+        } else {
+            $route->setMethods(self::$requestMethods);
         }
 
-        if (!isset($data['tokens']) || $data['tokens'] === null) {
-            $data['tokens'] = self::$routeTokens;
+        if (!is_array($data['tokens'] ?? null)) {
+            $route->setTokens(self::$requestMethods);
+        } elseif ($data['tokens'] !== []) {
+            $route->setTokens($data['tokens']);
         }
 
-        return new self($data);
+        if (is_array($data['attributes'] ?? null) && $data['attributes'] !== []) {
+            $route->routeData['attributes'] = $data['attributes'];
+        }
+
+        if (isset($data['middleware'])) {
+            $route->setMiddleware($data['middleware'] ?? null);
+        }
+
+        return $route;
     }
 
     /**
@@ -117,7 +123,7 @@ final class Route implements Arrayable
      */
     public function getName(): string
     {
-        return $this->name;
+        return $this->routeData['name'];
     }
 
     /**
@@ -125,7 +131,7 @@ final class Route implements Arrayable
      */
     public function getPath(): string
     {
-        return $this->path;
+        return $this->routeData['path'];
     }
 
     /**
@@ -133,7 +139,7 @@ final class Route implements Arrayable
      */
     public function getAttributes(): array
     {
-        return $this->attributes;
+        return $this->routeData['attributes'] ?? [];
     }
 
     /**
@@ -141,7 +147,7 @@ final class Route implements Arrayable
      */
     public function toArray(): array
     {
-        return get_object_vars($this);
+        return $this->routeData;
     }
 
     /**
@@ -161,7 +167,8 @@ final class Route implements Arrayable
      */
     public function getHandler(): mixed
     {
-        return count($this->handler) > 1 ? $this->handler : $this->handler[0];
+        return count($handler = $this->routeData['handler']) > 1
+            ? $handler : $handler[0];
     }
 
     /**
@@ -183,7 +190,7 @@ final class Route implements Arrayable
     public function methods(array|string|null $methods = null): array|self
     {
         if ($methods === null) {
-            return $this->methods;
+            return $this->routeData['methods'];
         }
 
         return (clone $this)->setMethods($methods);
@@ -196,7 +203,7 @@ final class Route implements Arrayable
     public function tokens(?array $tokens = null): array|self
     {
         if ($tokens === null) {
-            return $this->tokens;
+            return $this->routeData['tokens'];
         }
 
         return (clone $this)->setTokens($tokens);
@@ -208,6 +215,30 @@ final class Route implements Arrayable
      */
     public function middleware($middleware): self
     {
+        if ($middleware === null) {
+            return $this;
+        }
+
         return (clone $this)->setMiddleware($middleware);
+    }
+
+    public function offsetExists($offset): bool
+    {
+        return isset($this->routeData[$offset]);
+    }
+
+    public function offsetGet($offset): mixed
+    {
+        return $this->routeData[$offset] ?? null;
+    }
+
+    public function offsetSet($offset, $value): self
+    {
+        throw new \RuntimeException('Route is not mmutable');
+    }
+
+    public function offsetUnset($offset): void
+    {
+        throw new \RuntimeException('Route is not muttable');
     }
 }
