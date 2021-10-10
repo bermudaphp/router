@@ -2,13 +2,13 @@
 
 namespace Bermuda\Router;
 
-trait AttributeNormalizer
+class Attribute
 {
     /**
      * @param string $segment
      * @return bool
      */
-    private function isOptional(string $segment): bool
+    public function isOptional(string $segment): bool
     {
         return $segment[0] === '?';
     }
@@ -17,7 +17,7 @@ trait AttributeNormalizer
      * @param string $segment
      * @return bool
      */
-    private function isAttribute(string $segment): bool
+    public function isAttribute(string $segment): bool
     {
         if (empty($segment)) {
             return false;
@@ -30,7 +30,7 @@ trait AttributeNormalizer
      * @param string $placeholder
      * @return string
      */
-    private function normalize(string $placeholder): string
+    public function trim(string $placeholder): string
     {
         return trim($placeholder, '?{}');
     }
