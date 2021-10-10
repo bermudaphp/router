@@ -2,6 +2,8 @@
 
 namespace Bermuda\Router;
 
+use App\RoutesCache;
+
 /**
  * @mixin RouteMap
  */
@@ -37,7 +39,7 @@ final class Router
     {
         return $this->matcher->match($this->routes, $requestMethod, $uri);
     }
-
+    
     /**
      * @param string $name
      * @param array $attributes
@@ -60,7 +62,6 @@ final class Router
 
     public static function withDefaults(): self
     {
-        return new self(new RouteMatcher, new PathGenerator, new Routes);
+        return new self($routes = new Routes(), $routes, $routes);
     }
-
 }
