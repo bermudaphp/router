@@ -122,9 +122,10 @@ interface RouteMap extends Arrayable, IteratorAggregate
         mixed $middleware = null): RouteMap;
 
     /**
-     * @param string $resource must be subclass of Resource
+     * Must be subclass of Resource
+     * @param string|Resource $resource
      * @return RouteMap
      * @throws RuntimeException
      */
-    public function resource(string $resource): RouteMap;
+    public function resource(string|Resource $resource): RouteMap;
 }
