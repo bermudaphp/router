@@ -267,10 +267,10 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @inheritDoc
      */
-    public function resource(string $resource): RouteMap
+    public function resource(string|Resource $resource): RouteMap
     {
         if (!is_subclass_of($resource, Resource::class)) {
-            throw new RuntimeException(sprintf('Resource must be subclass of %s', Resource::class));
+            throw new RuntimeException('The argument [Resource] must be subclass of '. Resource::class);
         }
 
         return $resource::register($this);
