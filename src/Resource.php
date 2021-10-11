@@ -8,11 +8,12 @@ use Psr\Http\Message\{
 
 abstract class Resource
 {
-    public static function register(RouteMap $routes): RouteMap
+    final public static function register(RouteMap $routes): RouteMap
     {
         $routes = static::registerGetHandler($routes);
         $routes = static::registerCreateHandler($routes);
         $routes = static::registerUpdateHandler($routes);
+        
         return static::registerDestroyHandler($routes);
     }
 
