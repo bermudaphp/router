@@ -8,12 +8,11 @@ use Psr\Http\Message\{
 
 abstract class Resource
 {
-    final public static function register(RouteMap $routes): RouteMap
+    public static function register(RouteMap $routes): RouteMap
     {
         $routes = static::registerGetHandler($routes);
         $routes = static::registerCreateHandler($routes);
         $routes = static::registerUpdateHandler($routes);
-        
         return static::registerDestroyHandler($routes);
     }
 
@@ -40,7 +39,7 @@ abstract class Resource
     {
         return $routes->get(static::getName().'.get', static::getPathPrefix().'/?{id}', static::class . '@get');
     }
-    
+
     /**
      * @param RouteMap $routes
      * @return RouteMap
@@ -49,14 +48,14 @@ abstract class Resource
     {
         return $routes->delete(static::getName().'.destroy', static::getPathPrefix().'/{id}', static::class . '@destroy');
     }
-    
+
     /**
      * @param RouteMap $routes
      * @return RouteMap
      */
     public static function registerCreateHandler(RouteMap $routes): RouteMap
     {
-        return $routes->get(static::getName().'.create', static::getPathPrefix().'/create', static::class . '@create');
+        return $routes->post(static::getName().'.create', static::getPathPrefix().'/create', static::class . '@create');
     }
 
     /**
