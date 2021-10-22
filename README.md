@@ -76,7 +76,7 @@
  ## Routes Group
  
  ```php
- $routes->group('/admin', static function(RouteMap $routes)
+ $routes->group('/admin', callback: static function(RouteMap $routes)
  {
     $routes->get('index', '/', $handler);
     $routes->get('users', '/users', $handler);
@@ -85,7 +85,7 @@
  
  or
  
- $routes->group(['prefix' => '/admin', 'tokens' => ['id' => 'd+'], 'middleware' => MyAdminGroupMiddleware::class], static function(RouteMap $routes)
+ $routes->group('/admin', MyAdminGroupMiddleware::class, $tokens, static function(RouteMap $routes)
  {
     $routes->get('index', '/', $handler);
     $routes->get('users', '/users', $handler);
