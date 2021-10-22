@@ -55,7 +55,7 @@ abstract class Resource
      */
     public static function registerCreateHandler(RouteMap $routes): RouteMap
     {
-        return $routes->post(static::getName().'.create', static::getPathPrefix().'/create', static::class . '@create');
+        return $routes->post(static::getName().'.create', static::getPathPrefix(), static::class . '@create');
     }
 
     /**
