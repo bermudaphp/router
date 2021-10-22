@@ -9,6 +9,8 @@ use RuntimeException;
 
 class Routes implements RouteMap, Matcher, Generator
 {
+    use AttributeNormalizer;
+
     protected array $routes = [];
 
     /**
@@ -64,7 +66,11 @@ class Routes implements RouteMap, Matcher, Generator
                             $middleware = [$middleware];
                         }
 
-                        $middleware = array_merge($this->middleware, $middleware);
+                        if (is_array($this->middleware)) {
+                            $middleware = array_merge($this->middleware, $middleware);
+                        } else {
+                            array_unshift($middleware, $this->middleware);
+                        }
                     }
                 }
 
@@ -219,12 +225,12 @@ class Routes implements RouteMap, Matcher, Generator
 
             $path .= '/';
 
-            if (Attribute::is($segment)) {
-                $attribute = Attribute::trim($segment);
+            if ($this->isAttribute($segment)) {
+                $attribute = $this->normalize($segment);
 
-                if (!Attribute::isOptional($segment)) {
+                if (!$this->isOptional($segment)) {
                     if (!array_key_exists($attribute, $attributes)) {
-                        throw new GeneratorException('Missing route attribute with name: ' . $attribute);
+                        return new GeneratorException('Missing route attribute with name: ' . $attribute);
                     }
 
                     $path .= $attributes[$attribute];
@@ -244,13 +250,8 @@ class Routes implements RouteMap, Matcher, Generator
      */
     public function match(RouteMap $routes, string $requestMethod, string $uri): Route
     {
-        if ($routes instanceof self) {
-            $routes = $routes->routes;
-        }
-
         $method = strtoupper($requestMethod);
-
-        foreach ($routes as $route) {
+        foreach ($routes instanceof self ? $routes->routes : $routes as $route) {
             if (preg_match($this->buildRegexp($route), $path = $this->getPath($uri), $matches) === 1) {
                 if (in_array($method, $route['methods'])) {
                     return $this->parseAttributes($route, $matches);
@@ -267,10 +268,10 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @inheritDoc
      */
-    public function resource(string|Resource $resource): RouteMap
+    public function resource(string $resource): RouteMap
     {
         if (!is_subclass_of($resource, Resource::class)) {
-            throw new RuntimeException('The argument [Resource] must be subclass of '. Resource::class);
+            throw new RuntimeException(sprintf('Resource must be subclass of %s', Resource::class));
         }
 
         return $resource::register($this);
@@ -309,11 +310,11 @@ class Routes implements RouteMap, Matcher, Generator
                 continue;
             }
 
-            if (Attribute::isOptional($segment)) {
+            if ($this->isOptional($segment)) {
                 $pattern .= '/??(';
 
-                if (Attribute::is($segment)) {
-                    $token = Attribute::trim($segment);
+                if ($this->isAttribute($segment)) {
+                    $token = $this->normalize($segment);
                     $pattern .= $routeData['tokens'][$token] ?? '(.+)';
                 } else {
                     $pattern .= $segment;
@@ -325,8 +326,8 @@ class Routes implements RouteMap, Matcher, Generator
 
             $pattern .= '/';
 
-            if (Attribute::is($segment)) {
-                $token = Attribute::trim($segment);
+            if ($this->isAttribute($segment)) {
+                $token = $this->normalize($segment);
                 $pattern .= $routeData['tokens'][$token] ?? '(.+)';
             } else {
                 $pattern .= $segment;
@@ -355,8 +356,8 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         foreach (explode('/', $route['path']) as $segment) {
-            if (Attribute::is($segment)) {
-                $attributes[Attribute::trim($segment)] = ltrim(array_shift($matches), '/');
+            if ($this->isAttribute($segment)) {
+                $attributes[$this->normalize($segment)] = ltrim(array_shift($matches), '/');
             }
         }
 
