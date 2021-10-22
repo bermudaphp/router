@@ -2,15 +2,13 @@
 
 namespace Bermuda\Router;
 
+use RuntimeException;
 use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
 use Bermuda\Router\Exception\RouteNotFoundException;
-use RuntimeException;
 
 class Routes implements RouteMap, Matcher, Generator
 {
-    use AttributeNormalizer;
-
     protected array $routes = [];
 
     /**
@@ -205,11 +203,11 @@ class Routes implements RouteMap, Matcher, Generator
     public function generate(RouteMap $routes, string $name, array $attributes = []): string
     {
         if ($routes instanceof self) {
-            if (!isset($this->routesData[$name])) {
+            if (!isset($this->routes[$name])) {
                 throw RouteNotFoundException::forName($name);
             }
 
-            $route = $this->routesData[$name];
+            $route = $this->routes[$name];
         } else {
             $route = $routes->get($name);
         }
@@ -225,10 +223,10 @@ class Routes implements RouteMap, Matcher, Generator
 
             $path .= '/';
 
-            if ($this->isAttribute($segment)) {
-                $attribute = $this->normalize($segment);
+            if (Attribute::is($segment)) {
+                $attribute = Attribute::trim($segment);
 
-                if (!$this->isOptional($segment)) {
+                if (!Attribute::isOptional($segment)) {
                     if (!array_key_exists($attribute, $attributes)) {
                         return new GeneratorException('Missing route attribute with name: ' . $attribute);
                     }
@@ -310,11 +308,11 @@ class Routes implements RouteMap, Matcher, Generator
                 continue;
             }
 
-            if ($this->isOptional($segment)) {
+            if (Attribute::isOptional($segment)) {
                 $pattern .= '/??(';
 
-                if ($this->isAttribute($segment)) {
-                    $token = $this->normalize($segment);
+                if (Attribute::is($segment)) {
+                    $token = Attribute::trim($segment);
                     $pattern .= $routeData['tokens'][$token] ?? '(.+)';
                 } else {
                     $pattern .= $segment;
@@ -326,8 +324,8 @@ class Routes implements RouteMap, Matcher, Generator
 
             $pattern .= '/';
 
-            if ($this->isAttribute($segment)) {
-                $token = $this->normalize($segment);
+            if (Attribute::is($segment)) {
+                $token = Attribute::trim($segment);
                 $pattern .= $routeData['tokens'][$token] ?? '(.+)';
             } else {
                 $pattern .= $segment;
@@ -356,8 +354,8 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         foreach (explode('/', $route['path']) as $segment) {
-            if ($this->isAttribute($segment)) {
-                $attributes[$this->normalize($segment)] = ltrim(array_shift($matches), '/');
+            if (Attribute::is($segment)) {
+                $attributes[Attribute::trim($segment)] = ltrim(array_shift($matches), '/');
             }
         }
 
