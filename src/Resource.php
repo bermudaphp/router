@@ -64,6 +64,6 @@ abstract class Resource
      */
     public static function registerUpdateHandler(RouteMap $routes): RouteMap
     {
-        return $routes->any(static::getName().'update', static::getPathPrefix().'/{id}', static::class . '@update', 'PUT|PATCH');
+        return $routes->any(static::getName().'.update', static::getPathPrefix().'/{id}', static::class . '@update', 'PUT|PATCH');
     }
 }
