@@ -7,13 +7,9 @@
 
  ```php
  $router = Router::withDefaults();
- 
- $route = [
-     'name' => 'home',
-     'path' => '/home/{name}',
-     'handler' => static function(string $name){echo sprintf('Hello, %s!', $name)}, 
-     'methods' => 'GET|POST'
- ];
+ $router->getRoutes()->get('home', '/path/{name}', static function(string $name): void {
+     echo sprintf('Hello, %s!', $name)
+ });
  
  try {
     $route = $router->match($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
