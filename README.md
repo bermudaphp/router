@@ -7,7 +7,7 @@
 
  ```php
  $router = Router::withDefaults();
- $router->getRoutes()->get('home', '/path/{name}', static function(string $name): void {
+ $router->getRoutes()->get('home', '/hello/{name}', static function(string $name): void {
      echo sprintf('Hello, %s!', $name)
  });
  
