@@ -232,7 +232,7 @@ final class Route implements Arrayable, \ArrayAccess
         return $this->routeData[$offset] ?? null;
     }
 
-    public function offsetSet($offset, $value): self
+    public function offsetSet($offset, $value): void
     {
         throw new \RuntimeException('Route is not mmutable');
     }
