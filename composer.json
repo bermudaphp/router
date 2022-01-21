@@ -7,7 +7,7 @@
     }
   },
   "require": {
-    "php": "^8.0.0",
+    "php": "^8.0.0 || ^8.1",
     "bermudaphp/psr15factory": "^v2.0.2",
     "bermudaphp/arrayable": "^v1.1",
     "bermudaphp/config": "^1.1",
