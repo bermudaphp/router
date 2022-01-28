@@ -7,6 +7,7 @@ use InvalidArgumentException;
 use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
+use function Bermuda\String\str_after;
 use function Bermuda\String\str_contains_all;
 
 class Routes implements RouteMap, Matcher, Generator
@@ -297,7 +298,7 @@ class Routes implements RouteMap, Matcher, Generator
             foreach ($routes as $route) {
                 if (preg_match($this->buildRegexp($route), $path, $matches) === 1) {
                     if (in_array($method, $route['methods'])) {
-                        return $this->parseAttributes($route, $matches);
+                        return $this->parseAttributes($route, explode('/', $matches[0]));
                     }
 
                     ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
@@ -358,27 +359,14 @@ class Routes implements RouteMap, Matcher, Generator
 
     private function parseAttributes(Route|array $route, array $matches): Route
     {
-        if (count($matches) > 1) {
-            array_shift($matches);
-        } else {
-            $matches = explode('/', $matches[0]);
-            foreach (explode('/', $route['path']) as $i => $segment) {
-                if ($segment == $matches[$i]) {
-                    continue;
-                }
-                $attributes[Attribute::trim($segment)] = $matches[$i];
+        foreach (explode('/', $route['path']) as $i => $segment) {
+            if ($segment == $matches[$i]) {
+                continue;
             }
-
-            goto returnRoute;
+            
+            $attributes[Attribute::trim($segment)] = $matches[$i];
         }
 
-        foreach (explode('/', $route['path']) as $segment) {
-            if (Attribute::is($segment)) {
-                $attributes[Attribute::trim($segment)] = ltrim(array_shift($matches), '/');
-            }
-        }
-
-        returnRoute:
         return is_array($route) ? Route::fromArray(array_merge($route, compact('attributes')))
             : $route->withAttributes($attributes);
     }
