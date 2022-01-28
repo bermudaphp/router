@@ -361,7 +361,15 @@ class Routes implements RouteMap, Matcher, Generator
         if (count($matches) > 1) {
             array_shift($matches);
         } else {
-            return is_array($route) ? Route::fromArray($route) : $route;
+            $matches = explode('/', $matches[0]);
+            foreach (explode('/', $route['path']) as $i => $segment) {
+                if ($segment == $matches[$i]) {
+                    continue;
+                }
+                $attributes[Attribute::trim($segment)] = $matches[$i];
+            }
+
+            goto returnRoute;
         }
 
         foreach (explode('/', $route['path']) as $segment) {
@@ -370,6 +378,7 @@ class Routes implements RouteMap, Matcher, Generator
             }
         }
 
+        returnRoute:
         return is_array($route) ? Route::fromArray(array_merge($route, compact('attributes')))
             : $route->withAttributes($attributes);
     }
