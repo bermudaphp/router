@@ -275,7 +275,7 @@ class Routes implements RouteMap, Matcher, Generator
     public function match(RouteMap $routes, string $requestMethod, string $uri): Route
     {
         $method = strtoupper($requestMethod);
-        $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
+        $path = rtrim(rawurldecode(parse_url($uri, PHP_URL_PATH)), '/');
 
         if ($routes instanceof self) {
             if (isset($this->map[$path])) {
