@@ -359,15 +359,24 @@ class Routes implements RouteMap, Matcher, Generator
 
     private function parseAttributes(Route|array $route, array $matches): Route
     {
-        foreach (explode('/', $route['path']) as $i => $segment) {
+        $segments = explode('/', $route['path']);
+        if (count($segments) > count($matches)) {
+            array_pop($segments);
+        }
+
+        foreach ($segments as $i => $segment) {
             if ($segment == $matches[$i]) {
                 continue;
             }
-            
+
             $attributes[Attribute::trim($segment)] = $matches[$i];
         }
 
-        return is_array($route) ? Route::fromArray(array_merge($route, compact('attributes')))
+        if (isset($attributes)) {
+            $route['attributes'] = $attributes;
+        }
+
+        return is_array($route) ? Route::fromArray($route)
             : $route->withAttributes($attributes);
     }
 
