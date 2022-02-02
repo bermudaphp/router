@@ -227,7 +227,6 @@ class Routes implements RouteMap, Matcher, Generator
     public function generate(RouteMap $routes, string $name, array $attributes = []): string
     {
         if ($routes instanceof self) {
-
             $route = $this->routes['static'][$name]
                 ?? ($this->routes['dynamic'][$name] ?? null);
 
@@ -238,35 +237,29 @@ class Routes implements RouteMap, Matcher, Generator
             $route = $routes->get($name);
         }
 
+        $path = '';
         $segments = explode('/', $route['path']);
 
-        $path = '';
-
         foreach ($segments as $segment) {
-            if (empty($segment)) {
-                continue;
-            }
+            if (!empty($segment)) {
+                $path .= '/';
 
-            $path .= '/';
-
-            if (Attribute::is($segment)) {
-                $attribute = Attribute::trim($segment);
-
-                if (!Attribute::isOptional($segment)) {
-                    if (!array_key_exists($attribute, $attributes)) {
-                        return new GeneratorException('Missing route attribute with name: ' . $attribute);
+                if (Attribute::is($segment)) {
+                    $id = Attribute::trim($segment);
+                    if (!Attribute::isOptional($segment)) {
+                        if (!isset($attributes[$id])) {
+                            throw GeneratorException::create($id);
+                        }
                     }
-
-                    $path .= $attributes[$attribute];
-                } elseif (array_key_exists($attribute, $attributes)) {
-                    $path .= $attributes[$attribute];
+                    $path .= $attributes[$id] ?? '';
+                    continue;
                 }
-            } else {
+
                 $path .= $segment;
             }
         }
 
-        return empty($path) ? '/' : rtrim($path, '/');
+        return $path;
     }
 
     /**
@@ -275,7 +268,8 @@ class Routes implements RouteMap, Matcher, Generator
     public function match(RouteMap $routes, string $requestMethod, string $uri): Route
     {
         $method = strtoupper($requestMethod);
-        $path = rtrim(rawurldecode(parse_url($uri, PHP_URL_PATH)), '/');
+        $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
+        $path == '/' ?: $path = rtrim($path, '/');
 
         if ($routes instanceof self) {
             if (isset($this->map[$path])) {
@@ -325,12 +319,22 @@ class Routes implements RouteMap, Matcher, Generator
         $segments = explode('/', $path);
 
         foreach ($segments as $segment) {
-            if (empty($segment)) {
-                continue;
-            }
+            if (!empty($segment)) {
+                if (Attribute::isOptional($segment)) {
+                    $pattern .= '/??(';
 
-            if (Attribute::isOptional($segment)) {
-                $pattern .= '/??(';
+                    if (Attribute::is($segment)) {
+                        $token = Attribute::trim($segment);
+                        $pattern .= $routeData['tokens'][$token] ?? '(.+)';
+                    } else {
+                        $pattern .= $segment;
+                    }
+
+                    $pattern .= ')??';
+                    continue;
+                }
+
+                $pattern .= '/';
 
                 if (Attribute::is($segment)) {
                     $token = Attribute::trim($segment);
@@ -338,20 +342,7 @@ class Routes implements RouteMap, Matcher, Generator
                 } else {
                     $pattern .= $segment;
                 }
-
-                $pattern .= ')??';
-                continue;
             }
-
-            $pattern .= '/';
-
-            if (Attribute::is($segment)) {
-                $token = Attribute::trim($segment);
-                $pattern .= $routeData['tokens'][$token] ?? '(.+)';
-            } else {
-                $pattern .= $segment;
-            }
-
         }
 
         return $pattern . '/?$#';
