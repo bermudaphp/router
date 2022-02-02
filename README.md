@@ -63,7 +63,13 @@
   ## Optional attribute
  
  ```php
- $routes->get('users.get, 'api/v1/users/?{id}', $handler);
+ $routes->get('users.get, 'api/v1/user/?{id}', static function(ServerRequestInterface $request): ResponseInterface {
+     if ((id = $request->getAttribute('id')) !== null) {
+         return get_user_by_id($id);
+     }
+     
+     return get_all_users();
+ });
  ```
   
  ## Routes Group
