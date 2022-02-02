@@ -228,7 +228,6 @@ class Routes implements RouteMap, Matcher, Generator
         if ($routes instanceof self) {
             $route = $this->routes['static'][$name]
                 ?? ($this->routes['dynamic'][$name] ?? null);
-
             if ($route === null) {
                 throw RouteNotFoundException::forName($name);
             }
@@ -241,7 +240,6 @@ class Routes implements RouteMap, Matcher, Generator
 
         foreach ($segments as $segment) {
             if (!empty($segment)) {
-
                 if (Attribute::is($segment)) {
                     $id = Attribute::trim($segment);
                     if (!Attribute::isOptional($segment)) {
@@ -249,7 +247,6 @@ class Routes implements RouteMap, Matcher, Generator
                             throw GeneratorException::create($id);
                         }
                     }
-
                     if (!empty($attribute = $attributes[$id] ?? '')) {
                         $path .= '/' . $attribute;
                     }
@@ -353,10 +350,10 @@ class Routes implements RouteMap, Matcher, Generator
                 $route['attributes'] = $attributes;
                 return Route::fromArray($route);
             }
-            
+
             return $route->withAttributes($attributes);
         }
-        
+
         return $route;
     }
 
