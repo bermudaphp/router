@@ -64,7 +64,7 @@
  
  ```php
  $routes->get('users.get, 'api/v1/user/?{id}', static function(ServerRequestInterface $request): ResponseInterface {
-     if ((id = $request->getAttribute('id')) !== null) {
+     if (($id = $request->getAttribute('id')) !== null) {
          return get_user_by_id($id);
      }
      
