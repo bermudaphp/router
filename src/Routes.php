@@ -7,7 +7,6 @@ use InvalidArgumentException;
 use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
-use function Bermuda\String\str_after;
 use function Bermuda\String\str_contains_all;
 
 class Routes implements RouteMap, Matcher, Generator
