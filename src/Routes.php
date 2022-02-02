@@ -320,7 +320,7 @@ class Routes implements RouteMap, Matcher, Generator
             if (!empty($segment)) {
                 if (Attribute::is($segment)) {
                     if (Attribute::isOptional($segment)) {
-                        $pattern .= '/??('.($routeData['tokens'][Attribute::trim($segment)] ?? '.*').')??';
+                        $pattern .= '/?('.($routeData['tokens'][Attribute::trim($segment)] ?? '.*').')?';
                     } else {
                         $pattern .= '/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
                     }
