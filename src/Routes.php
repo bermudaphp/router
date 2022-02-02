@@ -23,8 +23,8 @@ class Routes implements RouteMap, Matcher, Generator
      */
     public function getIterator(): \Generator
     {
-        foreach (array_merge($this->routes['static'], $this->routes['dynamic']) as $name => $route) {
-            yield $name => Route::fromArray($route);
+        foreach (array_merge($this->routes['static'], $this->routes['dynamic']) as $name => $data) {
+            yield $name => Route::fromArray($data);
         }
     }
 
@@ -242,7 +242,6 @@ class Routes implements RouteMap, Matcher, Generator
 
         foreach ($segments as $segment) {
             if (!empty($segment)) {
-                $path .= '/';
 
                 if (Attribute::is($segment)) {
                     $id = Attribute::trim($segment);
@@ -251,11 +250,15 @@ class Routes implements RouteMap, Matcher, Generator
                             throw GeneratorException::create($id);
                         }
                     }
-                    $path .= $attributes[$id] ?? '';
+
+                    if (!empty($attribute = $attributes[$id] ?? '')) {
+                        $path .= '/' . $attribute;
+                    }
+
                     continue;
                 }
 
-                $path .= $segment;
+                $path .= '/' . $segment;
             }
         }
 
@@ -292,7 +295,7 @@ class Routes implements RouteMap, Matcher, Generator
             foreach ($routes as $route) {
                 if (preg_match($this->buildRegexp($route), $path, $matches) === 1) {
                     if (in_array($method, $route['methods'])) {
-                        return $this->parseAttributes($route, explode('/', $matches[0]));
+                        return $this->parseAttributes($route, $matches);
                     }
 
                     ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
@@ -310,35 +313,22 @@ class Routes implements RouteMap, Matcher, Generator
      */
     private function buildRegexp(array|Route $routeData): string
     {
-        if (($path = $routeData['path']) === '' || $path === '/') {
+        if (empty($path = $routeData['path']) || $path == '/') {
             return '#^/$#';
         }
 
         $pattern = '#^';
-
         $segments = explode('/', $path);
 
         foreach ($segments as $segment) {
             if (!empty($segment)) {
-                if (Attribute::isOptional($segment)) {
-                    $pattern .= '/??(';
-
-                    if (Attribute::is($segment)) {
-                        $token = Attribute::trim($segment);
-                        $pattern .= $routeData['tokens'][$token] ?? '(.+)';
-                    } else {
-                        $pattern .= $segment;
-                    }
-
-                    $pattern .= ')??';
-                    continue;
-                }
-
                 $pattern .= '/';
-
                 if (Attribute::is($segment)) {
-                    $token = Attribute::trim($segment);
-                    $pattern .= $routeData['tokens'][$token] ?? '(.+)';
+                    if (Attribute::isOptional($segment)) {
+                        $pattern .= '?('.($routeData['tokens'][Attribute::trim($segment)] ?? '.*').')';
+                    } else {
+                        $pattern .= '('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
+                    }
                 } else {
                     $pattern .= $segment;
                 }
@@ -350,25 +340,25 @@ class Routes implements RouteMap, Matcher, Generator
 
     private function parseAttributes(Route|array $route, array $matches): Route
     {
+        array_shift($matches);
         $segments = explode('/', $route['path']);
-        if (count($segments) > count($matches)) {
-            array_pop($segments);
-        }
 
-        foreach ($segments as $i => $segment) {
-            if ($segment == $matches[$i]) {
-                continue;
+        foreach ($segments as $segment) {
+            if (Attribute::is($segment)) {
+                $attributes[Attribute::trim($segment)] = array_shift($matches);
             }
-
-            $attributes[Attribute::trim($segment)] = $matches[$i];
         }
 
-        if (isset($attributes)) {
-            $route['attributes'] = $attributes;
+        if (isset($attributes) ) {
+            if (is_array($route)) {
+                $route['attributes'] = $attributes;
+                return Route::fromArray($route);
+            }
+            
+            return $route->withAttributes($attributes);
         }
-
-        return is_array($route) ? Route::fromArray($route)
-            : $route->withAttributes($attributes);
+        
+        return $route;
     }
 
     /**
