@@ -6,6 +6,6 @@ class GeneratorException extends RouterException
 {
     public static function create(string $id, string $routeName): self
     {
-        return new GeneratorException("For route [$routeName] missing attribute [$id] missing.");
+        return new static("For route [$routeName] missing attribute [$id] missing.");
     }
 }
