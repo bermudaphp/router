@@ -318,15 +318,14 @@ class Routes implements RouteMap, Matcher, Generator
 
         foreach ($segments as $segment) {
             if (!empty($segment)) {
-                $pattern .= '/';
                 if (Attribute::is($segment)) {
                     if (Attribute::isOptional($segment)) {
                         $pattern .= '/??('.($routeData['tokens'][Attribute::trim($segment)] ?? '.*').')??';
                     } else {
-                        $pattern .= '('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
+                        $pattern .= '/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
                     }
                 } else {
-                    $pattern .= $segment;
+                    $pattern .= '/'.$segment;
                 }
             }
         }
