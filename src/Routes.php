@@ -244,7 +244,7 @@ class Routes implements RouteMap, Matcher, Generator
                     $id = Attribute::trim($segment);
                     if (!Attribute::isOptional($segment)) {
                         if (!isset($attributes[$id])) {
-                            throw GeneratorException::create($id);
+                            throw GeneratorException::create($id, $route['name']);
                         }
                     }
                     if (!empty($attribute = $attributes[$id] ?? '')) {
