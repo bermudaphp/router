@@ -289,9 +289,9 @@ class Routes implements RouteMap, Matcher, Generator
         } else {
             each:
             foreach ($routes as $route) {
-                if (preg_match($this->buildRegexp($route), $path, $matches) === 1) {
+                if (preg_match($this->buildRegexp($route), $path) === 1) {
                     if (in_array($method, $route['methods'])) {
-                        return $this->parseAttributes($route, $matches);
+                        return $this->parseAttributes($route, $path);
                     }
 
                     ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
@@ -320,7 +320,7 @@ class Routes implements RouteMap, Matcher, Generator
             if (!empty($segment)) {
                 if (Attribute::is($segment)) {
                     if (Attribute::isOptional($segment)) {
-                        $pattern .= '/?('.($routeData['tokens'][Attribute::trim($segment)] ?? '.*').')?';
+                        $pattern .= '(/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').'))??';
                     } else {
                         $pattern .= '/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
                     }
@@ -333,17 +333,17 @@ class Routes implements RouteMap, Matcher, Generator
         return $pattern . '/?$#';
     }
 
-    private function parseAttributes(Route|array $route, array $matches): Route
+    private function parseAttributes(Route|array $route, string $path): Route
     {
-        array_shift($matches);
+        $paths = explode('/', $path);
         $segments = explode('/', $route['path']);
 
-        foreach ($segments as $segment) {
-            if (Attribute::is($segment)) {
-                $attributes[Attribute::trim($segment)] = array_shift($matches);
+        foreach ($segments as $i => $segment) {
+            if ($segment != ($paths[$i] ?? '')) {
+                $attributes[Attribute::trim($segment)] = $paths[$i] ?? null;
             }
         }
-
+        
         if (isset($attributes) ) {
             if (is_array($route)) {
                 $route['attributes'] = $attributes;
