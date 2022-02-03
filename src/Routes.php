@@ -2,6 +2,7 @@
 
 namespace Bermuda\Router;
 
+use Laminas\Code\Generator\FileGenerator;
 use RuntimeException;
 use InvalidArgumentException;
 use Bermuda\Router\Exception\GeneratorException;
@@ -106,21 +107,27 @@ class Routes implements RouteMap, Matcher, Generator
             $methods = [$methods];
         }
 
-        if ($tokens === null) {
-            $tokens = Route::$routeTokens;
-        } else {
-            $tokens = array_merge(Route::$routeTokens, $tokens);
-        }
-
         $methods = array_map('strtoupper', $methods);
 
-        if (str_contains_all($path, ['{', '}'])) {
-            $this->routes['dynamic'][$name]
-                = compact('name', 'path', 'handler', 'methods', 'tokens', 'middleware');
-        } else {
-            $this->routes['static'][$name]
-                = compact('name', 'path', 'handler', 'methods', 'tokens', 'middleware');
+        $data = [
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => $methods
+        ];
 
+        if ($middleware != null) {
+            $data['middleware'] = $middleware;
+        }
+
+        if ($tokens != null) {
+            $data['tokens'] = $tokens;
+        }
+
+        if (str_contains_all($path, ['{', '}'])) {
+            $this->routes['dynamic'][$name] = $data;
+        } else {
+            $this->routes['static'][$name] = $data;
             if (isset($this->map[$path])) {
                 $this->map[$path][] = $name;
             } else {
@@ -320,9 +327,9 @@ class Routes implements RouteMap, Matcher, Generator
             if (!empty($segment)) {
                 if (Attribute::is($segment)) {
                     if (Attribute::isOptional($segment)) {
-                        $pattern .= '(/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').'))??';
+                        $pattern .= '(/('.($routeData['tokens'][$id = Attribute::trim($segment)] ?? (Route::$tokens[$id] ?? '.+')).'))??';
                     } else {
-                        $pattern .= '/('.($routeData['tokens'][Attribute::trim($segment)] ?? '.+').')';
+                        $pattern .= '/('.($routeData['tokens'][$id = Attribute::trim($segment)] ?? (Route::$tokens[$id] ?? '.+')).')';
                     }
                 } else {
                     $pattern .= '/'.$segment;
