@@ -17,7 +17,7 @@ final class Route implements Arrayable, \ArrayAccess
         RequestMethodInterface::METHOD_OPTIONS,
     ];
 
-    public static array $routeTokens = [
+    public static array $tokens = [
         'id' => '\d+',
         'action' => '(create|read|update|delete)',
         'any' => '.*'
