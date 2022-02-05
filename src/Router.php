@@ -32,12 +32,20 @@ final class Router
         return $this->generator->generate($this->routes, $name, $attributes);
     }
 
+    public function withRoutes(RouteMap $routes): self
+    {
+        $copy = clone $this;
+        $copy->routes = $routes;
+        
+        return $copy;
+    }
+     
     /**
      * @return RouteMap
      */
     public function getRoutes(): RouteMap
     {
-        return $this->routes;
+        return clone $this->routes;
     }
 
     /**
@@ -45,6 +53,6 @@ final class Router
      */
     public static function withDefaults(): self
     {
-        return new self($routes = new Routes(), $routes, $routes);
+        return new self($routes = new Routes, $routes, $routes);
     }
 }
