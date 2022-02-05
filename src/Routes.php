@@ -2,7 +2,6 @@
 
 namespace Bermuda\Router;
 
-use Laminas\Code\Generator\FileGenerator;
 use RuntimeException;
 use InvalidArgumentException;
 use Bermuda\Router\Exception\GeneratorException;
@@ -278,36 +277,33 @@ class Routes implements RouteMap, Matcher, Generator
         $path == '/' ?: $path = rtrim($path, '/');
 
         if ($routes instanceof self) {
-            if (isset($this->map[$path])) {
-                foreach ($this->map[$path] as $name) {
-                    if (in_array($method, $this->routes['static'][$name]['methods'])) {
-                        return Route::fromArray($this->routes['static'][$name]);
+            if (isset($routes->map[$path])) {
+                foreach ($routes->map[$path] as $name) {
+                    if (in_array($method, $routes->routes['static'][$name]['methods'])) {
+                        return Route::fromArray($routes->routes['static'][$name]);
                     } else {
-                        $routes = $this->routes['dynamic'];
+                        $routes = $routes->routes['dynamic'];
                         ($e = MethodNotAllowedException::make($path, $requestMethod))
-                            ->addAllowedMethods($this->routes['static'][$name]['methods']);
-                        goto each;
+                            ->addAllowedMethods($routes->routes['static'][$name]['methods']);
                     }
                 }
             } else {
-                $routes = $this->routes['dynamic'];
-                goto each;
-            }
-        } else {
-            each:
-            foreach ($routes as $route) {
-                if (preg_match($this->buildRegexp($route), $path) === 1) {
-                    if (in_array($method, $route['methods'])) {
-                        return $this->parseAttributes($route, $path);
-                    }
-
-                    ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
-                        ->addAllowedMethods($route['methods']);
-                }
+                $routes = $routes->routes['dynamic'];
             }
         }
 
-        throw $e ?? RouteNotFoundException::forPath($path ?? $path);
+        foreach ($routes as $route) {
+            if (preg_match($this->buildRegexp($route), $path) === 1) {
+                if (in_array($method, $route['methods'])) {
+                    return $this->parseAttributes($route, $path);
+                }
+
+                ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
+                    ->addAllowedMethods($route['methods']);
+            }
+        }
+
+        throw $e ?? RouteNotFoundException::forPath($path);
     }
 
     /**
@@ -327,9 +323,9 @@ class Routes implements RouteMap, Matcher, Generator
             if (!empty($segment)) {
                 if (Attribute::is($segment)) {
                     if (Attribute::isOptional($segment)) {
-                        $pattern .= '(/('.($routeData['tokens'][$id = Attribute::trim($segment)] ?? (Route::$tokens[$id] ?? '.+')).'))??';
+                        $pattern .= '(/('.(($routeData['tokens'][Attribute::trim($segment)] ?? Route::$tokens[$id] ?? '.+')).'))??';
                     } else {
-                        $pattern .= '/('.($routeData['tokens'][$id = Attribute::trim($segment)] ?? (Route::$tokens[$id] ?? '.+')).')';
+                        $pattern .= '/('.(($routeData['tokens'][Attribute::trim($segment)] ?? Route::$tokens[$id] ?? '.+')).')';
                     }
                 } else {
                     $pattern .= '/'.$segment;
