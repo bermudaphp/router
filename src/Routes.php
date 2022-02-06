@@ -270,30 +270,29 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @inheritDoc
      */
-    public function match(RouteMap $routes, string $requestMethod, string $uri): Route
+    public function match(RouteMap $map, string $requestMethod, string $uri): Route
     {
         $method = strtoupper($requestMethod);
         $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
         $path == '/' ?: $path = rtrim($path, '/');
 
-        if ($routes instanceof self) {
-            if (isset($routes->map[$path])) {
-                foreach ($routes->map[$path] as $name) {
-                    if (in_array($method, $routes->routes['static'][$name]['methods'])) {
+        if ($map instanceof self) {
+            if (isset($map->map[$path])) {
+                foreach ($map->map[$path] as $name) {
+                    if (in_array($method, $map->routes['static'][$name]['methods'])) {
                         return Route::fromArray($routes->routes['static'][$name]);
-                    } else {
-                        $routes = $routes->routes['dynamic'];
-                        ($e = MethodNotAllowedException::make($path, $requestMethod))
-                            ->addAllowedMethods($routes->routes['static'][$name]['methods']);
                     }
+
+                    ($e = MethodNotAllowedException::make($path, $requestMethod))
+                        ->addAllowedMethods($map->routes['static'][$name]['methods']);
                 }
-            } else {
-                $routes = $routes->routes['dynamic'];
             }
+
+            $routes = $map->routes['dynamic'];
         }
 
-        foreach ($routes as $route) {
-            if (preg_match($this->buildRegexp($route), $path) === 1) {
+        foreach ($routes ?? $map as $route) {
+            if (preg_match($route['regexp'] ?? $this->buildRegexp($route), $path) === 1) {
                 if (in_array($method, $route['methods'])) {
                     return $this->parseAttributes($route, $path);
                 }
@@ -310,7 +309,7 @@ class Routes implements RouteMap, Matcher, Generator
      * @param array $routeData
      * @return string
      */
-    private function buildRegexp(array|Route $routeData): string
+    private function buildRegexp(Route|array $routeData): string
     {
         if (empty($path = $routeData['path']) || $path == '/') {
             return '#^/$#';
@@ -340,22 +339,19 @@ class Routes implements RouteMap, Matcher, Generator
         $paths = explode('/', $path);
         $segments = explode('/', $route['path']);
 
+        $attributes = [];
         foreach ($segments as $i => $segment) {
             if ($segment != ($paths[$i] ?? '')) {
                 $attributes[Attribute::trim($segment)] = $paths[$i] ?? null;
             }
         }
 
-        if (isset($attributes) ) {
-            if (is_array($route)) {
-                $route['attributes'] = $attributes;
-                return Route::fromArray($route);
-            }
-
-            return $route->withAttributes($attributes);
+        if (is_array($route)) {
+            $route['attributes'] = $attributes;
+            return Route::fromArray($route);
         }
 
-        return $route;
+        return $route->withAttributes($attributes);
     }
 
     /**
