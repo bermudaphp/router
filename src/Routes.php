@@ -280,7 +280,7 @@ class Routes implements RouteMap, Matcher, Generator
             if (isset($map->map[$path])) {
                 foreach ($map->map[$path] as $name) {
                     if (in_array($method, $map->routes['static'][$name]['methods'])) {
-                        return Route::fromArray($routes->routes['static'][$name]);
+                        return Route::fromArray($map->routes['static'][$name]);
                     }
 
                     ($e = MethodNotAllowedException::make($path, $requestMethod))
