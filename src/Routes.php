@@ -342,8 +342,13 @@ class Routes implements RouteMap, Matcher, Generator
         $attributes = [];
         foreach ($segments as $i => $segment) {
             if ($segment != ($paths[$i] ?? '')) {
-                $attributes[Attribute::trim($segment)] = $paths[$i] ?? null;
+                $attributes[$s = Attribute::trim($segment)] = $paths[$i] ?? null;
             }
+        }
+        
+        if (isset($segments[$i])) {
+            $attributes[$s] = $attributes[$s]
+                . '/' . implode('/', array_slice($paths, $i + 1));
         }
 
         if (is_array($route)) {
