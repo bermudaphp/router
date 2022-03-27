@@ -346,7 +346,7 @@ class Routes implements RouteMap, Matcher, Generator
             }
         }
         
-        if (isset($segments[$i])) {
+        if (isset($paths[$i+1])) {
             $attributes[$s] = $attributes[$s]
                 . '/' . implode('/', array_slice($paths, $i + 1));
         }
