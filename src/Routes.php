@@ -17,13 +17,16 @@ class Routes implements RouteMap, Matcher, Generator
         'dynamic' => []
     ];
 
+    protected int $routePosition = 0;
+    protected array $postionsMap = [];
+
     /**
      * @return \Generator<Route>
      */
     public function getIterator(): \Generator
     {
-        foreach (array_merge($this->routes['static'], $this->routes['dynamic']) as $name => $data) {
-            yield $name => Route::fromArray($data);
+        foreach (array_merge($this->routes['static'], $this->routes['dynamic']) as $pos => $data) {
+            yield ($route = Route::fromArray($data))['name'] => $route;
         }
     }
 
@@ -44,8 +47,8 @@ class Routes implements RouteMap, Matcher, Generator
             throw new InvalidArgumentException('The argument [ callback ] cannot be null');
         }
 
-        $callback($map = new class($prefix, $middleware, $tokens) extends Routes {
-            public function __construct(private string $prefix, private mixed $middleware, private ?array $tokens = null)
+        $callback($map = new class($this, $prefix, $middleware, $tokens) extends Routes {
+            public function __construct(private Routes $wrapped, private string $prefix, private mixed $middleware, private ?array $tokens = null)
             {
             }
 
@@ -78,20 +81,10 @@ class Routes implements RouteMap, Matcher, Generator
                     }
                 }
 
-                return parent::add($name, $this->prefix . $path, $handler, $methods, $tokens, $middleware);
+                $this->wrapped->add($name, $this->prefix . $path, $handler, $methods, $tokens, $middleware);
+                return $this;
             }
         });
-
-        $this->routes['static'] = array_merge($this->routes['static'], $map->routes['static']);
-        $this->routes['dynamic'] = array_merge($this->routes['dynamic'], $map->routes['dynamic']);
-
-        foreach ($map->map as $path => $value) {
-            if (isset($this->map[$path])) {
-                $this->map[$path] = array_merge($this->map[$path], $value);
-            } else {
-                $this->map[$path] = $value;
-            }
-        }
 
         return $this;
     }
@@ -112,7 +105,7 @@ class Routes implements RouteMap, Matcher, Generator
             'name' => $name,
             'path' => $path,
             'handler' => $handler,
-            'methods' => $methods
+            'methods' => $methods,
         ];
 
         if ($middleware != null) {
@@ -124,7 +117,8 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         if (str_contains_all($path, ['{', '}'])) {
-            $this->routes['dynamic'][$name] = $data;
+            $this->routes['dynamic'][$this->routePosition++] = $data;
+            $this->postionsMap[$name] = $this->routePosition;
         } else {
             $this->routes['static'][$name] = $data;
             if (isset($this->map[$path])) {
@@ -233,7 +227,7 @@ class Routes implements RouteMap, Matcher, Generator
     {
         if ($routes instanceof self) {
             $route = $this->routes['static'][$name]
-                ?? ($this->routes['dynamic'][$name] ?? null);
+                ?? ($this->routes['dynamic'][$this->postionsMap[$name] ?? null] ?? null);
             if ($route === null) {
                 throw RouteNotFoundException::forName($name);
             }
@@ -377,7 +371,7 @@ class Routes implements RouteMap, Matcher, Generator
     public function route(string $name): Route
     {
         $route = $this->routes['static'][$name]
-            ?? ($this->routes['dynamic'][$name] ?? null);
+            ?? ($this->routes['dynamic'][$this->postionsMap[$name] ?? null] ?? null);
 
         if ($route) {
             return Route::fromArray($route);
