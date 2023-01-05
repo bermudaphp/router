@@ -5,7 +5,7 @@
     "psr-4": {
       "Bermuda\\Router\\": "src/",
       "Bermuda\\Router\\Middleware\\": "src/middleware/",
-      "Bermuda\\Router\\Exception\\": "src/exception/",
+      "Bermuda\\Router\\Exception\\": "src/exception/"
     },
     "files": ["src\\functions.php"]
   },
