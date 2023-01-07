@@ -109,6 +109,15 @@
  });
  ```
  
+ ## Middleware
+ 
+ ```php
+ $routes->get($name, $path, $handler, MyMiddleware::class);
+ or
+ $routes->get($name, $path, $handler, [FirstMiddleware::class, SecondMiddleware::class]);
+ 
+ See: https://github.com/bermudaphp/psr15factory
+ ```
 ## Cache
  
 Once all routes are registered in the route map and they will no longer be changed. Call the $routes->cache method to cache the route map in a php file. Then use the Routes::createFromCache('/path/to/cached/routes/filename.php') method to create a map instance with preloaded routes.
