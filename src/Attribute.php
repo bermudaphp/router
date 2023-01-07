@@ -2,8 +2,28 @@
 
 namespace Bermuda\Router;
 
-class Attribute
+final class Attribute
 {
+    private static $limiters = ['{', '}'];
+
+    /**
+     * @param string $left
+     * @param string $right
+     * @return void
+     */
+    public static function setLimiters(string $left, string $right): void
+    {
+        self::$limiters = [$left, $right];
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getLimiters(): array
+    {
+        return self::$limiters;
+    }
+
     /**
      * @param string $segment
      * @return bool
@@ -23,7 +43,9 @@ class Attribute
             return false;
         }
 
-        return ($segment[0] === '{' || ($segment[0] === '?' && $segment[1] === '{')) && $segment[mb_strlen($segment) - 1] === '}';
+        return ($segment[0] == self::$limiters[0] || ($segment[0] == '?'
+                    && $segment[1] == self::$limiters[0]))
+            && $segment[mb_strlen($segment) - 1] == self::$limiters[1];
     }
 
     /**
@@ -32,6 +54,6 @@ class Attribute
      */
     public static function trim(string $placeholder): string
     {
-        return trim($placeholder, '?{}');
+        return trim($placeholder, '?' . self::$limiters[0] . self::$limiters[1]);
     }
 }
