@@ -55,7 +55,7 @@ class Routes implements RouteMap, Matcher, Generator
             return;
         }
 
-        file_put_contents($filename, '<?php ' . PHP_EOL . $content);
+        file_put_contents($filename, '<?php ' . PHP_EOL .'return '. $content);
     }
 
     /**
