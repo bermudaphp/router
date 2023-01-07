@@ -26,7 +26,7 @@ class Routes implements RouteMap, Matcher, Generator
             return require_once $filename;
         })();
 
-        $self = new self;
+        $self = new static;
         $self->routes = $routes;
 
         return $self;
@@ -51,7 +51,7 @@ class Routes implements RouteMap, Matcher, Generator
         $content = export_array($this->routes);
 
         if ($fileWriter) {
-            $fileWriter($filename);
+            $fileWriter($filename, $content);
             return;
         }
 
