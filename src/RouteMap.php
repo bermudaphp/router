@@ -2,9 +2,9 @@
 
 namespace Bermuda\Router;
 
+use RuntimeException;
 use Bermuda\Arrayable;
 use IteratorAggregate;
-use RuntimeException;
 
 interface RouteMap extends Arrayable, IteratorAggregate
 {
@@ -24,7 +24,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param string $prefix
      * @param mixed $middleware
      * @param array|null $tokens
-     * @param callable|null $callback
+     * @param callable $callback
      * @throws \InvalidArgumentException if $callback is null
      * @return RouteMap
      */
@@ -33,92 +33,79 @@ interface RouteMap extends Arrayable, IteratorAggregate
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function get(
-        string $name, string $path,
-        $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function post(
-        string $name, string $path,
-        $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function delete(
-        string $name, string $path,
-               $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function put(
-        string $name, string $path,
-        $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function patch(
-        string $name, string $path,
-        $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
-     * @param array|null $tokens
+     * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
      */
     public function options(
-        string $name, string $path,
-        $handler, ?array $tokens = null,
-        mixed $middleware = null): RouteMap;
+        string $name, string|Path $path,
+        mixed $handler, mixed $middleware = null): RouteMap;
 
     /**
      * @param string $name
      * @param string $path
-     * @param $handler
+     * @param mixed $handler
      * @param array|string|null $methods
-     * @param array|null $tokens
      * @param mixed|null $middleware
      * @return RouteMap
      */
-    public function any(string $name, string $path,
-        $handler, array|string $methods = null, ?array $tokens = null,
+    public function any(string $name, string|Path $path,
+        mixed $handler, array|string $methods = null,
         mixed $middleware = null): RouteMap;
 
     /**
