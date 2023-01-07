@@ -81,9 +81,11 @@
  
  ## Predefined placeholders
  
+ ````
  id: \d+
  action: (create|read|update|delete)
  any: .*
+ ````
  
  Other placeholders passed to path as a string without being explicitly defined via path(tokes: $tokens) will match the pattern .*
   
