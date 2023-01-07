@@ -2,9 +2,10 @@
 
 namespace Bermuda\Router;
 
-use RuntimeException;
 use Bermuda\Arrayable;
+use Bermuda\Router\Exception\RouterException;
 use IteratorAggregate;
+use RuntimeException;
 
 interface RouteMap extends Arrayable, IteratorAggregate
 {
@@ -36,6 +37,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function get(
         string $name, string|Path $path,
@@ -47,6 +49,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function post(
         string $name, string|Path $path,
@@ -58,6 +61,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function delete(
         string $name, string|Path $path,
@@ -69,6 +73,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function put(
         string $name, string|Path $path,
@@ -80,6 +85,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function patch(
         string $name, string|Path $path,
@@ -91,6 +97,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param mixed $handler
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function options(
         string $name, string|Path $path,
@@ -103,6 +110,7 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @param array|string|null $methods
      * @param mixed|null $middleware
      * @return RouteMap
+     * @throws RouterException if $name already exists in map
      */
     public function any(string $name, string|Path $path,
         mixed $handler, array|string $methods = null,
