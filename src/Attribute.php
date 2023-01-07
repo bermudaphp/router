@@ -26,6 +26,15 @@ final class Attribute
 
     /**
      * @param string $segment
+     * @return string
+     */
+    public static function wrap(string $segment): string
+    {
+        return self::$limiters[0] . $segment . self::$limiters[1];
+    }
+
+    /**
+     * @param string $segment
      * @return bool
      */
     public static function isOptional(string $segment): bool
