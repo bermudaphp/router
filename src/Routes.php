@@ -9,7 +9,7 @@ use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
 
-use function Bermuda\VarExport\export_array;
+use function Bermuda\Utils\export_array;
 
 class Routes implements RouteMap, Matcher, Generator
 {
@@ -89,20 +89,31 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         $callback($map = new class($this, $prefix, $middleware, $tokens) extends Routes {
-            public function __construct(private Routes $wrapped, private string $prefix, private mixed $middleware, private ?array $tokens = null)
-            {
+            public function __construct(
+                private Routes $wrapped,
+                private string $prefix,
+                private mixed $middleware,
+                private ?array $tokens = null
+            ) {
             }
 
-            protected function add(string       $name, string $path, $handler,
-                                   array|string $methods = null, ?array $tokens = null,
-                                   mixed        $middleware = null): self
+            protected function add(string $name, string|Path $path, mixed $handler,
+                                   array|string $methods = null, mixed $middleware = null): self
             {
 
-                if ($this->tokens !== null) {
-                    if ($tokens !== null) {
-                        $tokens = array_merge($this->tokens, $tokens);
+                if ($path instanceof Path ) {
+                    if ($this->tokens !== null) {
+                        $path->mergeTokens($this->tokens);
+                    }
+
+                    $path->addPrefix($this->prefix);
+                } else {
+                    if ($this->tokens !== null) {
+                        $path = new Path($path, $this->tokens);
+                        $path->mergeTokens($this->tokens);
+                        $path->addPrefix($this->prefix);
                     } else {
-                        $tokens = $this->tokens;
+                        $path = $this->prefix . $path;
                     }
                 }
 
@@ -122,7 +133,7 @@ class Routes implements RouteMap, Matcher, Generator
                     }
                 }
 
-                $this->wrapped->add($name, $this->prefix . $path, $handler, $methods, $tokens, $middleware);
+                $this->wrapped->add($name, $path, $handler, $methods, $middleware);
                 return $this;
             }
         });
@@ -130,9 +141,8 @@ class Routes implements RouteMap, Matcher, Generator
         return $this;
     }
 
-    protected function add(string       $name, string $path, $handler,
-                           array|string $methods, ?array $tokens = null,
-                           mixed        $middleware = null): self
+    protected function add(string $name, string|Path $path, mixed $handler,
+        array|string $methods, mixed $middleware = null): self
     {
 
         if (isset($this->routes['static'][$name]) || isset($this->routes['dynamic'][$name])) {
@@ -149,7 +159,7 @@ class Routes implements RouteMap, Matcher, Generator
 
         $data = [
             'name' => $name,
-            'path' => $path,
+            'path' => (string) $path,
             'handler' => $handler,
             'methods' => $methods,
         ];
@@ -158,10 +168,11 @@ class Routes implements RouteMap, Matcher, Generator
             $data['middleware'] = $middleware;
         }
 
-        if ($tokens != null) {
-            $data['tokens'] = $tokens;
+        if ($path instanceof Path) {
+            $data['tokens'] = $path->getTokens();
+            $path = (string) $path;
         }
-        
+
         list($left, $right) = Attribute::getLimiters();
 
         if (str_contains($path, $left) && str_contains($path, $right)) {
@@ -181,90 +192,65 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @inheritDoc
      */
-    public function get(string $name, string $path,
-                               $handler, ?array $tokens = null,
-                        mixed  $middleware = null): RouteMap
+    public function get(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'GET', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'GET', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function post(
-        string $name,
-        string $path,
-               $handler,
-        ?array $tokens = null,
-        mixed  $middleware = null): RouteMap
+    public function post(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'POST', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'POST', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function delete(
-        string $name,
-        string $path,
-               $handler,
-        ?array $tokens = null,
-        mixed  $middleware = null): RouteMap
+    public function delete(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'DELETE', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'DELETE', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function put(
-        string $name,
-        string $path,
-               $handler,
-        ?array $tokens = null,
-        mixed  $middleware = null): RouteMap
+    public function put(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'PUT', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'PUT', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function patch(
-        string $name,
-        string $path,
-               $handler,
-        ?array $tokens = null,
-        mixed  $middleware = null): RouteMap
+    public function patch(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'PATCH', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'PATCH', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function options(
-        string $name,
-        string $path,
-               $handler,
-        ?array $tokens = null,
-        mixed  $middleware = null): RouteMap
+    public function options(string $name, string|Path $path,
+        mixed $handler, mixed  $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, 'OPTIONS', $tokens, $middleware);
+        return $this->add($name, $path, $handler, 'OPTIONS', $middleware);
     }
 
     /**
      * @inheritDoc
      */
-    public function any(
-        string       $name,
-        string       $path,
-                     $handler,
-        array|string $methods = null,
-        ?array       $tokens = null,
-        mixed        $middleware = null): RouteMap
+    public function any(string $name, string|Path $path,
+        mixed $handler, array|string $methods = null,
+        mixed $middleware = null): RouteMap
     {
-        return $this->add($name, $path, $handler, $methods ?? Route::$requestMethods, $tokens, $middleware);
+        return $this->add($name, $path, $handler, $methods ?? Route::$requestMethods, $middleware);
     }
 
     /**
