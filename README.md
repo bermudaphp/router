@@ -88,7 +88,7 @@
  any: .*
  ````
  
- Other placeholders passed to path as a string without being explicitly defined via path(tokes: $tokens) will match the pattern .*
+ Other placeholders passed to path as a string without being explicitly defined via `path(tokes: $tokens)` will match the pattern `.*`
   
  ## Routes Group
  
@@ -120,7 +120,7 @@ $routes->get($name, $path, $handler, [FirstMiddleware::class, SecondMiddleware::
 See: [https://github.com/bermudaphp/psr15factory](https://github.com/bermudaphp/psr15factory)
 ## Cache
  
-Once all routes are registered in the route map and they will no longer be changed. Call the $routes->cache method to cache the route map in a php file. Then use the Routes::createFromCache('/path/to/cached/routes/filename.php') method to create a map instance with preloaded routes.
+Once all routes are registered in the route map and they will no longer be changed. Call the $routes->cache method to cache the route map in a php file. Then use the `Routes::createFromCache('/path/to/cached/routes/filename.php')` method to create a map instance with preloaded routes.
 
 ```php
  
@@ -130,7 +130,7 @@ Once all routes are registered in the route map and they will no longer be chang
  $router = new Router($routes, $routes, $routes);
  ```
 # Cache context
-If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the Routes::createFromCache method. See example below
+If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the `Routes::createFromCache` method. See example below
 ```php
  $repository = new UserRepository;
  $routes->get('user.get', '/user/{id}', static function(int $id) use ($repository): ResponseInterface {
