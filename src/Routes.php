@@ -19,6 +19,9 @@ class Routes implements RouteMap, Matcher, Generator
         'map' => [],
     ];
 
+    public string $leftLimiter = '[';
+    public string $rightLimiter = ']';
+
     public static function createFromCache(string $filename, array $context = null): RouteMap
     {
         $routes = (static function() use ($filename, $context): array {
@@ -161,8 +164,10 @@ class Routes implements RouteMap, Matcher, Generator
         if ($tokens != null) {
             $data['tokens'] = $tokens;
         }
+        
+        list($left, $right) = Attribute::getLimiters();
 
-        if (str_contains($path, '{') && str_contains($path, '}')) {
+        if (str_contains($path, $left) && str_contains($path, $right)) {
             $this->routes['dynamic'][$name] = $data;
         } else {
             $this->routes['static'][$name] = $data;
