@@ -51,13 +51,13 @@
  ## RouteMap HTTP Methods
  
  ```php
- $routes->get(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->post(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->patch(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->put(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->delete(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->options(string $name, ?string $path = null, $handler = null, ?array $tokens = null, ?array $middleware = null);
- $routes->any(string $name, ?string $path = null, $handler = null, string|array $methods =null, ?array $tokens = null, ?array $middleware = null);
+ $routes->get(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->post(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->patch(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->put(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->delete(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->options(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
+ $routes->any(string $name, string $path, $handler, string|array $methods = null, ?array $tokens = null, ?array $middleware = null);
  ```
  
   ## Optional attribute
