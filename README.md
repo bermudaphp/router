@@ -116,7 +116,7 @@
  or
  $routes->get($name, $path, $handler, [FirstMiddleware::class, SecondMiddleware::class]);
  
- See: https://github.com/bermudaphp/psr15factory
+ See: [https://github.com/bermudaphp/psr15factory](https://github.com/bermudaphp/psr15factory)
  ```
 ## Cache
  
