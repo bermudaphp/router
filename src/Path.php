@@ -2,10 +2,10 @@
 
 namespace Bermuda\Router;
 
-class Path implements Stringable {
+class Path implements \Stringable {
     public function __construct(
-        private readonly string $path,
-        private readonly array $tokens
+        private string $path,
+        private array $tokens
     ) {
     }
 
@@ -27,8 +27,29 @@ class Path implements Stringable {
         return str_replace($search, $replace, $this->path);
     }
 
+    /**
+     * @param string $prefix
+     * @return void
+     */
+    public function addPrefix(string $prefix): void
+    {
+        $this->path = $prefix . $this->path;
+    }
+
+    /**
+     * @param array $tokens
+     * @return void
+     */
+    public function mergeTokens(array $tokens): void
+    {
+        $this->tokens = array_merge($this->tokens, $tokens);
+    }
+
+    /**
+     * @return array
+     */
     public function getTokens(): array
     {
-        return array_filter($this->tokens, static fn($v, $k): bool => !is_int($k));
+        return array_filter($this->tokens, static fn($v, $k): bool => !is_int($k), ARRAY_FILTER_USE_BOTH);
     }
 }
