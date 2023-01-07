@@ -129,14 +129,15 @@ Once all routes are registered in the route map and they will no longer be chang
  $router = new Router($routes, $routes, $routes);
  ```
 # Cache context
-If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the cache method. See example below
+If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the Routes::createFromCache method. See example below
 ```php
  $repository = new UserRepository;
  $routes->get('user.get', '/user/{id}', static function(int $id) use ($repository): ResponseInterface {
     return $app->respond(200, $repository->findById($id));
  });
 
- $routes->cache('path/to/cached/routes/file.php', compact('repository'));
+ $routes->cache('path/to/cached/routes/file.php');
+ $routes = Routes::createFromCache('path/to/cached/routes/file.php', compact('repository'));
  ```
  
  # Cache limitations
