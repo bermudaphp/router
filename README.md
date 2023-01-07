@@ -132,13 +132,14 @@ Once all routes are registered in the route map and they will no longer be chang
 # Cache context
 If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the `Routes::createFromCache` method. See example below
 ```php
+ $app = new App;
  $repository = new UserRepository;
- $routes->get('user.get', '/user/{id}', static function(int $id) use ($repository): ResponseInterface {
+ $routes->get('user.get', '/user/{id}', static function(int $id) use ($app, $repository): ResponseInterface {
     return $app->respond(200, $repository->findById($id));
  });
 
  $routes->cache('path/to/cached/routes/file.php');
- $routes = Routes::createFromCache('path/to/cached/routes/file.php', compact('repository'));
+ $routes = Routes::createFromCache('path/to/cached/routes/file.php', compact('app', 'repository'));
  ```
  
  # Cache limitations
