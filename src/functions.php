@@ -2,7 +2,12 @@
 
 namespace Bermuda\Router;
 
-function build(string $name, string $path, mixed $handler): RouteBuilder
+/**
+ * @param string $path
+ * @param array $tokens
+ * @return Path
+ */
+function path(string $path, array $tokens): Path
 {
-    return new RouteBuilder($name, $path, $handler);
+    return new Path($path, $tokens);
 }
