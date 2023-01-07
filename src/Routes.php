@@ -19,9 +19,6 @@ class Routes implements RouteMap, Matcher, Generator
         'map' => [],
     ];
 
-    public string $leftLimiter = '[';
-    public string $rightLimiter = ']';
-
     public static function createFromCache(string $filename, array $context = null): RouteMap
     {
         $routes = (static function() use ($filename, $context): array {
