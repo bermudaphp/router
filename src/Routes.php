@@ -9,7 +9,7 @@ use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
 
-use function Bermuda\Utils\export_array;
+use function Bermuda\VarExport\export_array;
 
 class Routes implements RouteMap, Matcher, Generator
 {
