@@ -51,16 +51,23 @@
  ## RouteMap HTTP Methods
  
  ```php
- $routes->get(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->post(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->patch(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->put(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->delete(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->options(string $name, string $path, $handler, ?array $tokens = null, ?array $middleware = null);
- $routes->any(string $name, string $path, $handler, string|array $methods = null, ?array $tokens = null, ?array $middleware = null);
+ $routes->get(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->post(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->patch(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->put(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->delete(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->options(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
+ $routes->any(string $name, string|Path $path, mixed $handler, string|array $methods = null, ?array $middleware = null);
  ```
  
-  ## Optional attribute
+ ## Set attribute placeholder pattern
+ 
+ ```php
+ $routes->get('users.get, path('api/v1/client/name', ['name' => '[a-zA-Z]']), static function(ServerRequestInterface $request): ResponseInterface {
+     return get_client_by_name($request->getAttribute('name'));
+ });
+ ```
+ ## Optional attribute
  
  ```php
  $routes->get('users.get, 'api/v1/user/?{id}', static function(ServerRequestInterface $request): ResponseInterface {
@@ -71,6 +78,14 @@
      return get_all_users();
  });
  ```
+ 
+ ## Predefined placeholders
+ 
+ id: \d+
+ action: (create|read|update|delete)
+ any: .*
+ 
+ Other placeholders passed to path as a string without being explicitly defined via path(tokes: $tokens) will match the pattern .*
   
  ## Routes Group
  
@@ -91,3 +106,28 @@
     $routes->post('user.add', '/add/user', $handler);
  });
  ```
+ 
+## Cache
+ 
+Once all routes are registered in the route map and they will no longer be changed. Call the $routes->cache method to cache the route map in a php file. Then use the Routes::createFromCache('/path/to/cached/routes/filename.php') method to create a map instance with preloaded routes.
+
+```php
+ 
+ $routes->cache('path/to/cached/routes/file.php');
+ $routes = Routes::createFromCache('path/to/cached/routes/file.php')
+ 
+ $router = new Router($routes, $routes, $routes);
+ ```
+# Cache context
+If you are using a parent-context-bound closure (the use construct) as a route handler, then you must pass an array of bound variables to the cache method. See example below
+```php
+ $repository = new UserRepository;
+ $routes->get('user.get', '/user/{id}', static function(int $id) use ($repository): ResponseInterface {
+    return $app->respond(200, $repository->findById($id));
+ });
+
+ $routes->cache('path/to/cached/routes/file.php', compact('repository'));
+ ```
+ 
+ # Cache limitations
+ Currently, the caching implementation does not allow caching routes using object instances and callback functions based on object instances.
