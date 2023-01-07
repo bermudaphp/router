@@ -2,7 +2,8 @@
  ```bash
  composer require bermudaphp/router
  ````
- 
+ ## Relevance of documentation
+ This documentation is relevant for all versions starting from 3.1
  ## Usage
 
  ```php
