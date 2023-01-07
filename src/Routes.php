@@ -4,30 +4,71 @@ namespace Bermuda\Router;
 
 use RuntimeException;
 use InvalidArgumentException;
+use Bermuda\Router\Exception\RouterException;
 use Bermuda\Router\Exception\GeneratorException;
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Bermuda\Router\Exception\MethodNotAllowedException;
-use function Bermuda\String\str_contains_all;
+
+use function Bermuda\Utils\export_array;
 
 class Routes implements RouteMap, Matcher, Generator
 {
-    protected array $map = [];
     protected array $routes = [
         'static' => [],
-        'dynamic' => []
+        'dynamic' => [],
+        'map' => [],
     ];
 
-    protected int $routePosition = 0;
-    protected array $postionsMap = [];
+    public static function createFromCache(string $filename, array $context = null): RouteMap
+    {
+        $routes = (static function() use ($filename, $context): array {
+            if ($context) extract($context);
+            return require_once $filename;
+        })();
+
+        $self = new self;
+        $self->routes = $routes;
+
+        return $self;
+    }
+
+    public function cache(string $filename, callable $fileWriter = null): void
+    {
+        if (empty($this->routes['static']) && empty($this->routes['dynamic'])) {
+            throw new \LogicException('RouteMap is empty');
+        }
+
+        foreach ($this->routes() as $n => $route) {
+            if (!isset($route['regexp'])) {
+                $route['regexp'] = $this->buildRegexp($route);
+            }
+
+            isset($this->routes['static'][$n]) ?
+                $this->routes['static'][$n] = $route
+                : $this->routes['dynamic'][$n] = $route ;
+        }
+
+        $content = export_array($this->routes);
+
+        if ($fileWriter) {
+            $fileWriter($filename);
+            return;
+        }
+
+        file_put_contents($filename, '<?php ' . PHP_EOL . $content);
+    }
 
     /**
      * @return \Generator<Route>
      */
     public function getIterator(): \Generator
     {
-        foreach (array_merge($this->routes['static'], $this->routes['dynamic']) as $pos => $data) {
-            yield ($route = Route::fromArray($data))['name'] => $route;
-        }
+        foreach ($this->routes() as $n => $d) yield $n => Route::fromArray($d);
+    }
+
+    private function routes(): array
+    {
+        return array_merge($this->routes['static'], $this->routes['dynamic']);
     }
 
     /**
@@ -93,6 +134,11 @@ class Routes implements RouteMap, Matcher, Generator
                            array|string $methods, ?array $tokens = null,
                            mixed        $middleware = null): self
     {
+
+        if (isset($this->routes['static'][$name]) || isset($this->routes['dynamic'][$name])) {
+            throw new RouterException("Route with name [$name] alredy exists");
+        }
+
         if (true === ($needConvertToArray = is_string($methods)) && str_contains($methods, '|')) {
             $methods = explode('|', $methods);
         } elseif ($needConvertToArray) {
@@ -116,15 +162,14 @@ class Routes implements RouteMap, Matcher, Generator
             $data['tokens'] = $tokens;
         }
 
-        if (str_contains_all($path, ['{', '}'])) {
-            $this->routes['dynamic'][$this->routePosition++] = $data;
-            $this->postionsMap[$name] = $this->routePosition;
+        if (str_contains($path, '{') && str_contains($path, '}')) {
+            $this->routes['dynamic'][$name] = $data;
         } else {
             $this->routes['static'][$name] = $data;
-            if (isset($this->map[$path])) {
-                $this->map[$path][] = $name;
+            if (isset($this->routes['map'][$path])) {
+                $this->routes['map'][$path][] = $name;
             } else {
-                $this->map[$path] = [$name];
+                $this->routes['map'][$path] = [$name];
             }
         }
 
@@ -225,15 +270,7 @@ class Routes implements RouteMap, Matcher, Generator
      */
     public function generate(RouteMap $routes, string $name, array $attributes = []): string
     {
-        if ($routes instanceof self) {
-            $route = $this->routes['static'][$name]
-                ?? ($this->routes['dynamic'][$this->postionsMap[$name] ?? null] ?? null);
-            if ($route === null) {
-                throw RouteNotFoundException::forName($name);
-            }
-        } else {
-            $route = $routes->get($name);
-        }
+        $route = $routes->route($name);
 
         $path = '';
         $segments = explode('/', $route['path']);
@@ -271,8 +308,8 @@ class Routes implements RouteMap, Matcher, Generator
         $path == '/' ?: $path = rtrim($path, '/');
 
         if ($map instanceof self) {
-            if (isset($map->map[$path])) {
-                foreach ($map->map[$path] as $name) {
+            if (isset($map->routes['map'][$path])) {
+                foreach ($map->routes['map'][$path] as $name) {
                     if (in_array($method, $map->routes['static'][$name]['methods'])) {
                         return Route::fromArray($map->routes['static'][$name]);
                     }
@@ -371,7 +408,7 @@ class Routes implements RouteMap, Matcher, Generator
     public function route(string $name): Route
     {
         $route = $this->routes['static'][$name]
-            ?? ($this->routes['dynamic'][$this->postionsMap[$name] ?? null] ?? null);
+            ?? ($this->routes['dynamic'][$name] ?? null);
 
         if ($route) {
             return Route::fromArray($route);
