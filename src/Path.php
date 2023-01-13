@@ -17,10 +17,10 @@ class Path implements \Stringable {
         foreach ($this->tokens as $token => $v) {
             if (is_int($token)) {
                 $replace[] = \Bermuda\Router\Attribute::wrap($v);
-                $search[] = $v;
+                $search[] = ":$v";
             } else {
                 $replace[] = \Bermuda\Router\Attribute::wrap($token);
-                $search[] = $token;
+                $search[] = ":$token";
             }
         }
 
