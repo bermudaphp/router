@@ -64,7 +64,7 @@
  ## Set attribute placeholder pattern
  
  ```php
- $routes->get('users.get, path('api/v1/client/name', ['name' => '[a-zA-Z]']), static function(ServerRequestInterface $request): ResponseInterface {
+ $routes->get('users.get, path('api/v1/client/:name', ['name' => '[a-zA-Z]']), static function(ServerRequestInterface $request): ResponseInterface {
      return get_client_by_name($request->getAttribute('name'));
  });
  ```
