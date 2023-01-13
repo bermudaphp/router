@@ -20,6 +20,10 @@
  
  call_user_func($route->getHandler(), $route->getAttributes()['name']);
  ```
+ ## Route path generation
+ ```php
+ echo $router->generate('home', ['name' => 'Jane']); // Output /hello/Jane
+ ```
  ## Usage with PSR-15
  
  ```php
@@ -48,7 +52,20 @@
 
  send($response)
  ```
+ ## Get current route data
  
+ ```php
+ class Handler implements RequestHandlerInterface
+ {
+    public function handle(ServerRequestInterface $request): ResponseInterface
+    {
+        $routeData = $request->getAttribute('Bermuda\Router\Middleware\RouteMiddleware')->toArray();
+        
+        dd($routeData) 
+    }
+ };
+ 
+ ```
  ## RouteMap HTTP Methods
  
  ```php
