@@ -244,19 +244,8 @@ class ChachedRouterBenchmark implements Benchmark
     public function run(): void
     {
         if (!$this->router) {
-            $this->router = Router::withDefaults();
-
-            $routes = $this->router->getRoutes();
-            $it = 1000;
-            while($it--) {
-                $routes->any($it+1,
-                    new Path('/path/{version}/api/{name}/21', ['version' => '\d', 'name' => 'product']),
-                    static fn() => ''
-                );
-            }
-
-            $routes->get('f22', new Path('/path/{version}/api/{name}/22', ['version' => '\d+', 'name' => 'product']), static fn() => '');
-            $this->router = $this->router->withRoutes($routes);
+            $this->router = Router::withDefaults()
+                ->withRoutes(Routes::createFromCache('chached_routes.php'));
         }
 
         $this->router->match('GET', '/path/25/api/product/22');
