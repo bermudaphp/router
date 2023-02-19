@@ -101,8 +101,8 @@ final class Route implements Arrayable, \ArrayAccess
             $route->setMethods(self::$requestMethods);
         }
 
-        if (!is_array($data['tokens'] ?? null)) {
-            $route->setTokens(self::$requestMethods);
+        if (empty($data['tokens']) || !is_array($data['tokens'])) {
+            $route->setTokens(self::$tokens);
         } elseif ($data['tokens'] !== []) {
             $route->setTokens($data['tokens']);
         }
