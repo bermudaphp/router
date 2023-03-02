@@ -6,7 +6,7 @@ final class Router
 {
     public function __construct(private Matcher  $matcher,
         private Generator $generator, private RouteMap $routes
-    ){
+    ) {
     }
     
     /**
@@ -54,5 +54,10 @@ final class Router
     public static function withDefaults(): self
     {
         return new self($routes = new Routes, $routes, $routes);
+    }
+    
+    public static function fromDnf((Matcher&Generator&RouteMap) $routes): self
+    {
+        return new self($routes, $routes, $routes);
     }
 }
