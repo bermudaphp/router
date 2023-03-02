@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router;
 
-use Bermuda\Arrayable;
+use Bermuda\Stdlib\Arrayable;
 use Fig\Http\Message\RequestMethodInterface;
 use InvalidArgumentException;
 
