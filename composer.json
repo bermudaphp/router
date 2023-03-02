@@ -10,7 +10,7 @@
     "files": ["src\\functions.php"]
   },
   "require": {
-    "php": "^8.0.0 || ^8.1",
+    "php": "^8.2",
     "bermudaphp/psr15factory": "^v2.0.3",
     "bermudaphp/var-export": "^v1.0",
     "bermudaphp/arrayable": "^v1.1.1",
