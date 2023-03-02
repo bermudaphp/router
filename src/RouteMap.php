@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router;
 
-use Bermuda\Arrayable;
+use Bermuda\Stdlib\Arrayable;
 use Bermuda\Router\Exception\RouterException;
 use IteratorAggregate;
 use RuntimeException;
