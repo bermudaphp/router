@@ -13,7 +13,7 @@
     "php": "^8.0|^8.1",
     "bermudaphp/psr15factory": "^v2.0.3",
     "bermudaphp/var-export": "^v1.0",
-    "bermudaphp/arrayable": "^v2.0",
+    "bermudaphp/arrayable": "^v1.0",
     "bermudaphp/config": "^1.1.1",
     "fig/http-message-util": "^v1.1.4"
   }
