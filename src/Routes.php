@@ -283,7 +283,7 @@ class Routes implements RouteMap, Matcher, Generator
             }
         }
 
-        return $path;
+        return empty($path) ? '/' : $path;
     }
 
     /**
