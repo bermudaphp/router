@@ -14,7 +14,7 @@
     "bermudaphp/psr15factory": "^v2.0.3",
     "bermudaphp/var-export": "^v1.0",
     "bermudaphp/arrayable": "^v1.0",
-    "bermudaphp/config": "^1.1.1",
+    "bermudaphp/config": "^1.2",
     "fig/http-message-util": "^v1.1.4"
   }
 }
