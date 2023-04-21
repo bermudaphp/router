@@ -108,6 +108,7 @@ class Routes implements RouteMap, Matcher, Generator, Cacheable
 
                     $path->addPrefix($this->prefix);
                 } else {
+                    $path = Path::normalize($path);
                     if ($this->tokens !== null) {
                         $path = new Path($path, $this->tokens);
                         $path->mergeTokens($this->tokens);
@@ -156,7 +157,9 @@ class Routes implements RouteMap, Matcher, Generator, Cacheable
         }
 
         $methods = array_map('strtoupper', $methods);
-
+        
+        if (is_string($path)) $path = Path::normalize($path);
+        
         $data = [
             'name' => $name,
             'path' => (string) $path,
