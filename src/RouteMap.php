@@ -123,18 +123,4 @@ interface RouteMap extends Arrayable, IteratorAggregate
      * @throws RuntimeException
      */
     public function resource(string|Resource $resource): RouteMap;
-
-    /**
-     * @param string $filename
-     * @param array|null $context
-     * @return RouteMap
-     */
-    public static function createFromCache(string $filename, array $context = null): RouteMap ;
-
-    /**
-     * @param string $filename
-     * @param callable|null $fileWriter
-     * @return void
-     */
-    public function cache(string $filename, callable $fileWriter = null): void ;
 }
