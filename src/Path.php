@@ -8,7 +8,7 @@ class Path implements \Stringable {
         string $path,
         private array $tokens
     ) {
-        $this->path = '/'.ltrim('\/', $path);
+        $this->path = static::normalize($path);
     }
 
     public function __toString()
@@ -27,6 +27,11 @@ class Path implements \Stringable {
         }
 
         return str_replace($search, $replace, $this->path);
+    }
+
+    public static function normalize(string $path): string
+    {
+        return '/'.ltrim('\/', $path);
     }
 
     /**
