@@ -31,7 +31,7 @@ class Path implements \Stringable {
 
     public static function normalize(string $path): string
     {
-        return '/'.ltrim('\/', $path);
+        return '/'.ltrim($path, '\/');
     }
 
     /**
