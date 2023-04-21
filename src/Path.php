@@ -3,10 +3,12 @@
 namespace Bermuda\Router;
 
 class Path implements \Stringable {
+    private string $path;
     public function __construct(
-        private string $path,
+        string $path,
         private array $tokens
     ) {
+        $this->path = '/'.ltrim('\/', $path);
     }
 
     public function __toString()
