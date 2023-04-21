@@ -11,7 +11,7 @@ use Bermuda\Router\Exception\MethodNotAllowedException;
 
 use function Bermuda\VarExport\export_array;
 
-class Routes implements RouteMap, Matcher, Generator
+class Routes implements RouteMap, Matcher, Generator, Cacheable
 {
     protected array $routes = [
         'static' => [],
