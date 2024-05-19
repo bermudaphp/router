@@ -2,53 +2,155 @@
 
 namespace Bermuda\Router;
 
-use RuntimeException;
-use InvalidArgumentException;
 use Bermuda\Router\Exception\RouterException;
 use Bermuda\Router\Exception\GeneratorException;
-use Bermuda\Router\Exception\RouteNotFoundException;
-use Bermuda\Router\Exception\MethodNotAllowedException;
-
 use function Bermuda\VarExport\export_array;
 
 class Routes implements RouteMap, Matcher, Generator
 {
-    protected array $routes = [
-        'static' => [],
-        'dynamic' => [],
-        'map' => [],
-    ];
+    use RouteCollector;
 
-    public static function createFromCache(string $filename, array $context = null): RouteMap
-    {
-        $routes = (static function() use ($filename, $context): array {
-            if ($context) extract($context);
-            return require_once $filename;
-        })();
+    /**
+     * @var RouteGroup[]
+     */
+    private array $groups = [];
 
-        $self = new static;
-        $self->routes = $routes;
-
-        return $self;
+    public function __construct(
+        protected readonly Tokenizer $tokenizer = new Tokenizer,
+    ) {
     }
 
-    public function cache(string $filename, callable $fileWriter = null): void
+    public function match(RouteMap $routes, string $uri, string $requestMethod):? MatchedRoute
     {
-        if (empty($this->routes['static']) && empty($this->routes['dynamic'])) {
-            throw new \LogicException('RouteMap is empty');
-        }
+        list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
 
-        foreach ($this->routes() as $n => $route) {
-            if (!isset($route['regexp'])) {
-                $route['regexp'] = $this->buildRegexp($route);
+        if (!$routes instanceof Routes) {
+            foreach ($routes as $route) {
+                $result = $this->matchRoute($route, $path, $requestMethod);
+                if ($result) return $result;
             }
 
-            isset($this->routes['static'][$n]) ?
-                $this->routes['static'][$n] = $route
-                : $this->routes['dynamic'][$n] = $route ;
+            return null;
         }
 
-        $content = export_array($this->routes);
+        foreach ($routes->groups as $group) {
+            if (str_starts_with($uri, $group->prefix)) {
+                foreach ($group as $route) {
+                    $result = $this->matchRoute($route, $path, $requestMethod);
+                    if ($result) return $result;
+                }
+            }
+        }
+
+        foreach ($routes->routes as $route) {
+            $result = $this->matchRoute($route, $path, $requestMethod);
+            if ($result) return $result;
+        }
+
+        return null;
+    }
+
+    public function getRoute(string $name):? RouteRecord
+    {
+        foreach ($this->getIterator() as $route) {
+            if ($route->name === $name) return $route;
+        }
+
+        return null;
+    }
+
+    /**
+     * @throws GeneratorException
+     */
+    public function generate(RouteMap $routes, string $name, array $params = []): string
+    {
+        $route = $routes->getRoute($name);
+
+        if (!$route) {
+            throw new GeneratorException('Route "' . $name . '" not found');
+        }
+
+        $path = '';
+        $segments = explode('/', $route->path);
+
+        foreach ($segments as $segment) {
+            if (!empty($segment)) {
+                if ($this->tokenizer->isToken($segment)) {
+                    list($id) = $this->tokenizer->parseToken($segment);
+                    if ($this->tokenizer->isRequired($segment) && !isset($params[$id])) {
+                        throw new GeneratorException('Missing required parameter "' . $id . '"');
+                    }
+
+                    if (!empty($param = $params[$id] ?? '')) {
+                        $path .= "/$param";
+                    }
+
+                    continue;
+                }
+
+
+                $path .= '/' . $segment;
+            }
+        }
+
+        return empty($path) ? '/' : $path;
+    }
+
+    /**
+     * @return \Generator<RouteRecord>
+     */
+    public function getIterator(): \Generator
+    {
+        foreach ($this->groups as $group) {
+            yield from $group;
+        }
+
+        foreach ($this->routes as $route) yield $route;
+    }
+
+    /**
+     * @throws RouterException
+     */
+    public function group(string $name, ?string $prefix = null): RouteGroup
+    {
+        if (!$prefix) {
+            if (!isset($this->groups[$name])) {
+                throw new RouterException('Group "' . $name . '" not found');
+            }
+
+            return $this->groups[$name];
+        }
+
+        return $this->groups[$name] = new RouteGroup($name, $prefix);
+    }
+
+    /**
+     * @throws ArrayExportException
+     */
+    public function cache(string $filename, callable $fileWriter = null): void
+    {
+        $routes = [];
+        foreach ($this->getIterator() as $route) {
+            $routeData = [
+                'name' => $route->name,
+                'path' => $this->tokenizer->setTokens($route->path, $route->tokens),
+                'methods' => $route->methods,
+                'handler' => $route->handler,
+                'regexp' => $this->buildRegexp($route)
+            ];
+
+            if ($this->tokenizer->hasTokens($route->path)) $routes['dynamic'][] = $routeData;
+            elseif (isset($routes['static'][$route->path])) {
+                if (isset($routes['static'][$route->path]['path'])) {
+                    $routes['static'][$route->path] = [$routes['static'][$route->path], $routeData];
+                } else {
+                    $routes['static'][$route->path][] = $routeData;
+                }
+            }
+            else $routes['static'][$route->path] = $routeData;
+        }
+
+        $content = export_array($routes);
 
         if ($fileWriter) {
             $fileWriter($filename, $content);
@@ -59,349 +161,177 @@ class Routes implements RouteMap, Matcher, Generator
     }
 
     /**
-     * @return \Generator<Route>
+     * @return static
      */
-    public function getIterator(): \Generator
+    public static function createFromCache(string $filename, array $context = null): RouteMap
     {
-        foreach ($this->routes() as $n => $d) yield $n => Route::fromArray($d);
+        return static::createFromArray((static function() use ($filename, $context): array {
+            if ($context) extract($context);
+            return require_once $filename;
+        })());
     }
 
-    private function routes(): array
+    private function buildRegexp(RouteRecord $route): string
     {
-        return array_merge($this->routes['static'], $this->routes['dynamic']);
-    }
-
-    /**
-     * @return Route[]
-     */
-    public function toArray(): array
-    {
-        return iterator_to_array($this);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function group(string $prefix, mixed $middleware = null, ?array $tokens = null, callable $callback = null): RouteMap
-    {
-        if ($callback === null) {
-            throw new InvalidArgumentException('The argument [ callback ] cannot be null');
-        }
-
-        $callback($map = new class($this, $prefix, $middleware, $tokens) extends Routes {
-            public function __construct(
-                private Routes $wrapped,
-                private string $prefix,
-                private mixed $middleware,
-                private ?array $tokens = null
-            ) {
-            }
-
-            protected function add(string $name, string|Path $path, mixed $handler,
-                                   array|string $methods = null, mixed $middleware = null): self
-            {
-
-                if ($path instanceof Path ) {
-                    if ($this->tokens !== null) {
-                        $path->mergeTokens($this->tokens);
-                    }
-
-                    $path->addPrefix($this->prefix);
-                } else {
-                    if ($this->tokens !== null) {
-                        $path = new Path($path, $this->tokens);
-                        $path->mergeTokens($this->tokens);
-                        $path->addPrefix($this->prefix);
-                    } else {
-                        $path = $this->prefix . $path;
-                    }
-                }
-
-                if ($this->middleware !== null) {
-                    if ($middleware === null) {
-                        $middleware = $this->middleware;
-                    } else {
-                        if (!is_array($middleware)) {
-                            $middleware = [$middleware];
-                        }
-
-                        if (is_array($this->middleware)) {
-                            $middleware = array_merge($this->middleware, $middleware);
-                        } else {
-                            array_unshift($middleware, $this->middleware);
-                        }
-                    }
-                }
-
-                $this->wrapped->add($name, $path, $handler, $methods, $middleware);
-                return $this;
-            }
-        });
-
-        return $this;
-    }
-
-    protected function add(string $name, string|Path $path, mixed $handler,
-        array|string $methods, mixed $middleware = null): self
-    {
-
-        if (isset($this->routes['static'][$name]) || isset($this->routes['dynamic'][$name])) {
-            throw new RouterException("Route with name [$name] alredy exists");
-        }
-
-        if (true === ($needConvertToArray = is_string($methods)) && str_contains($methods, '|')) {
-            $methods = explode('|', $methods);
-        } elseif ($needConvertToArray) {
-            $methods = [$methods];
-        }
-
-        $methods = array_map('strtoupper', $methods);
-
-        $data = [
-            'name' => $name,
-            'path' => (string) $path,
-            'handler' => $handler,
-            'methods' => $methods,
-        ];
-
-        if ($middleware != null) {
-            $data['middleware'] = $middleware;
-        }
-
-        if ($path instanceof Path) {
-            $data['tokens'] = $path->getTokens();
-            $path = (string) $path;
-        }
-
-        list($left, $right) = Attribute::getLimiters();
-
-        if (str_contains($path, $left) && str_contains($path, $right)) {
-            $this->routes['dynamic'][$name] = $data;
-        } else {
-            $this->routes['static'][$name] = $data;
-            if (isset($this->routes['map'][$path])) {
-                $this->routes['map'][$path][] = $name;
-            } else {
-                $this->routes['map'][$path] = [$name];
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function get(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'GET', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function post(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'POST', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function delete(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'DELETE', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function put(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'PUT', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function patch(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'PATCH', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function options(string $name, string|Path $path,
-        mixed $handler, mixed  $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, 'OPTIONS', $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function any(string $name, string|Path $path,
-        mixed $handler, array|string $methods = null,
-        mixed $middleware = null): RouteMap
-    {
-        return $this->add($name, $path, $handler, $methods ?? Route::$requestMethods, $middleware);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function generate(RouteMap $routes, string $name, array $attributes = []): string
-    {
-        $route = $routes->route($name);
-
-        $path = '';
-        $segments = explode('/', $route['path']);
-
-        foreach ($segments as $segment) {
-            if (!empty($segment)) {
-                if (Attribute::is($segment)) {
-                    $id = Attribute::trim($segment);
-                    if (!Attribute::isOptional($segment)) {
-                        if (!isset($attributes[$id])) {
-                            throw GeneratorException::create($id, $route['name']);
-                        }
-                    }
-                    if (!empty($attribute = $attributes[$id] ?? '')) {
-                        $path .= '/' . $attribute;
-                    }
-
-                    continue;
-                }
-
-                $path .= '/' . $segment;
-            }
-        }
-
-        return $path;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function match(RouteMap $map, string $requestMethod, string $uri): Route
-    {
-        $method = strtoupper($requestMethod);
-        $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
-        $path == '/' ?: $path = rtrim($path, '/');
-
-        if ($map instanceof self) {
-            if (isset($map->routes['map'][$path])) {
-                foreach ($map->routes['map'][$path] as $name) {
-                    if (in_array($method, $map->routes['static'][$name]['methods'])) {
-                        return Route::fromArray($map->routes['static'][$name]);
-                    }
-
-                    ($e = MethodNotAllowedException::make($path, $requestMethod))
-                        ->addAllowedMethods($map->routes['static'][$name]['methods']);
-                }
-            }
-
-            $routes = $map->routes['dynamic'];
-        }
-
-        foreach ($routes ?? $map as $route) {
-            if (preg_match($route['regexp'] ?? $this->buildRegexp($route), $path) === 1) {
-                if (in_array($method, $route['methods'])) {
-                    return $this->parseAttributes($route, $path);
-                }
-
-                ($e ?? $e = MethodNotAllowedException::make($path, $requestMethod))
-                    ->addAllowedMethods($route['methods']);
-            }
-        }
-
-        throw $e ?? RouteNotFoundException::forPath($path);
-    }
-
-    /**
-     * @param array $routeData
-     * @return string
-     */
-    private function buildRegexp(Route|array $routeData): string
-    {
-        if (empty($path = $routeData['path']) || $path == '/') {
+        if ($route->path === '' || $route->path === '/') {
             return '#^/$#';
         }
 
-        $pattern = '#^';
-        $segments = explode('/', $path);
-
-        foreach ($segments as $segment) {
+        $regexp = '#^';
+        foreach (explode('/', $route->path) as $segment) {
             if (!empty($segment)) {
-                if (Attribute::is($segment)) {
-                    $id = Attribute::trim($segment);
-                    $pattern .= Attribute::isOptional($segment)
-                        ? '(/('.(($routeData['tokens'][$id] ?? Route::$tokens[$id] ?? '.+')).'))?'
-                        : '/('.(($routeData['tokens'][$id] ?? Route::$tokens[$id] ?? '.+')).')';
+                if ($this->tokenizer->isToken($segment)) {
+                    list($id, $pattern) = $this->tokenizer->parseToken($segment);
+                    $pattern = $route->tokens[$id] ?? $pattern;
+                    if (!$pattern) $pattern = '/('.$route->tokens[$id] ?? '.+'.')';
+                    if (!$this->tokenizer->isRequired($segment)) $regexp .= "(/$pattern)?";
+                    else $regexp .= '/'.$pattern;
                 } else {
-                    $pattern .= '/'.$segment;
+                    $regexp .= '/'.$segment;
                 }
             }
         }
 
-        return $pattern . '/?$#';
+        return $regexp . '/?$#';
     }
 
-    private function parseAttributes(Route|array $route, string $path): Route
+    private function matchRoute(RouteRecord $route, string $path, string $requestMethod):? MatchedRoute
     {
-        $paths = explode('/', $path);
-        $segments = explode('/', $route['path']);
-
-        $attributes = [];
-        foreach ($segments as $i => $segment) {
-            if ($segment != ($paths[$i] ?? '')) {
-                $attributes[$s = Attribute::trim($segment)] = $paths[$i] ?? null;
+        $pattern = $this->buildRegexp($route);
+        if (preg_match($pattern, $path) === 1) {
+            if (in_array($requestMethod, $route->methods)) {
+                return $this->parseParams($route, $path);
             }
         }
-        
-        if (isset($paths[$i+1])) {
-            $attributes[$s] = $attributes[$s]
+
+        return null;
+    }
+
+    protected function preparePathAndMethod(string $uri, string $requestMethod): array
+    {
+        $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
+        return [$path == '/' ?: rtrim($path, '/'), strtoupper($requestMethod)];
+    }
+
+    private function parseParams(RouteRecord $route, string $path): MatchedRoute
+    {
+        $paths = explode('/', $path);
+        $segments = explode('/', $route->path);
+
+        $params = [];
+        foreach ($segments as $i => $segment) {
+            if ($segment != ($paths[$i] ?? '')) {
+                list($id) = $this->tokenizer->parseToken($segment);
+                $params[$id] = $paths[$i] ?? $route->defaults[$id] ?? null;
+                if (is_numeric($params[$id])) $params[$id] = $params[$id] + 0;
+            }
+        }
+
+        if (isset($i) && isset($paths[$i+1]) && isset($id)) {
+            $params[$id] = $params[$id]
                 . '/' . implode('/', array_slice($paths, $i + 1));
         }
 
-        if (is_array($route)) {
-            $route['attributes'] = $attributes;
-            return Route::fromArray($route);
-        }
-
-        return $route->withAttributes($attributes);
+        return new MatchedRoute(
+            $route->name,
+            $route->path,
+            $route->handler,
+            $route->methods,
+            $params,
+        );
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function resource(Resource|string $resource): RouteMap
+    public static function createFromArray(array $routes): static
     {
-        if (!is_subclass_of($resource, Resource::class)) {
-            throw new RuntimeException(sprintf('Resource must be subclass of %s', Resource::class));
-        }
+        return new class($routes) extends Routes
+        {
+            public function __construct(private readonly array $elements)
+            {
+                parent::__construct();
+            }
 
-        return $resource::register($this);
-    }
+            public function match(RouteMap $routes, string $uri, string $requestMethod): ?MatchedRoute
+            {
+                list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
 
-    /**
-     * @inheritDoc
-     */
-    public function route(string $name): Route
-    {
-        $route = $this->routes['static'][$name]
-            ?? ($this->routes['dynamic'][$name] ?? null);
+                if (!$routes instanceof $this) {
+                    foreach ($routes as $route) {
+                        $result = parent::match($route, $uri, $requestMethod);
+                        if ($result) return $result;
+                    }
 
-        if ($route) {
-            return Route::fromArray($route);
-        }
+                    return null;
+                }
 
-        throw RouteNotFoundException::forName($name);
+                if (isset($routes->elements['static'][$path])) {
+                    if (isset($routes->elements['static'][$path]['path'])) {
+                        if (in_array($requestMethod, $routes->elements['static'][$path]['methods'])) {
+                            return MatchedRoute::fromArray($routes->elements['static'][$path]);
+                        };
+                    } else {
+                        foreach ($routes->elements['static'][$path] as $routeData) {
+                            if (in_array($requestMethod, $routeData['methods'])) {
+                                return MatchedRoute::fromArray($routeData);
+                            };
+                        }
+                    }
+                }
+
+                $parseParams = static function(array $route, string $path) use ($routes): MatchedRoute {
+                    $paths = explode('/', $path);
+                    $segments = explode('/', $route['path']);
+
+                    $route['params'] = [];
+                    foreach ($segments as $i => $segment) {
+                        if ($segment != ($paths[$i] ?? '')) {
+                            list($id) = $routes->tokenizer->parseToken($segment);
+                            $route['params'][$id] = $paths[$i] ?? null;
+                            if (is_numeric($route['params'][$id])) $route['params'][$id] = $route['params'][$id] + 0;
+                        }
+                    }
+
+                    if (isset($i) && isset($paths[$i+1]) && isset($id)) {
+                        $route['params'][$id] = $route['params'][$id]
+                            . '/' . implode('/', array_slice($paths, $i + 1));
+                    }
+
+                    return MatchedRoute::fromArray($route);
+                };
+
+                foreach ($routes->elements['dynamic'] as $route) {
+                    if (preg_match($route['regexp'], $path) === 1) {
+                        if (in_array($requestMethod, $route['methods'])) {
+                            return $parseParams($route, $path);
+                        }
+                    }
+                }
+
+                if (!empty($routes->routes)) return parent::match($routes, $uri, $requestMethod);
+                return null;
+            }
+            public function getRoute(string $name): ?RouteRecord
+            {
+                foreach (array_merge($this->elements['static'], $this->elements['dynamic']) as $routeData) {
+                    if ($routeData['name'] === $name) {
+                        return RouteRecord::fromArray($routeData);
+                    }
+                }
+
+                if (!empty($this->routes)) return parent::getRoute($name);
+                return null;
+            }
+
+            /**
+             * @return \Generator<RouteRecord>
+             */
+            public function getIterator(): \Generator
+            {
+                foreach (array_merge($this->elements['static'], $this->elements['dynamic']) as $routeData) {
+                    yield RouteRecord::fromArray($routeData);
+                }
+
+                if ($this->routes !== []) yield from parent::getIterator();
+            }
+        };
     }
 }
