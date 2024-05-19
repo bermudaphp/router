@@ -19,7 +19,7 @@ final class RouteRecord
     {
         $this->routeData = [
             'name' => $name,
-            'path' => preg_replace('!/+!', '/',"/$path"),
+            'path' => normalize_path($path),
             'handler' => [$handler],
             'tokens' => ['id' => '\d+'],
             'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
