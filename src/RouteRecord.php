@@ -88,9 +88,7 @@ final class RouteRecord
         return $route;
     }
 
-
     /**
-     * @internal
      * @return array{
      *     handler: mixed,
      *     path: string,
