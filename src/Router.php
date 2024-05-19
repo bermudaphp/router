@@ -21,7 +21,7 @@ final class Router
      */
     public function generate(string $name, array $params = []): string
     {
-        return $this->generator->generate($this->routes, $name, $attributes);
+        return $this->generator->generate($this->routes, $name, $params);
     }
 
     public function withRoutes(RouteMap $routes): self
