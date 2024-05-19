@@ -13,7 +13,19 @@ namespace Bermuda\Router;
  */
 final class RouteRecord
 {
+    /**
+     * @var array{
+     *      handler: mixed,
+     *      path: string,
+     *      name: string,
+     *      group: ?string,
+     *      methods: array<string>,
+     *      tokens: array
+     *  }
+     */
     private array $routeData;
+
+    public const id = '\d+'
 
     public function __construct(string $name, string $path, mixed $handler)
     {
@@ -21,15 +33,20 @@ final class RouteRecord
             'name' => $name,
             'path' => normalize_path($path),
             'handler' => [$handler],
-            'tokens' => ['id' => '\d+'],
+            'tokens' => ['id' => self::id],
             'methods' => ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
             'group' => null,
             'defaults' => null
         ];
     }
 
-    public function setToken(string $name, string $pattern): self
+    public function setToken(string $name, ?string $pattern): self
     {
+        if (!$pattern) {
+            unset($this->tokens[$name]);
+            return $this;
+        }
+        
         $this->routeData['tokens'][$name] = $pattern;
         return $this;
     }
@@ -43,21 +60,35 @@ final class RouteRecord
         return null;
     }
 
-    public function setDefaults(array $defaults): self
+    public function setDefaults(?array $defaults): self
     {
         $this->routeData['defaults'] = $defaults;
         return $this;
     }
 
-    public function setGroup(string $name): self
+    public function setGroup(?string $name): self
     {
         $this->routeData['group'] = $name;
         return $this;
     }
 
-    public function setMiddleware(array $middleware): self
+    public function setMiddleware(?array $middleware): self
     {
+        if (!$middleware) {
+            $this->routeData['handler'] = array_pop($this->routeData['handler']);
+            return $this;
+        }
+        
         $this->routeData['handler'] = [...$middleware, array_pop($this->routeData['handler'])];
+        return $this;
+    }
+    
+    public function addMiddleware(mixed $middleware): self
+    {
+        $handler = array_pop($this->routeData['handler']);
+        $this->routeData['handler'][] = $middleware;
+        $this->routeData['handler'][] = $handler;
+        
         return $this;
     }
 
@@ -87,7 +118,7 @@ final class RouteRecord
 
         return $route;
     }
-
+    
     /**
      * @return array{
      *     handler: mixed,
