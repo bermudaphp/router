@@ -2,6 +2,8 @@
 
 namespace Bermuda\Router;
 
+use function \Bermuda\Router\normalize_path;
+
 /**
  * @property-read string $name
  * @property-read string $path
