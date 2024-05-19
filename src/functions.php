@@ -2,12 +2,14 @@
 
 namespace Bermuda\Router;
 
-/**
- * @param string $path
- * @param array $tokens
- * @return Path
- */
-function path(string $path, array $tokens): Path
+function normalize_path(string $path): string
 {
-    return new Path($path, $tokens);
+    return preg_replace('!/+!', '/', replace_slashes("/$path"));
 }
+
+function replace_slashes(string $path): string
+{
+    return str_replace('\\', '/', $path);
+}
+
+
