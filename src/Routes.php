@@ -186,7 +186,7 @@ class Routes implements RouteMap, Matcher, Generator
                     $pattern = $route->tokens[$id] ?? $pattern;
                     if (!$pattern) {
                         $pattern = $route->tokens[$id] ?? '.+';
-                        $pattern = "/($pattern)";
+                        $pattern = "($pattern)";
                     }
                     if (!$this->tokenizer->isRequired($segment)) $regexp .= "(/$pattern)?";
                     else $regexp .= '/'.$pattern;
