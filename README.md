@@ -7,8 +7,10 @@
  ## Usage
 
  ```php
- $router = Router::withDefaults();
- $router->getRoutes()->get('home', '/hello/{name}', static function(string $name): void {
+ $routes = new Routes;
+ $router = new Router($routes, $routes, $routes);
+
+ $routes->get('home', '/hello/{name}', static function(string $name): void {
      echo sprintf('Hello, %s!', $name)
  });
  
