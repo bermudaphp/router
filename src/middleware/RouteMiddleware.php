@@ -29,7 +29,7 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
         return $this->process($request, new class implements RequestHandlerInterface {
             public function handle(ServerRequestInterface $req): ResponseInterface
             {
-                ExceptionFactory::emptyHandler()->throw();
+                throw new \RuntimeException('Empty request handler');
             }
         });
     }
@@ -43,7 +43,7 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
             ->process($request, $handler);
     }
 
-    public function setRouteAttribute(ServerRequestInterface $request): ServerRequestInterface
+    public function setRequestAttribute(ServerRequestInterface $request): ServerRequestInterface
     {
         return $request->withAttribute(RouteMiddleware::class, $this);
     }
