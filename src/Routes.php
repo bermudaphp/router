@@ -185,8 +185,8 @@ class Routes implements RouteMap, Matcher, Generator
                     list($id, $pattern) = $this->tokenizer->parseToken($segment);
                     $pattern = $route->tokens[$id] ?? $pattern;
                     if (!$pattern) {
-                        $placeholder = $route->tokens[$id] ?? '.+';
-                        $pattern = "/($placeholder)";
+                        $pattern = $route->tokens[$id] ?? '.+';
+                        $pattern = "/($pattern)";
                     }
                     if (!$this->tokenizer->isRequired($segment)) $regexp .= "(/$pattern)?";
                     else $regexp .= '/'.$pattern;
