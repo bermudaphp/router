@@ -2,8 +2,9 @@
 
 namespace Bermuda\Router\Middleware;
 
-use Bermuda\Router\Route;
 use Bermuda\Router\Router;
+use Bermuda\Router\MatchedRoute;
+use Bermuda\Router\Exception\RouteNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,32 +13,36 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
 final class MatchRouteMiddleware implements MiddlewareInterface
 {
-    private static ?Route $route = null;
-    public function __construct(private MiddlewareFactoryInterface $middlewareFactory, private Router $router)
-    {
+    public function __construct(
+        private readonly MiddlewareFactoryInterface $middlewareFactory, 
+        private readonly Router $router,
+    ) {
     }
 
     /**
-     * @inheritDoc
+     * @throws RouteNotFoundException
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        self::$route = $this->router->match($request->getMethod(), (string) $request->getUri());
-
-        foreach (self::$route->getAttributes() as $name => $value) {
-            $request = $request->withAttribute($name, $value);
+        $route = $this->router->match((string) $request->getUri(), $request->getMethod());
+        if (!$route) {
+            throw new RouteNotFoundException('Route not found.', (string) $request->getUri(), $request->getMethod());
         }
 
-        $request = RouteMiddleware::modify($this->middlewareFactory, $request, self::$route);
-
-        return $handler->handle($request);
+        $this->router->setCurrentRoute($route);
+        
+        foreach ($route->params as $name => $value) {
+            $request = $request->withAttribute($name, $value);
+        }
+        
+        return $handler->handle((new RouteMiddleware($this->middlewareFactory, $route))->setRequestAttribute($request));
     }
 
     /**
-     * @return Route|null
+     * @return MatchedRoute|null
      */
-    public static function getRoute():? Route
+    public function getRoute():? MatchedRoute
     {
-        return self::$route;
+        return $this->router->currentRoute();
     }
 }
