@@ -162,102 +162,12 @@ If you are using a parent-context-bound closure (the use construct) as a route h
  Currently, the caching implementation does not allow caching routes using object instances and callback functions based on object instances.
 
  # Benchmark
- ```php
- final class Tester
-{
-    public const iterationCount = 'it_count';
-    public const memoryUsage = 'memory_usage';
-    public const memoryPeakUsage = 'memory_peak_usage';
-    public const execTime = 'exec_time';
-
-    /**
-     * @param Benchmark $benchmark
-     * @param int $iterationCount
-     * @return array
-     */
-    public function test(Benchmark $benchmark, int $iterationCount = 10000): array
-    {
-        set_time_limit(1000);
-        $result = [
-            self::iterationCount => $iterationCount,
-        ];
-
-        $start = microtime(true);
-        $memory = 0;
-
-        while ($iterationCount--) {
-            $benchmark->run();
-            $memory += memory_get_usage(true);
-        }
-
-        $humanize = static function($size) {
-            $unit=['b','kb','mb','gb','tb','pb'];
-            return @round($size/pow(1024,($i=floor(log($size,1024)))),2).' '.$unit[$i];
-        };
-
-        $result[self::execTime] = microtime(true) - $start;
-        $result[self::memoryUsage] = $humanize(round($memory/$result[self::iterationCount]));
-        $result[self::memoryPeakUsage] = $humanize(round(memory_get_peak_usage(true)));
-
-        return $result;
-    }
-}
-
-class RouterBenchmark implements Benchmark
-{
-    public $router = null;
-    public function run(): void
-    {
-        if (!$this->router) {
-            $this->router = Router::withDefaults();
-
-            $routes = $this->router->getRoutes();
-            $it = 1000;
-            while($it--) {
-                $routes->any($it+1,
-                    new Path('/path/{version}/api/{name}/21', ['version' => '\d', 'name' => 'product']),
-                    static fn() => ''
-                );
-            }
-
-            $routes->get('f22', new Path('/path/{version}/api/{name}/22', ['version' => '\d+', 'name' => 'product']), static fn() => '');
-            $this->router = $this->router->withRoutes($routes);
-        }
-
-        $this->router->match('GET', '/path/25/api/product/22');
-    }
-}
-
-dd((new Tester())->test(new RouterBenchmark()));
-
-^ array:4 [▼
-  "it_count" => 10000
-  "exec_time" => 62.266676139832
-  "memory_usage" => "6 mb"
-  "memory_peak_usage" => "6 mb"
-]
-
-class ChachedRouterBenchmark implements Benchmark
-{
-    public $router = null;
-    public function run(): void
-    {
-        if (!$this->router) {
-            $routes = Routes::createFromCache('chached_routes.php');
-            $this->router = new Router($routes, $routes, $routes);
-        }
-
-        $this->router->match('GET', '/path/25/api/product/22');
-    }
-}
-
-dd((new Tester())->test(new ChachedRouterBenchmark()));
-
-^ array:4 [▼
-  "it_count" => 10000
-  "exec_time" => 3.1582560539246
-  "memory_usage" => "10 mb"
-  "memory_peak_usage" => "10 mb"
-]
+ ```
++---------------------------+-------------------+------------+-----------------+-------+--------------+-------------------+
+| benchmark                 | registered_routes | cache_mode | exec_time       | its   | memory_usage | memory_peak_usage |
++---------------------------+-------------------+------------+-----------------+-------+--------------+-------------------+
+| Benchmark\RouterBenchmark | 1001              | disable    | 32.680938005447 | 10000 | 16 MB        | 16 MB             |
+| Benchmark\RouterBenchmark | 1001              | enable     | 1.298574924469  | 10000 | 16 MB        | 16 MB             |
++---------------------------+-------------------+------------+-----------------+-------+--------------+-------------------+
  ````
 
