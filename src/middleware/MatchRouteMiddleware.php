@@ -43,6 +43,6 @@ final class MatchRouteMiddleware implements MiddlewareInterface
      */
     public function getRoute():? MatchedRoute
     {
-        return $this->router->currentRoute();
+        return $this->router->getCurrentRoute();
     }
 }
