@@ -9,6 +9,10 @@ use Psr\Http\Message\ServerRequestInterface;
 
 final class DispatchRouteMiddleware implements MiddlewareInterface
 {
+    public function __construct(private ?RequestHandlerInterface $fallbackHandler = null)
+    {
+    }
+
     /**
      * @inheritDoc
      */
@@ -18,6 +22,13 @@ final class DispatchRouteMiddleware implements MiddlewareInterface
             return $route->process($request, $handler);
         }
 
+        if ($this->fallbackHandler) return $this->fallbackHandler->handle($request);
+
         return $handler->handle($request);
+    }
+
+    public function setFallbackHandler(?RequestHandlerInterface $fallbackHandler): void
+    {
+        $this->fallbackHandler = $fallbackHandler;
     }
 }
