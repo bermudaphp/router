@@ -2,23 +2,22 @@
  ```bash
  composer require bermudaphp/router
  ````
- ## Relevance of documentation
- This documentation is relevant for all versions starting from 3.1
  ## Usage
 
  ```php
- $router = Router::withDefaults();
- $router->getRoutes()->get('home', '/hello/{name}', static function(string $name): void {
+ $routes = new Routes;
+ $router = Router::fromDnf($routes);
+
+ $routes->get('home', '/hello/[name]', static function(string $name): void {
      echo sprintf('Hello, %s!', $name)
  });
  
- try {
-    $route = $router->match($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
- } catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException) {
-    // handle exception logics
+ $route = $router->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+ if (!route) {
+     // route not found logics
  }
  
- call_user_func($route->getHandler(), $route->getAttributes()['name']);
+ call_user_func($route->handler, $route->params['name']);
  ```
  ## Route path generation
  ```php
