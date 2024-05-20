@@ -17,7 +17,8 @@ class Routes implements RouteMap, Matcher, Generator
 
     public function __construct(
         protected readonly Tokenizer $tokenizer = new Tokenizer,
-    ) {
+    )
+    {
     }
 
     public function match(RouteMap $routes, string $uri, string $requestMethod):? MatchedRoute
@@ -82,7 +83,7 @@ class Routes implements RouteMap, Matcher, Generator
                     }
 
                     if (!empty($param = $params[$id] ?? '')) {
-                        $param = \rawurlencode($param);
+                        $param = rawurlencode($param);
                         $path .= "/$param";
                     }
 
@@ -249,9 +250,14 @@ class Routes implements RouteMap, Matcher, Generator
     {
         return new class($routes) extends Routes
         {
-            public function __construct(private readonly array $elements)
+            private array $staticRoutes;
+            private array $dynamicRoutes;
+            
+            public function __construct(array $elements)
             {
                 parent::__construct();
+                $this->staticRoutes = $elements['static'] ?? [];
+                $this->dynamicRoutes = $elements['dynamic'] ?? [];
             }
 
             public function match(RouteMap $routes, string $uri, string $requestMethod): ?MatchedRoute
@@ -267,13 +273,13 @@ class Routes implements RouteMap, Matcher, Generator
                     return null;
                 }
 
-                if (isset($routes->elements['static'][$path])) {
-                    if (isset($routes->elements['static'][$path]['path'])) {
-                        if (in_array($requestMethod, $routes->elements['static'][$path]['methods'])) {
-                            return MatchedRoute::fromArray($routes->elements['static'][$path]);
+                if (isset($routes->staticRoutes[$path])) {
+                    if (isset($routes->staticRoutes[$path]['path'])) {
+                        if (in_array($requestMethod, $routes->staticRoutes[$path]['methods'])) {
+                            return MatchedRoute::fromArray($routes->staticRoutes[$path]);
                         };
                     } else {
-                        foreach ($routes->elements['static'][$path] as $routeData) {
+                        foreach ($routes->staticRoutes[$path] as $routeData) {
                             if (in_array($requestMethod, $routeData['methods'])) {
                                 return MatchedRoute::fromArray($routeData);
                             };
@@ -302,7 +308,7 @@ class Routes implements RouteMap, Matcher, Generator
                     return MatchedRoute::fromArray($route);
                 };
 
-                foreach ($routes->elements['dynamic'] as $route) {
+                foreach ($routes->dynamicRoutes as $route) {
                     if (preg_match($route['regexp'], $path) === 1) {
                         if (in_array($requestMethod, $route['methods'])) {
                             return $parseParams($route, $path);
@@ -315,7 +321,13 @@ class Routes implements RouteMap, Matcher, Generator
             }
             public function getRoute(string $name): ?RouteRecord
             {
-                foreach (array_merge($this->elements['static'], $this->elements['dynamic']) as $routeData) {
+                foreach ($this->staticRoutes as $routeData) {
+                    if ($routeData['name'] === $name) {
+                        return RouteRecord::fromArray($routeData);
+                    }
+                }
+
+                foreach ($this->dynamicRoutes as $routeData) {
                     if ($routeData['name'] === $name) {
                         return RouteRecord::fromArray($routeData);
                     }
@@ -330,7 +342,11 @@ class Routes implements RouteMap, Matcher, Generator
              */
             public function getIterator(): \Generator
             {
-                foreach (array_merge($this->elements['static'], $this->elements['dynamic']) as $routeData) {
+                foreach ($this->staticRoutes as $routeData) {
+                    yield RouteRecord::fromArray($routeData);
+                }
+
+                foreach ($this->dynamicRoutes as $routeData) {
                     yield RouteRecord::fromArray($routeData);
                 }
 
