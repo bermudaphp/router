@@ -82,6 +82,7 @@ class Routes implements RouteMap, Matcher, Generator
                     }
 
                     if (!empty($param = $params[$id] ?? '')) {
+                        $param = \rawurlencode($param);
                         $path .= "/$param";
                     }
 
