@@ -16,5 +16,8 @@
     "bermudaphp/arrayable": "^v1.1.1",
     "bermudaphp/config": "^1.1.1",
     "fig/http-message-util": "^v1.1.4"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5"
   }
 }
