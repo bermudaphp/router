@@ -13,9 +13,8 @@ final class RouteGroup implements \IteratorAggregate
     public function __construct(
         public readonly string $name,
         public readonly string $prefix,
-        mixed $middleware = null,
+        private readonly RouteMap $routeMap,
     ) {
-        if ($middleware) $this->setMiddleware($middleware);
     }
 
     public function setMiddleware(array $middleware): self
@@ -37,6 +36,7 @@ final class RouteGroup implements \IteratorAggregate
     public function addRoute(RouteRecord $route): self
     {
         $this->routes[$route->name] = $route;
+        $this->routeMap->addRoute($route);
         $this->updateRoutes();
 
         return $this;
