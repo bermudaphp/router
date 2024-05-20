@@ -26,7 +26,7 @@ final class MatchRouteMiddleware implements MiddlewareInterface
     {
         $route = $this->router->match((string) $request->getUri(), $request->getMethod());
         if (!$route) {
-            throw new RouteNotFoundException('Route not found.', (string) $request->getUri(), $request->getMethod());
+            throw new RouteNotFoundException((string) $request->getUri(), $request->getMethod());
         }
 
         $this->router->setCurrentRoute($route);
