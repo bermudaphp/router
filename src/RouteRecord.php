@@ -55,7 +55,7 @@ final class RouteRecord
     {
         if (isset($this->routeData[$name])) {
             if ($name === 'handler') {
-                return count($this->routeData['handler']) > 1 ?
+                return \count($this->routeData['handler']) > 1 ?
                     $this->routeData['handler'] : $this->routeData['handler'][0];
             }
             
