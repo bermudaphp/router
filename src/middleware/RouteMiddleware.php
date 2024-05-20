@@ -15,23 +15,10 @@ use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
  */
 final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
-    public function __construct(private MiddlewareFactoryInterface $middlewareFactory, private Route $route)
-    {
-    }
-
-    /**
-     * @param string $name
-     * @param array $arguments
-     * @return mixed
-     * @throws \BadMethodCallException
-     */
-    public function __call(string $name, array $arguments)
-    {
-        try {
-            return $this->route->{$name}(...$arguments);
-        } catch (\Throwable) {
-            throw new \BadMethodCallException('Bad method call: '. $name);
-        }
+    public function __construct(
+        private readonly MiddlewareFactoryInterface $middlewareFactory, 
+        public readonly MatchedRoute $route
+    ) {
     }
 
     /**
@@ -52,18 +39,12 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->middlewareFactory->make($this->route->getHandler())
+        return $this->middlewareFactory->make($this->route->handler)
             ->process($request, $handler);
     }
 
-    /**
-     * @param MiddlewareFactoryInterface $middlewareFactory
-     * @param ServerRequestInterface $request
-     * @param Route $route
-     * @return ServerRequestInterface
-     */
-    public static function modify(MiddlewareFactoryInterface $middlewareFactory, ServerRequestInterface $request, Route $route): ServerRequestInterface
+    public function setRouteAttribute(ServerRequestInterface $request): ServerRequestInterface
     {
-        return $request->withAttribute(self::class, new self($middlewareFactory, $route));
+        return $request->withAttribute(RouteMiddleware::class, $this);
     }
 }
