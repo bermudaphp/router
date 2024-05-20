@@ -4,6 +4,8 @@ namespace Bermuda\Router;
 
 final class Router
 {
+    private ?MatchedRoute $currentRoute = null;
+    
     public function __construct(
         private Matcher   $matcher,
         private Generator $generator, 
@@ -31,18 +33,23 @@ final class Router
         
         return $copy;
     }
+
+    public function setCurrentRoute(MatchedRoute $route): self
+    {
+        $this->currentRoute = $route;
+        return $this;
+    }
+
+    public function getCurrentRoute():? MatchedRoute
+    {
+        return $this->currentRoute;
+    }
      
-    /**
-     * @return RouteMap
-     */
     public function getRoutes(): RouteMap
     {
         return clone $this->routes;
     }
 
-    /**
-     * @return static
-     */
     public static function withDefaults(): self
     {
         return new self($routes = new Routes, $routes, $routes);
