@@ -99,18 +99,6 @@ class Routes implements RouteMap, Matcher, Generator
     }
 
     /**
-     * @return \Generator<RouteRecord>
-     */
-    public function getIterator(): \Generator
-    {
-        foreach ($this->groups as $group) {
-            yield from $group;
-        }
-
-        foreach ($this->routes as $route) yield $route;
-    }
-
-    /**
      * @throws RouterException
      */
     public function group(string $name, ?string $prefix = null): RouteGroup
@@ -123,7 +111,7 @@ class Routes implements RouteMap, Matcher, Generator
             return $this->groups[$name];
         }
 
-        return $this->groups[$name] = new RouteGroup($name, $prefix);
+        return $this->groups[$name] = new RouteGroup($name, $prefix, $this);
     }
 
     /**
