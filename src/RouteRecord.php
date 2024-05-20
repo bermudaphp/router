@@ -54,6 +54,11 @@ final class RouteRecord
     public function __get(string $name)
     {
         if (isset($this->routeData[$name])) {
+            if ($name === 'handler') {
+                return count($this->routeData['handler']) > 1 ?
+                    $this->routeData['handler'] : $this->routeData['handler'][0];
+            }
+            
             return $this->routeData[$name];
         }
 
