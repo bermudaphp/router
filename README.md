@@ -10,7 +10,7 @@
 
  $routes->get('home', '/hello/[name]', static function(string $name): void {
      echo sprintf('Hello, %s!', $name)
- });
+ }); 
  
  $route = $router->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
  if (!route) {
@@ -21,7 +21,7 @@
  ```
  ## Route path generation
  ```php
- echo $router->generate('home', ['name' => 'Jane']); // Output /hello/Jane
+ echo $router->generate('home', ['name' => 'Jane Doe']); // Output /hello/Jane%20Doe
  ```
  ## Usage with PSR-15
  
