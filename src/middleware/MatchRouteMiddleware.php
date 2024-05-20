@@ -4,7 +4,6 @@ namespace Bermuda\Router\Middleware;
 
 use Bermuda\Router\Router;
 use Bermuda\Router\MatchedRoute;
-use Bermuda\Router\Exception\RouteNotFoundException;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -20,13 +19,13 @@ final class MatchRouteMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @throws RouteNotFoundException
+     * @inheritDoc
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $route = $this->router->match((string) $request->getUri(), $request->getMethod());
         if (!$route) {
-            throw new RouteNotFoundException((string) $request->getUri(), $request->getMethod());
+            return $handler->handle($request);
         }
 
         $this->router->setCurrentRoute($route);
