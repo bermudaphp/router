@@ -28,7 +28,7 @@
  ```php
  
  $pipeline = new \Bermuda\Pipeline\Pipeline();
- $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($containerInterface, $responseFactoryInterface);
+ $factory = new \Bermuda\MiddlewareFactory\MiddlewareFactory($container, $responseFactory);
  
  class Handler implements RequestHandlerInterface
  {
@@ -38,16 +38,13 @@
     }
  };
  
- $router->get('home', '/{name}', Handler::class);
+ $router->get('home', '/hello/[name:[a-z]]', Handler::class);
  
  $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
- $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class));
+ $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class)
+     ->setFallbackHandler($container->get(Middleware\FallbackHandler::class)));
   
- try {
-    $response = $pipeline->handle($request);
- } catch(Exception\RouteNotFoundException|Exception\MethodNotAllowedException) {
-    // handle exception logics
- }
+ $response = $pipeline->handle($request);
 
  send($response)
  ```
@@ -58,38 +55,41 @@
  {
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $routeData = $request->getAttribute('Bermuda\Router\Middleware\RouteMiddleware')->toArray();
-        
-        dd($routeData) 
+        $route = $request->getAttribute('Bermuda\Router\Middleware\RouteMiddleware')->route; // MatchedRoute instance
     }
- };
- 
+ }; 
  ```
  ## RouteMap HTTP Methods
  
  ```php
- $routes->get(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->post(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->patch(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->put(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->delete(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->options(string $name, string|Path $path, mixed $handler, ?array $middleware = null);
- $routes->any(string $name, string|Path $path, mixed $handler, string|array $methods = null, ?array $middleware = null);
+ $routes->get(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->post(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->patch(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->put(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->delete(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->options(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->head(string $name, string $path, mixed $handler): RouteRecord ;
+ $routes->any(string $name, string $path, mixed $handler): RouteRecord ;
  ```
  
  ## Set attribute placeholder pattern
  
  ```php
- $routes->get('users.get, path('api/v1/client/:name', ['name' => '[a-zA-Z]']), static function(ServerRequestInterface $request): ResponseInterface {
-     return get_client_by_name($request->getAttribute('name'));
+ $routes->get('users.get, '/api/v1/users/[id:[a-zA-Z]]', static function(ServerRequestInterface $request): ResponseInterface {
+     return findUser($request->getAttribute('id'));
  });
+
+ alternative:
+ $routes->get('users.get, '/api/v1/users/[id]', static function(ServerRequestInterface $request): ResponseInterface {
+     return findUserById($request->getAttribute('id'));
+ })->setToken('id', '[a-zA-Z]');
  ```
  ## Optional attribute
  
  ```php
- $routes->get('users.get, 'api/v1/user/?{id}', static function(ServerRequestInterface $request): ResponseInterface {
+ $routes->get('users.get, '/api/v1/users/[?id]', static function(ServerRequestInterface $request): ResponseInterface {
      if (($id = $request->getAttribute('id')) !== null) {
-         return get_user_by_id($id);
+         return findUserById($id);
      }
      
      return get_all_users();
@@ -100,40 +100,23 @@
  
  ````
  id: \d+
- action: (create|read|update|delete)
- any: .*
  ````
  
- Other placeholders passed to path as a string without being explicitly defined via `path(tokes: $tokens)` will match the pattern `.*`
+ Other placeholders passed to path as a string without being explicitly defined will match the pattern `.*`
   
  ## Routes Group
  
  ```php
- $routes->group('/admin', callback: static function(RouteMap $routes)
- {
-    $routes->get('index', '/', $handler);
-    $routes->get('users', '/users', $handler);
-    $routes->post('add.user', '/add/user', $handler);
- });
- 
- or
- 
- $routes->group('/admin', $middleware, $tokens, static function(RouteMap $routes)
- {
-    $routes->get('index', '/', $handler);
-    $routes->get('users', '/users', $handler);
-    $routes->post('user.add', '/add/user', $handler);
- });
+ $group = $routes->group(name: 'api', prifix: '/api'); // set routes group
+
+ $group->get('users.get, 'users/[?id]', GetUserHandler::class);
+ $group->post(user.create, 'users', CreateUserHandler::class);
+
+ $group = $routes->group('api') // get routes group from name
+ $group->setMiddleware(GuardMiddleware::class) // set middleware for all routes in group
+ $group->setTokens(['id' => '[a-zA-Z]']) // set tokens for all routes in group
  ```
- 
-## Middleware
- 
-```php
-$routes->get($name, $path, $handler, MyMiddleware::class);
-or
-$routes->get($name, $path, $handler, [FirstMiddleware::class, SecondMiddleware::class]);
-```
-See: [https://github.com/bermudaphp/psr15factory](https://github.com/bermudaphp/psr15factory)
+
 ## Cache
  
 Once all routes are registered in the route map and they will no longer be changed. Call the $routes->cache method to cache the route map in a php file. Then use the `Routes::createFromCache('/path/to/cached/routes/filename.php')` method to create a map instance with preloaded routes.
