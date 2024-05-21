@@ -27,8 +27,9 @@ final class DispatchRouteMiddleware implements MiddlewareInterface
         return $handler->handle($request);
     }
 
-    public function setFallbackHandler(?RequestHandlerInterface $fallbackHandler): void
+    public function setFallbackHandler(?RequestHandlerInterface $fallbackHandler): self
     {
         $this->fallbackHandler = $fallbackHandler;
+        return $this;
     }
 }
