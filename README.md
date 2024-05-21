@@ -42,7 +42,7 @@
  
  $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
  $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class)
-     ->setFallbackHandler($container->get(Middleware\FallbackHandler::class)));
+     ->setFallbackHandler($container->get(Middleware\RouteNotFoundHandler::class)));
   
  $response = $pipeline->handle($request);
 
