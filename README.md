@@ -5,6 +5,8 @@
  ## Usage
 
  ```php
+ use Bermuda\Router\Routes;
+
  $routes = new Routes;
  $router = Router::fromDnf($routes);
 
@@ -40,9 +42,9 @@
  
  $router->get('home', '/hello/[name:[a-z]]', Handler::class);
  
- $pipeline->pipe($factory->make(Middleware\MatchRouteMiddleware::class));
- $pipeline->pipe($factory->make(Middleware\DispatchRouteMiddleware::class)
-     ->setFallbackHandler($container->get(Middleware\RouteNotFoundHandler::class)));
+ $pipeline->pipe($factory->make(Bermuda\Router\Middleware\MatchRouteMiddleware::class));
+ $pipeline->pipe($factory->make(Bermuda\Router\Middleware\DispatchRouteMiddleware::class)
+     ->setFallbackHandler($container->get(Bermuda\Router\Middleware\RouteNotFoundHandler::class)));
   
  $response = $pipeline->handle($request);
 
