@@ -8,7 +8,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class FallbackHandler implements RequestHandlerInterface
+final class RouteNotFoundHandler implements RequestHandlerInterface
 {
     public function __construct(
         private readonly ResponseFactoryInterface $responseFactory,
