@@ -135,7 +135,7 @@ If you are using a parent-context-bound closure (the use construct) as a route h
 ```php
  $app = new App;
  $repository = new UserRepository;
- $routes->get('user.get', '/user/{id}', static function(int $id) use ($app, $repository): ResponseInterface {
+ $routes->get('user.get', '/user/[id]', static function(int $id) use ($app, $repository): ResponseInterface {
     return $app->respond(200, $repository->findById($id));
  });
 
