@@ -2,9 +2,7 @@
 
 namespace Bermuda\Router;
 
-use IteratorAggregate;
-
-interface RouteMap extends IteratorAggregate
+interface RouteMap extends \IteratorAggregate
 {
     public function getRoute(string $name): ?RouteRecord;
 
@@ -23,6 +21,14 @@ interface RouteMap extends IteratorAggregate
     public function head(string $name, string $path, mixed $handler): RouteRecord;
 
     public function options(string $name, string $path, mixed $handler): RouteRecord;
+    
+    public function any(string $name, string $path, mixed $handler): RouteRecord;
+
+    /**
+     * @throws Exception\RouterException;
+     */
+    public function group(string $name, ?string $prefix = null): RouteGroup ;
+   
 
     /**
      * @return \Traversable<RouteRecord>
