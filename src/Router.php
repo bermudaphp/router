@@ -4,24 +4,32 @@ namespace Bermuda\Router;
 
 final class Router
 {
-    public function __construct(
-        private Matcher  $matcher,
-        private Generator $generator, 
-        private RouteMap $routes
-    ) {
+    public function __construct(private Matcher  $matcher,
+        private Generator $generator, private RouteMap $routes
+    ){
     }
     
-    public function match(string $uri, string $requestMethod):? MatchedRoute
+    /**
+     * @param string $requestMethod
+     * @param string $uri
+     * @throws Exception\RouteNotFoundException
+     * @throws Exception\MethodNotAllowedException
+     */
+    public function match(string $requestMethod, string $uri): Route
     {
-        return $this->matcher->match($this->routes, $uri, $requestMethod);
+        return $this->matcher->match($this->routes, $requestMethod, $uri);
     }
 
     /**
+     * @param string $name
+     * @param array $attributes
+     * @return string
      * @throws Exception\GeneratorException
+     * @throws Exception\RouteNotFoundException
      */
-    public function generate(string $name, array $params = []): string
+    public function generate(string $name, array $attributes = []): string
     {
-        return $this->generator->generate($this->routes, $name, $params);
+        return $this->generator->generate($this->routes, $name, $attributes);
     }
 
     public function withRoutes(RouteMap $routes): self
