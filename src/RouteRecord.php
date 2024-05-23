@@ -25,7 +25,7 @@ final class RouteRecord
      */
     private array $routeData;
 
-    public const id = '\d+'
+    public const id = '\d+';
 
     public function __construct(string $name, string $path, mixed $handler)
     {
