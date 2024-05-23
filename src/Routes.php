@@ -217,7 +217,8 @@ class Routes implements RouteMap, Matcher, Generator
         foreach ($segments as $i => $segment) {
             if ($segment != ($paths[$i] ?? '')) {
                 list($id) = $this->tokenizer->parseToken($segment);
-                $params[$id] = $paths[$i] ?? $route->defaults[$id] ?? null;
+                if (empty($paths[$i])) $params[$id] = $route->defaults[$id] ?? null;
+                else $params[$id] = $paths[$i];
                 if (is_numeric($params[$id])) $params[$id] = $params[$id] + 0;
             }
         }
