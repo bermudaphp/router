@@ -203,7 +203,9 @@ class Routes implements RouteMap, Matcher, Generator
     protected function preparePathAndMethod(string $uri, string $requestMethod): array
     {
         $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
-        return [$path == '/' ?: rtrim($path, '/'), strtoupper($requestMethod)];
+        $path == '/' ?: rtrim($path, '/');
+            
+        return [$path, strtoupper($requestMethod)];
     }
 
     private function parseParams(RouteRecord $route, string $path): MatchedRoute
