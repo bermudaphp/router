@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router\Middleware;
 
-use Bermuda\Router\Route;
+use Bermuda\Router\MatchedRoute;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
