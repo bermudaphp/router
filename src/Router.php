@@ -55,7 +55,7 @@ final class Router
         return new self($routes = new Routes, $routes, $routes);
     }
     
-    public static function fromDnf((Matcher&Generator&RouteMap) $routes): self
+    public static function fromDnf(Matcher&Generator&RouteMap $routes): self
     {
         return new self($routes, $routes, $routes);
     }
