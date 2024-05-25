@@ -22,6 +22,7 @@ namespace Bermuda\Router;
          */
         public readonly ?array $middleware = null,
         public readonly ?string $group = null,
+        public readonly ?int $priority = 0,
         public readonly ?array $defaults = null,
     ) {
         if (is_string($methods)) {
