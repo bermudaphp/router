@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router;
 
-interface RouteMap extends \IteratorAggregate
+interface RouteMap extends Cacheable, \IteratorAggregate
 {
     public function getRoute(string $name): ?RouteRecord;
 
