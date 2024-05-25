@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router;
 
-#[Attribute(\Attribute::TARGET_CLASS)] class Route
+#[\Attribute(\Attribute::TARGET_CLASS)] class Route
 {
     /**
      * @var string[]
