@@ -10,9 +10,11 @@
  $routes = new Routes;
  $router = Router::fromDnf($routes);
 
- $routes->get('home', '/hello/[name]', static function(string $name): void {
-     echo sprintf('Hello, %s!', $name)
- }); 
+ $routes->addRoute(
+     RouteRecord::get('home', '/hello/[name]', static function(string $name): void {
+         echo sprintf('Hello, %s!', $name)
+     })
+ ); 
  
  $route = $router->match($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
  if (!route) {
@@ -41,6 +43,10 @@
  };
  
  $router->get('home', '/hello/[name:[a-z]]', Handler::class);
+
+ $routes->addRoute(
+     RouteRecord::get('home', '/hello/[name:[a-z]]', Handler::class)
+ ); 
  
  $pipeline->pipe($factory->make(Bermuda\Router\Middleware\MatchRouteMiddleware::class));
  $pipeline->pipe($factory->make(Bermuda\Router\Middleware\DispatchRouteMiddleware::class)
@@ -61,17 +67,16 @@
     }
  }; 
  ```
- ## RouteMap HTTP Methods
+ ## RouteRecord HTTP verbs helpers
  
  ```php
- $routes->get(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->post(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->patch(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->put(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->delete(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->options(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->head(string $name, string $path, mixed $handler): RouteRecord ;
- $routes->any(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::get(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::post(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::patch(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::put(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::delete(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::options(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::head(string $name, string $path, mixed $handler): RouteRecord ;
  ```
  
  ## Set attribute placeholder pattern
@@ -89,34 +94,37 @@
  ## Optional attribute
  
  ```php
- $routes->get('users.get, '/api/v1/users/[?id]', static function(ServerRequestInterface $request): ResponseInterface {
+ $routes->addRoute(RouteRecord::get('users.get, '/api/v1/users/[?id]', static function(ServerRequestInterface $request): ResponseInterface {
      if (($id = $request->getAttribute('id')) !== null) {
          return findUserById($id);
      }
      
      return get_all_users();
- });
+ }));
  ```
  
  ## Predefined placeholders
  
  ````
  id: \d+
+ any: .*
  ````
  
- Other placeholders passed to path as a string without being explicitly defined will match the pattern `.*`
+ Other placeholders passed to path as a string without being explicitly defined will match the pattern `.+`
   
  ## Routes Group
  
  ```php
  $group = $routes->group(name: 'api', prifix: '/api'); // set routes group
 
- $group->get('users.get, 'users/[?id]', GetUserHandler::class);
- $group->post(user.create, 'users', CreateUserHandler::class);
-
- $group = $routes->group('api') // get routes group from name
  $group->setMiddleware(GuardMiddleware::class) // set middleware for all routes in group
  $group->setTokens(['id' => '[a-zA-Z]']) // set tokens for all routes in group
+
+ $group->addRoute(RouteRecord::get('users.get, 'users/[?id]', GetUserHandler::class));
+ $group->addRoute(RouteRecord::post(user.create, 'users', CreateUserHandler::class));
+
+ $group = $routes->group('api') // get routes group from name
+ 
  ```
 
 ## Cache
@@ -135,9 +143,9 @@ If you are using a parent-context-bound closure (the use construct) as a route h
 ```php
  $app = new App;
  $repository = new UserRepository;
- $routes->get('user.get', '/users/[id]', static function(ServerRequest $request) use ($app, $repository): ResponseInterface {
+ $routes->addRoute(RouteRecord::get('user.get', '/users/[id]', static function(ServerRequest $request) use ($app, $repository): ResponseInterface {
     return $app->respond(200, $repository->findById($request->getAttribute('id')));
- });
+ }));
 
  $routes->cache('path/to/cached/routes/file.php');
  $routes = Routes::createFromCache('path/to/cached/routes/file.php', compact('app', 'repository'));
