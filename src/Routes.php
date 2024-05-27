@@ -13,15 +13,14 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @var RouteGroup[]
      */
-    private array $groups = [];
+    protected array $groups = [];
 
     public function __construct(
         protected readonly Tokenizer $tokenizer = new Tokenizer,
-    )
-    {
+    ) {
     }
 
-    public function match(RouteMap $routes, string $uri, string $requestMethod):? MatchedRoute
+    public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
     {
         list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
 
@@ -188,7 +187,7 @@ class Routes implements RouteMap, Matcher, Generator
         return $regexp . '/?$#';
     }
 
-    private function matchRoute(RouteRecord $route, string $path, string $requestMethod):? MatchedRoute
+    private function matchRoute(RouteRecord $route, string $path, string $requestMethod):? RouteRecord
     {
         $pattern = $this->buildRegexp($route);
         if (preg_match($pattern, $path) === 1) {
@@ -208,7 +207,7 @@ class Routes implements RouteMap, Matcher, Generator
         return [$path, strtoupper($requestMethod)];
     }
 
-    private function parseParams(RouteRecord $route, string $path): MatchedRoute
+    private function parseParams(RouteRecord $route, string $path): RouteRecord
     {
         $paths = explode('/', $path);
         $segments = explode('/', $route->path);
@@ -228,13 +227,7 @@ class Routes implements RouteMap, Matcher, Generator
                 . '/' . implode('/', array_slice($paths, $i + 1));
         }
 
-        return new MatchedRoute(
-            $route->name,
-            $route->path,
-            $route->handler,
-            $route->methods,
-            $params,
-        );
+        return $route->withParams($params);
     }
 
     public static function createFromArray(array $routes): static
@@ -251,7 +244,7 @@ class Routes implements RouteMap, Matcher, Generator
                 $this->dynamicRoutes = $elements['dynamic'] ?? [];
             }
 
-            public function match(RouteMap $routes, string $uri, string $requestMethod): ?MatchedRoute
+            public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
             {
                 list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
 
@@ -267,18 +260,18 @@ class Routes implements RouteMap, Matcher, Generator
                 if (isset($routes->staticRoutes[$path])) {
                     if (isset($routes->staticRoutes[$path]['path'])) {
                         if (in_array($requestMethod, $routes->staticRoutes[$path]['methods'])) {
-                            return MatchedRoute::fromArray($routes->staticRoutes[$path]);
+                            return RouteRecord::fromArray($routes->staticRoutes[$path]);
                         };
                     } else {
                         foreach ($routes->staticRoutes[$path] as $routeData) {
                             if (in_array($requestMethod, $routeData['methods'])) {
-                                return MatchedRoute::fromArray($routeData);
+                                return RouteRecord::fromArray($routeData);
                             };
                         }
                     }
                 }
 
-                $parseParams = static function(array $route, string $path) use ($routes): MatchedRoute {
+                $parseParams = static function(array $route, string $path) use ($routes): RouteRecord {
                     $paths = explode('/', $path);
                     $segments = explode('/', $route['path']);
 
@@ -296,7 +289,7 @@ class Routes implements RouteMap, Matcher, Generator
                             . '/' . implode('/', array_slice($paths, $i + 1));
                     }
 
-                    return MatchedRoute::fromArray($route);
+                    return RouteRecord::fromArray($route);
                 };
 
                 foreach ($routes->dynamicRoutes as $route) {

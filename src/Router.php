@@ -4,7 +4,7 @@ namespace Bermuda\Router;
 
 final class Router
 {
-    private ?MatchedRoute $currentRoute = null;
+    private ?RouteRecord $currentRoute = null;
     
     public function __construct(
         private Matcher   $matcher,
@@ -13,7 +13,7 @@ final class Router
     ) {
     }
     
-    public function match(string $uri, string $requestMethod):? MatchedRoute
+    public function match(string $uri, string $requestMethod):? RouteRecord
     {
         return $this->matcher->match($this->routes, $uri, $requestMethod);
     }
@@ -34,13 +34,13 @@ final class Router
         return $copy;
     }
 
-    public function setCurrentRoute(MatchedRoute $route): self
+    public function setCurrentRoute(RouteRecord $route): self
     {
         $this->currentRoute = $route;
         return $this;
     }
 
-    public function getCurrentRoute():? MatchedRoute
+    public function getCurrentRoute():? RouteRecord
     {
         return $this->currentRoute;
     }

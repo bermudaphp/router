@@ -20,43 +20,44 @@ final class RouteGroup implements \IteratorAggregate
     public function setMiddleware(array $middleware): self
     {
         $this->middleware = $middleware;
-        $this->updateRoutes();
+        return $this;
+    }
 
+    public function setNamePrefix(string $prefix): self
+    {
+        $this->namePrefix = $prefix;
         return $this;
     }
 
     public function setTokens(array $tokens): self
     {
         $this->tokens = $tokens;
-        $this->updateRoutes();
-
         return $this;
     }
 
     public function addRoute(RouteRecord $route): self
     {
-        $this->routes[$route->name] = $route;
-        $this->routeMap->addRoute($route);
-        $this->updateRoutes();
+        $routeData = $route->toArray();
+
+        if ($this->middleware !== []) {
+            $routeData['handler'] = [...$this->middleware, ...$routeData['handler']];
+        }
+
+        if ($this->tokens !== []) {
+            $routeData['tokens'] = array_merge($routeData['tokens'], $this->tokens);
+        }
+
+        if ($this->namePrefix !== null) {
+            $routeData['name'] = $this->namePrefix . $routeData['name'];
+        }
+
+        $routeData['path'] = "$this->prefix/${$routeData['path']}";
+
+        $this->routeMap->addRoute(
+            $this->routes[$routeData['name']]
+                = RouteRecord::fromArray($routeData)
+        );
 
         return $this;
-    }
-
-    private function createRoute(string $name, string $path, mixed $handler): RouteRecord
-    {
-        $this->addRoute($route = new RouteRecord($name, "/$this->prefix/$path", $handler));
-        return $route;
-    }
-
-    private function updateRoutes(): void
-    {
-        if ($this->middleware === [] && !$this->namePrefix && $this->tokens === []) return;
-
-        foreach ($this->routes as $route) {
-            if ($this->middleware !== []) $route->setMiddleware($this->middleware);
-            if ($this->tokens !== []) {
-                foreach ($this->tokens as $token => $pattern) $route->setToken($token, $pattern);
-            }
-        }
     }
 }
