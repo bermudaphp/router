@@ -3,7 +3,7 @@
 namespace Bermuda\Router\Middleware;
 
 use Bermuda\Router\Router;
-use Bermuda\Router\MatchedRoute;
+use Bermuda\Router\RouteRecord;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -38,9 +38,9 @@ final class MatchRouteMiddleware implements MiddlewareInterface
     }
 
     /**
-     * @return MatchedRoute|null
+     * @return RouteRecord|null
      */
-    public function getRoute():? MatchedRoute
+    public function getRoute():? RouteRecord
     {
         return $this->router->getCurrentRoute();
     }
