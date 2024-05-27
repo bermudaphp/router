@@ -2,7 +2,7 @@
 
 namespace Bermuda\Router\Middleware;
 
-use Bermuda\Router\MatchedRoute;
+use Bermuda\Router\RouteRecord;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -17,7 +17,7 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
 {
     public function __construct(
         private readonly MiddlewareFactoryInterface $middlewareFactory, 
-        public readonly MatchedRoute $route
+        public readonly RouteRecord $route
     ) {
     }
 
