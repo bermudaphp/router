@@ -82,14 +82,14 @@
  ## Set attribute placeholder pattern
  
  ```php
- $routes->get('users.get, '/api/v1/users/[id:[a-zA-Z]]', static function(ServerRequestInterface $request): ResponseInterface {
+ $routes->addRoute(RouteRecord::get('users.get, '/api/v1/users/[id:[a-zA-Z]]', static function(ServerRequestInterface $request): ResponseInterface {
      return findUser($request->getAttribute('id'));
- });
+ }));
 
  alternative:
- $routes->get('users.get, '/api/v1/users/[id]', static function(ServerRequestInterface $request): ResponseInterface {
+ $routes->addRoute(RouteRecord::get('users.get, '/api/v1/users/[id]', static function(ServerRequestInterface $request): ResponseInterface {
      return findUserById($request->getAttribute('id'));
- })->setToken('id', '[a-zA-Z]');
+ })->withToken('id', '[a-zA-Z]'));
  ```
  ## Optional attribute
  
