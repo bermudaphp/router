@@ -74,7 +74,7 @@ final class RouteRecord
     public function withPrefix(string $prefix): self
     {
         $route = clone $this;
-        $route->routeData['path'] = normalize_path("$prefix/${$route->routeData['path']}");
+        $route->routeData['path'] = normalize_path("$prefix/{$route->routeData['path']}");
 
         return $route;
     }
