@@ -3,6 +3,7 @@
 namespace Bermuda\Router\Benchmark;
 
 use Bermuda\Router\Routes;
+use Bermuda\Router\RouteRecord;
 
 final class RouterBenchmark
 {
@@ -15,10 +16,10 @@ final class RouterBenchmark
         } else {
             $this->routes = new Routes();
             for ($it = 0; 1000 > $it; $it++) {
-                $this->routes->any(bin2hex(random_bytes(3)), '/path/[version:v\d+]/api/[endpoint:a-z]', '');
+                $this->routes->addRoute(new RouteRecord(bin2hex(random_bytes(3)), '/path/[version:v\d+]/api/[endpoint:a-z]', '');
             }
 
-            $this->routes->get('matched', '/path/[version:v\d+]/api/[endpoint:[a-z]+]/[id]', '');
+            $this->routes->addRoute(RouteRecord::get('matched', '/path/[version:v\d+]/api/[endpoint:[a-z]+]/[id]', ''));
         }
     }
 
