@@ -1,6 +1,6 @@
 <?php
 
-namespace Bermuda\Router\Attributes;
+namespace Bermuda\Router\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS|\Attribute::TARGET_METHOD)] class Route
 {
