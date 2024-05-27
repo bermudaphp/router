@@ -117,7 +117,7 @@
  ```php
  $group = $routes->group(name: 'api', prifix: '/api'); // set routes group
 
- $group->setMiddleware(GuardMiddleware::class) // set middleware for all routes in group
+ $group->setMiddleware([GuardMiddleware::class]) // set middleware for all routes in group
  $group->setTokens(['id' => '[a-zA-Z]']) // set tokens for all routes in group
 
  $group->addRoute(RouteRecord::get('users.get, 'users/[?id]', GetUserHandler::class));
