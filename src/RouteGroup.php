@@ -51,7 +51,7 @@ final class RouteGroup implements \IteratorAggregate
             $routeData['name'] = $this->namePrefix . $routeData['name'];
         }
 
-        $routeData['path'] = "$this->prefix/${$routeData['path']}";
+        $routeData['path'] = "$this->prefix/{$routeData['path']}";
 
         $this->routeMap->addRoute(
             $this->routes[$routeData['name']]
