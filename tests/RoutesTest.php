@@ -17,12 +17,10 @@ class RoutesTest extends TestCase
         $this->routes = new Routes();
         $group = $this->routes->group('api', '/api/v1');
 
-        $group->get('users.get', '/users/[?id]', '');
-        $group->get('posts.get', '/posts/[id]', '');
-        $group->get('videos.get', '/videos/[?id]', '');
-        $group->post('users.create', '/users', '');
-
-        $group->setTokens(['id' => '\d+']);
+        $group->addRoute(RouteRecord::get('users.get', '/users/[?id]', ''));
+        $group->addRoute(RouteRecord::get('posts.get', '/posts/[id]', ''));
+        $group->addRoute(RouteRecord::get('videos.get', '/videos/[?id]', ''));
+        $group->addRoute(RouteRecord::post('users.create', '/users', ''));
     }
 
     public function testMatchedRouteWithoutTokens(): void
