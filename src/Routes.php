@@ -22,6 +22,11 @@ class Routes implements RouteMap, Matcher, Generator
 
     public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
     {
+        if ($routes instanceof Matcher) {
+            $route = $routes->match($routes, $uri, $requestMethod);
+            if ($route) return $route;
+        }
+
         list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
 
         if (!$routes instanceof Routes) {
