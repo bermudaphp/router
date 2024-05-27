@@ -6,7 +6,8 @@
       "Bermuda\\Router\\": "src/",
       "Bermuda\\Router\\Middleware\\": "src/middleware/",
       "Bermuda\\Router\\Exception\\": "src/exception/",
-      "Bermuda\\Router\\Attributes\\": "src/attributes/"
+      "Bermuda\\Router\\Attributes\\": "src/attributes/",
+      "Bermuda\\Router\\Tests\\": "tests/"
     },
     "files": ["src\\functions.php"]
   },
