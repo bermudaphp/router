@@ -10,9 +10,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Bermuda\Router\Exception\ExceptionFactory;
 use Bermuda\MiddlewareFactory\MiddlewareFactoryInterface;
 
-/**
- * @mixin Route
- */
 final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterface
 {
     public function __construct(
