@@ -168,6 +168,7 @@ final class RouteRecord
         if (isset($routeData['defaults'])) $route->routeData['defaults'] = $routeData['defaults'];
         if (isset($routeData['group'])) $route->routeData['group'] = $routeData['group'];
         if (isset($routeData['tokens'])) $route->routeData['tokens'] = $routeData['tokens'];
+        if (isset($routeData['params'])) $route->routeData['params'] = $routeData['params'];
 
         return $route;
     }
