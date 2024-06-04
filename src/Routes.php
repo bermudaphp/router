@@ -130,7 +130,8 @@ class Routes implements RouteMap, Matcher, Generator
                 'path' => $this->tokenizer->setTokens($route->path, $route->tokens),
                 'methods' => $route->methods,
                 'handler' => $route->handler,
-                'regexp' => $this->buildRegexp($route)
+                'regexp' => $this->buildRegexp($route),
+                'defaults' => $route->defaults
             ];
 
             if ($this->tokenizer->hasTokens($route->path)) $routes['dynamic'][] = $routeData;
