@@ -173,14 +173,14 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         $regexp = '#^';
-        foreach (explode('/', $route->path) as $segment) {
+        foreach ($this->tokenizer->splitPath($route->path) as $segment) {
             if (!empty($segment)) {
                 if ($this->tokenizer->isToken($segment)) {
                     list($id, $pattern) = $this->tokenizer->parseToken($segment);
                     $pattern = $route->tokens[$id] ?? $pattern;
                     if (!$pattern) {
                         $pattern = $route->tokens[$id] ?? '.+';
-                        $pattern = "($pattern)";
+                        $pattern = "$pattern";
                     }
                     if (!$this->tokenizer->isRequired($segment)) $regexp .= "(/$pattern)?";
                     else $regexp .= '/'.$pattern;
