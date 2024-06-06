@@ -30,13 +30,8 @@ final class Tokenizer
 
     public function hasTokens(string $routePath): bool
     {
-        $segments = explode('/', $routePath);
-        foreach ($segments as $segment) {
-            if (empty($segment)) continue;
-            if ($this->isToken($segment)) return true;
-        }
-
-        return false;
+        return strpos($routePath, $this->limiters[0]) !== false
+            && strpos($routePath, $this->limiters[1]) !== false;
     }
 
     public function setTokens(string $routePath, array $tokens): string
@@ -63,5 +58,36 @@ final class Tokenizer
         if (str_contains($token, ':')) return explode(':', $token, 2);
 
         return [$token, null];
+    }
+
+    public function splitPath(string $path): array
+    {
+        $path = trim($path, '/');
+        $segments = [];
+
+        $chars = str_split($path);
+        $ignoreSlash = false;
+
+        $i = 0;
+
+        foreach ($chars as $pos => $char) {
+            isset($segments[$i]) ?: $segments[$i] = '';
+            if ($char === '/') {
+                if ($ignoreSlash) {
+                    $segments[$i] .= $char;
+                    continue;
+                } elseif ($chars[$pos+1] === $this->limiters[0]) $ignoreSlash = true;
+
+                $i++;
+                continue;
+            } elseif ($char === $this->limiters[0]) {
+                $ignoreSlash = true;
+            } elseif ($char === $this->limiters[1]) {
+                $ignoreSlash = false;
+            }
+            $segments[$i] .= $char;
+        }
+
+        return $segments;
     }
 }
