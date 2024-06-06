@@ -76,7 +76,7 @@ class Routes implements RouteMap, Matcher, Generator
         }
 
         $path = '';
-        $segments = explode('/', $route->path);
+        $segments = $this->tokenizer->splitPath($route->path);
 
         foreach ($segments as $segment) {
             if (!empty($segment)) {
@@ -178,10 +178,7 @@ class Routes implements RouteMap, Matcher, Generator
                 if ($this->tokenizer->isToken($segment)) {
                     list($id, $pattern) = $this->tokenizer->parseToken($segment);
                     $pattern = $route->tokens[$id] ?? $pattern;
-                    if (!$pattern) {
-                        $pattern = $route->tokens[$id] ?? '.+';
-                        $pattern = "$pattern";
-                    }
+                    if (!$pattern) $pattern = $route->tokens[$id] ?? '.+';
                     if (!$this->tokenizer->isRequired($segment)) $regexp .= "(/$pattern)?";
                     else $regexp .= '/'.$pattern;
                 } else {
@@ -216,7 +213,7 @@ class Routes implements RouteMap, Matcher, Generator
     private function parseParams(RouteRecord $route, string $path): RouteRecord
     {
         $paths = explode('/', $path);
-        $segments = explode('/', $route->path);
+        $segments = $this->tokenizer->splitPath($route->path);
 
         $params = [];
         foreach ($segments as $i => $segment) {
@@ -279,7 +276,7 @@ class Routes implements RouteMap, Matcher, Generator
 
                 $parseParams = static function(array $route, string $path) use ($routes): RouteRecord {
                     $paths = explode('/', $path);
-                    $segments = explode('/', $route['path']);
+                    $segments = $routes->tokenizer->splitPath('/', $route['path']);
 
                     $route['params'] = [];
                     foreach ($segments as $i => $segment) {
