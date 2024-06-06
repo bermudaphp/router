@@ -276,7 +276,8 @@ class Routes implements RouteMap, Matcher, Generator
 
                 $parseParams = static function(array $route, string $path) use ($routes): RouteRecord {
                     $paths = explode('/', $path);
-                    $segments = $routes->tokenizer->splitPath('/', $route['path']);
+                    if (empty($paths[0])) array_shift($paths);
+                    $segments = $routes->tokenizer->splitPath($route['path']);
 
                     $route['params'] = [];
                     foreach ($segments as $i => $segment) {
