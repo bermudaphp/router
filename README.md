@@ -42,8 +42,6 @@
     }
  };
  
- $router->get('home', '/hello/[name:[a-z]]', Handler::class);
-
  $routes->addRoute(
      RouteRecord::get('home', '/hello/[name:[a-z]]', Handler::class)
  ); 
