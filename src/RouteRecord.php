@@ -255,7 +255,7 @@ final class RouteRecord
             'name' => $name,
             'path' => $path,
             'handler' => $handler,
-            'methods' => ['options'],
+            'methods' => ['OPTIONS'],
         ]);
     }
 }
