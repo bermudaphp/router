@@ -16,8 +16,7 @@
     "bermudaphp/psr15factory": "^v2.0.3",
     "bermudaphp/var-export": "^v1.0",
     "bermudaphp/config": "^1.2",
-    "fig/http-message-util": "^v1.1.4",
-    "bermudaphp/http": "^1.0.2"
+    "fig/http-message-util": "^v1.1.4"
   },
   "require-dev": {
     "phpunit/phpunit": "^10.5"
