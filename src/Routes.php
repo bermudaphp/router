@@ -22,7 +22,7 @@ class Routes implements RouteMap, Matcher, Generator
 
     public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
     {
-        if ($routes instanceof Matcher) {
+        if ($routes instanceof Matcher && !$routes instanceof Routes) {
             $route = $routes->match($routes, $uri, $requestMethod);
             if ($route) return $route;
         }
