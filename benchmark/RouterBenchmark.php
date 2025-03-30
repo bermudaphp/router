@@ -16,7 +16,7 @@ final class RouterBenchmark
         } else {
             $this->routes = new Routes();
             for ($it = 0; 1000 > $it; $it++) {
-                $this->routes->addRoute(new RouteRecord(bin2hex(random_bytes(3)), '/path/[version:v\d+]/api/[endpoint:a-z]', '');
+                $this->routes->addRoute(new RouteRecord(bin2hex(random_bytes(3)), '/path/[version:v\d+]/api/[endpoint:a-z]', ''));
             }
 
             $this->routes->addRoute(RouteRecord::get('matched', '/path/[version:v\d+]/api/[endpoint:[a-z]+]/[id]', ''));
