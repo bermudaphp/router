@@ -121,7 +121,7 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @throws ArrayExportException
      */
-    public function cache(string $filename, callable $fileWriter = null): void
+    public function cache(string $filename, ?callable $fileWriter = null): void
     {
         $routes = [];
         foreach ($this->getIterator() as $route) {
@@ -158,7 +158,7 @@ class Routes implements RouteMap, Matcher, Generator
     /**
      * @return static
      */
-    public static function createFromCache(string $filename, array $context = null): RouteMap
+    public static function createFromCache(string $filename, ?array $context = null): RouteMap
     {
         return static::createFromArray((static function() use ($filename, $context): array {
             if ($context) extract($context);
