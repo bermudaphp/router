@@ -5,7 +5,7 @@ namespace Bermuda\Router\Tests;
 use function PHPUnit\Framework\assertNotNull;
 use function PHPUnit\Framework\assertNull;
 
-class CachedRouterTest extends RoutesTest
+class CachedRoutesTest extends RoutesTest
 {
     protected function setUp(): void
     {
