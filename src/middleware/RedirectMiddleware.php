@@ -14,7 +14,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
     public function __construct(
         private string $location, 
         private ResponseFactoryInterface $responseFactory,
-        callable $verifier = null,
+        ?callable $verifier = null,
         private bool $permanent = false)
     {
         if ($verifier !== null) {
@@ -60,7 +60,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
      * @param bool $permanent
      * @return callable
      */
-    public static function lazy(string $location, callable $verifier, bool $permanent = false): callable
+    public static function lazy(string $location, callable $verifier, ?bool $permanent = false): callable
     {
         return static fn(ContainerInterface $container): MiddlewareInterface => 
             new RedirectMiddleware($location, $container->get(ResponseFactoryInterface::class), $verifier, $permanent);
