@@ -34,7 +34,7 @@ final class RedirectMiddleware implements MiddlewareInterface, RequestHandlerInt
         return $handler->handle($request);
     }
     
-    public function permanent(bool $permanent = null): bool
+    public function permanent(?bool $permanent = null): bool
     {
         if ($permanent !== null) {
             $old = $this->permanent;
