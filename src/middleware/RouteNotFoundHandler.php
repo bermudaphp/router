@@ -1,6 +1,6 @@
 <?php
 
-namespace Berumda\Router\Middleware;
+namespace Bermuda\Router\Middleware;
 
 use Bermuda\Router\Exception\RouteNotFoundException;
 use Psr\Http\Message\ResponseFactoryInterface;
