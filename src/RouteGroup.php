@@ -60,4 +60,17 @@ final class RouteGroup implements \IteratorAggregate
 
         return $this;
     }
+
+    /**
+     * @internal
+     */
+    public static function copy(RouteMap $newMap, RouteGroup $group): self
+    {
+        $copy = new self($group->name, $group->prefix, $newMap);
+        foreach ($group->routes as $k => $route) {
+            $copy->routes[$k] = clone $route;
+        }
+
+        return $copy;
+    }
 }
