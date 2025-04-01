@@ -20,6 +20,18 @@ class Routes implements RouteMap, Matcher, Generator
     ) {
     }
 
+    public function __clone(): void
+    {
+        $groups = $this->groups;
+        $routes = $this->routes;
+        
+        $this->routes = [];
+        $this->groups = [];
+
+        foreach ($routes as $k => $route) $this->routes[$k] = clone $route;
+        foreach ($groups as $k => $group) $this->groups[$k] = $group::copy($this, $group);
+    }
+
     public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
     {
         if ($routes instanceof Matcher && $routes !== $this) {
