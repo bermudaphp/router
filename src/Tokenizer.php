@@ -2,6 +2,10 @@
 
 namespace Bermuda\Router;
 
+use Psr\Container\ContainerInterface;
+
+use function Bermuda\Config\conf;
+
 /**
  * @internal
  */
@@ -89,5 +93,13 @@ final class Tokenizer
         }
 
         return $segments;
+    }
+
+    public static function createFromContainer(ContainerInterface $container): Tokenizer
+    {
+        $config = conf($container);
+        $limiters = $config->get(ConfigProvider::CONFIG_KEY_LIMITERS, []);
+
+        return new self($limiters[0] ?? '[', $limiters[1] ?? ']');
     }
 }
