@@ -4,6 +4,8 @@ namespace Bermuda\Router;
 
 use Bermuda\Router\Exception\RouterException;
 use Bermuda\Router\Exception\GeneratorException;
+use Psr\Container\ContainerInterface;
+
 use function Bermuda\VarExport\export_array;
 
 class Routes implements RouteMap, Matcher, Generator
@@ -354,5 +356,10 @@ class Routes implements RouteMap, Matcher, Generator
                 if ($this->routes !== []) yield from parent::getIterator();
             }
         };
+    }
+
+    public static function createFromContainer(ContainerInterface $container): static
+    {
+        return new static($container->get(Tokenizer::class));
     }
 }
