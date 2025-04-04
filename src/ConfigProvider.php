@@ -20,7 +20,7 @@ final class ConfigProvider extends \Bermuda\Config\ConfigProvider
             Router::class => [Router::class, 'createFromContainer'],
             RouteMap::class => [Routes::class, 'createFromContainer'],
             Tokenizer::class => [Tokenizer::class, 'createFromContainer'],
-            MatchRouteMiddleware::class => [MatchRouteMiddleware, 'createFromContainer']
+            MatchRouteMiddleware::class => [MatchRouteMiddleware::class, 'createFromContainer']
         ];
     }
 
