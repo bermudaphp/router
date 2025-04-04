@@ -75,6 +75,7 @@
  RouteRecord::delete(string $name, string $path, mixed $handler): RouteRecord ;
  RouteRecord::options(string $name, string $path, mixed $handler): RouteRecord ;
  RouteRecord::head(string $name, string $path, mixed $handler): RouteRecord ;
+ RouteRecord::any(string $name, string $path, mixed $handler, array $methods = ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'HEAD', 'DELETE']): RouteRecord
  ```
  
  ## Set attribute placeholder pattern
