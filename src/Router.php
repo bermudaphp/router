@@ -2,6 +2,8 @@
 
 namespace Bermuda\Router;
 
+use Psr\Container\ContainerInterface;
+
 final class Router
 {
     private ?RouteRecord $currentRoute = null;
@@ -58,5 +60,15 @@ final class Router
     public static function fromDnf(Matcher&Generator&RouteMap $routes): self
     {
         return new self($routes, $routes, $routes);
+    }
+
+    public static function createFromContainer(ContainerInterface $container): self
+    {
+        $routes = $container->get(RouteMap::class);
+        try {
+            return static::fromDnf($routes);
+        } catch (\Throwable $exception) {
+            return new self($container->get(Matcher::class), $container->get(Generator::class), $routes);
+        }
     }
 }
