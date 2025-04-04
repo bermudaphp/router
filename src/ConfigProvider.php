@@ -9,19 +9,18 @@ use Psr\Container\ContainerInterface;
 
 final class ConfigProvider extends \Bermuda\Config\ConfigProvider
 {
+    public const string CONFIG_KEY_LIMITERS = 'Bermuda\Router:limiters';
+
     /**
      * @inheritDoc
      */
     protected function getFactories(): array
     {
         return [
-            Router::class => '\Bermuda\Router\Router::withDefaults',
-            MatchRouteMiddleware::class => static function (ContainerInterface $container): MatchRouteMiddleware {
-                return new MatchRouteMiddleware(
-                    $container->get(MiddlewareFactoryInterface::class),
-                    $container->get(Router::class)
-                );
-            }
+            Router::class => [Router::class, 'createFromContainer'],
+            RouteMap::class => [Routes::class, 'createFromContainer'],
+            Tokenizer::class => [Tokenizer::class, 'createFromContainer'],
+            MatchRouteMiddleware::class => [MatchRouteMiddleware, 'createFromContainer']
         ];
     }
 
