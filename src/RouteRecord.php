@@ -258,4 +258,14 @@ final class RouteRecord
             'methods' => ['OPTIONS'],
         ]);
     }
+
+    public static function any(string $name, string $path, mixed $handler, array $methods = ['GET', 'POST', 'PUT', 'PATCH', 'OPTIONS', 'HEAD', 'DELETE']): self
+    {
+        return self::fromArray([
+            'name' => $name,
+            'path' => $path,
+            'handler' => $handler,
+            'methods' => $methods,
+        ]);
+    }
 }
