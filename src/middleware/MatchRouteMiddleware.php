@@ -4,6 +4,7 @@ namespace Bermuda\Router\Middleware;
 
 use Bermuda\Router\Router;
 use Bermuda\Router\RouteRecord;
+use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -24,9 +25,7 @@ final class MatchRouteMiddleware implements MiddlewareInterface
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $route = $this->router->match((string) $request->getUri(), $request->getMethod());
-        if (!$route) {
-            return $handler->handle($request);
-        }
+        if (!$route) return $handler->handle($request);
 
         $this->router->setCurrentRoute($route);
         
@@ -43,5 +42,13 @@ final class MatchRouteMiddleware implements MiddlewareInterface
     public function getRoute():? RouteRecord
     {
         return $this->router->getCurrentRoute();
+    }
+
+    public static function createFromContainer(ContainerInterface $container): MatchRouteMiddleware 
+    {
+        return new MatchRouteMiddleware(
+            $container->get(MiddlewareFactoryInterface::class),
+            $container->get(Router::class)
+        );
     }
 }
