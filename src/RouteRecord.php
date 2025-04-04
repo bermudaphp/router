@@ -265,7 +265,7 @@ final class RouteRecord
             'name' => $name,
             'path' => $path,
             'handler' => $handler,
-            'methods' => $methods,
+            'methods' => array_map('strtoupper', $methods)
         ]);
     }
 }
