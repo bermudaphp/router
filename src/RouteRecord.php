@@ -124,18 +124,6 @@ final class RouteRecord
         return $route;
     }
     
-    public function addMiddleware(mixed $middleware): self
-    {
-        $route = clone $this;
-
-        $handler = array_pop($route->routeData['handler']);
-
-        $route->routeData['handler'][] = $middleware;
-        $route->routeData['handler'][] = $handler;
-        
-        return $route;
-    }
-
     public function withMethods(array $methods): self
     {
         $route = clone $this;
