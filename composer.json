@@ -12,10 +12,10 @@
     "files": ["src\\functions.php"]
   },
   "require": {
-    "php": "^8.1",
-    "bermudaphp/psr15factory": "^v2.0.3",
+    "php": "^8.4",
+    "bermudaphp/psr15factory": "^v3.0.0",
     "bermudaphp/var-export": "^v1.0",
-    "bermudaphp/config": "^1.2",
+    "bermudaphp/config": "^1.4",
     "fig/http-message-util": "^v1.1.4"
   },
   "require-dev": {
