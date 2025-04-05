@@ -36,7 +36,7 @@ final class RouteMiddleware implements MiddlewareInterface, RequestHandlerInterf
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->middlewareFactory->make($this->route->handler)
+        return $this->middlewareFactory->makeMiddleware($this->route->handler)
             ->process($request, $handler);
     }
 
