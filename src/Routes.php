@@ -41,7 +41,8 @@ class Routes implements RouteMap, Matcher, Generator
             if ($route) return $route;
         }
 
-        list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
+        $path = $this->extractPath($uri);
+        $requestMethod = $this->normalizeRequestMethod($requestMethod);
 
         if (!$routes instanceof Routes) {
             foreach ($routes as $route) {
@@ -144,7 +145,7 @@ class Routes implements RouteMap, Matcher, Generator
                 'path' => $this->tokenizer->setTokens($route->path, $route->tokens),
                 'methods' => $route->methods,
                 'handler' => $route->handler,
-                'regexp' => $this->buildRegexp($route),
+                'regexp' => $this->compileRouteRegex($route),
                 'defaults' => $route->defaults
             ];
 
@@ -180,7 +181,7 @@ class Routes implements RouteMap, Matcher, Generator
         })());
     }
 
-    private function buildRegexp(RouteRecord $route): string
+    private function compileRouteRegex(RouteRecord $route): string
     {
         if ($route->path === '' || $route->path === '/') {
             return '#^/$#';
@@ -206,25 +207,27 @@ class Routes implements RouteMap, Matcher, Generator
 
     private function matchRoute(RouteRecord $route, string $path, string $requestMethod):? RouteRecord
     {
-        $pattern = $this->buildRegexp($route);
+        $pattern = $this->compileRouteRegex($route);
         if (preg_match($pattern, $path) === 1) {
             if (in_array($requestMethod, $route->methods)) {
-                return $this->parseParams($route, $path);
+                return $this->extractRouteParameters($route, $path);
             }
         }
 
         return null;
     }
 
-    protected function preparePathAndMethod(string $uri, string $requestMethod): array
+    protected function extractPath(string $uri): string 
     {
-        $path = rawurldecode(parse_url($uri, PHP_URL_PATH));
-        $path == '/' ?: rtrim($path, '/');
-            
-        return [$path, strtoupper($requestMethod)];
+        return ($path = rawurldecode(parse_url($uri, PHP_URL_PATH))) == '/' ?: rtrim($path, '/');
     }
 
-    private function parseParams(RouteRecord $route, string $path): RouteRecord
+    protected function normalizeRequestMethod(string $uri, string $requestMethod): string
+    {
+        return strtoupper($requestMethod);
+    }
+
+    private function extractRouteParameters(RouteRecord $route, string $path): RouteRecord
     {
         $paths = explode('/', $path);
         $segments = $this->tokenizer->splitPath($route->path);
@@ -288,7 +291,7 @@ class Routes implements RouteMap, Matcher, Generator
                     }
                 }
 
-                $parseParams = static function(array $route, string $path) use ($routes): RouteRecord {
+                $extractRouteParameters = static function(array $route, string $path) use ($routes): RouteRecord {
                     $paths = explode('/', $path);
                     if (empty($paths[0])) array_shift($paths);
                     $segments = $routes->tokenizer->splitPath($route['path']);
@@ -314,7 +317,7 @@ class Routes implements RouteMap, Matcher, Generator
                 foreach ($routes->dynamicRoutes as $route) {
                     if (preg_match($route['regexp'], $path) === 1) {
                         if (in_array($requestMethod, $route['methods'])) {
-                            return $parseParams($route, $path);
+                            return $extractRouteParameters($route, $path);
                         }
                     }
                 }
