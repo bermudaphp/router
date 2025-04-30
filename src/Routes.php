@@ -210,7 +210,7 @@ class Routes implements RouteMap, Matcher, Generator
         $pattern = $this->compileRouteRegex($route);
         if (preg_match($pattern, $path) === 1) {
             if (in_array($requestMethod, $route->methods)) {
-                return $this->extractRouteParameters($route, $path);
+                return $route->withParams($this->extractRouteParameters($route, $path));
             }
         }
 
@@ -227,7 +227,7 @@ class Routes implements RouteMap, Matcher, Generator
         return strtoupper($requestMethod);
     }
 
-    private function extractRouteParameters(RouteRecord $route, string $path): RouteRecord
+    private function extractRouteParameters(RouteRecord $route, string $path): array
     {
         $paths = explode('/', $path);
         $segments = $this->tokenizer->splitPath($route->path);
@@ -247,7 +247,7 @@ class Routes implements RouteMap, Matcher, Generator
                 . '/' . implode('/', array_slice($paths, $i + 1));
         }
 
-        return $route->withParams($params);
+        return $params;
     }
 
     public static function createFromArray(array $routes): static
