@@ -266,7 +266,8 @@ class Routes implements RouteMap, Matcher, Generator
 
             public function match(RouteMap $routes, string $uri, string $requestMethod):? RouteRecord
             {
-                list($path, $requestMethod) = $this->preparePathAndMethod($uri, $requestMethod);
+                $path = $this->extractPath($uri);
+                $requestMethod = $this->normalizeRequestMethod($requestMethod);
 
                 if (!$routes instanceof $this) {
                     foreach ($routes as $route) {
