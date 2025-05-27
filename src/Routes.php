@@ -269,13 +269,9 @@ class Routes implements RouteMap, Matcher, Generator
                 $path = $this->extractPath($uri);
                 $requestMethod = $this->normalizeRequestMethod($requestMethod);
 
-                if (!$routes instanceof $this) {
-                    foreach ($routes as $route) {
-                        $result = parent::match($route, $uri, $requestMethod);
-                        if ($result) return $result;
-                    }
-
-                    return null;
+                if ($routes instanceof $this) {
+                    if ($routes instanceof Matcher) return $routes->match($routes, $method, $uri);
+                    return parent::match($routes, $method, $uri);
                 }
 
                 if (isset($routes->staticRoutes[$path])) {
