@@ -38,7 +38,7 @@ final class Methods extends Collector
      * @param string|null $default Default value if index not found
      * @return string|null HTTP method at index or default value
      */
-    public function get(string $name, ?string $default = null): ?string
+    public function get(string $name, mixed $default = null): ?string
     {
         return $this->values[$name] ?? $default;
     }

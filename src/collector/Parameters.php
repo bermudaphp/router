@@ -21,7 +21,7 @@ final class Parameters extends Collector
      * @param null|string|int|float $default Default value if parameter not found
      * @return null|string|int|float Parameter value or default
      */
-    public function get(string $name, null|string|int|float $default = null): null|string|int|float
+    public function get(string $name, mixed $default = null): null|string|int|float
     {
         return $this->values[$name] ?? $default;
     }

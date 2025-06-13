@@ -23,7 +23,7 @@ final class Tokens extends Collector
      * @param string|null $default Default pattern if token not found
      * @return string|null Token pattern or default value
      */
-    public function get(string $name, ?string $default = null): ?string
+    public function get(string $name, mixed $default = null): ?string
     {
         if (isset($this->values[$name])) {
             return $this->values[$name];
