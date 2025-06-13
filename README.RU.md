@@ -587,7 +587,7 @@ $router = Router::fromDnf($routes);
 
 Для автоматического обнаружения контроллеров с атрибутами используется ClassFinder (уже включен в зависимости):
 
-> 📋 **Подробная документация**: [bermudaphp/finder](https://github.com/bermudaphp/finder) | [Руководство на русском](https://github.com/bermudaphp/finder/blob/main/README_RU.md)
+> 📋 **Подробная документация**: [bermudaphp/finder](https://github.com/bermudaphp/classFinder) | [Руководство на русском](https://github.com/bermudaphp/classFinder/blob/main/README.RU.md)
 
 ```php
 use Bermuda\ClassFinder\{ClassFinder, ClassNotifier};
