@@ -124,7 +124,7 @@ final class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
             $this->middleware[] = $middleware;
         }
 
-        $this->updateExistingRoutes();
+        $this->updateExistingRoutes('middleware_update');
 
         return $this;
     }
@@ -138,7 +138,7 @@ final class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
     public function setMiddleware(array $middleware): self
     {
         $this->middleware = $middleware;
-        $this->updateExistingRoutes();
+        $this->updateExistingRoutes('middleware_update');
         return $this;
     }
 
@@ -150,7 +150,7 @@ final class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
     public function clearMiddleware(): self
     {
         $this->middleware = [];
-        $this->updateExistingRoutes();
+        $this->updateExistingRoutes('middleware_update');
         return $this;
     }
 
@@ -176,7 +176,7 @@ final class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
     public function setTokens(array $tokens): self
     {
         $this->tokens = $tokens;
-        $this->updateExistingRoutes();
+        $this->updateExistingRoutes('tokens_update');
         return $this;
     }
 
@@ -184,29 +184,35 @@ final class RouteGroup implements \IteratorAggregate, \Countable, Arrayable
      * Update all existing routes in the group with current group settings
      *
      * This method reprocesses all routes with current group configuration
-     * and notifies the parent collection about the changes.
+     * and notifies the parent collection about the changes using the existing
+     * 'group_change' operation mechanism.
+     *
+     * @param string $changeType Type of change: 'middleware_update' or 'tokens_update'
      */
-    private function updateExistingRoutes(): void
+    private function updateExistingRoutes(string $changeType = 'middleware_update'): void
     {
         if (empty($this->routes)) {
             return; // No routes to update
         }
 
-        // Reprocess all routes with current group settings
-        $updatedRoutes = [];
+        // Get list of route names that need updating
+        $routeNames = array_keys($this->routes);
 
+        // Reprocess all routes with current group settings locally
         foreach ($this->originalRoutes as $finalName => $originalRoute) {
             $processedRoute = $this->processRoute($originalRoute);
-            $updatedRoutes[$processedRoute->name] = $processedRoute;
 
             // Update in local collection
             $this->routes[$processedRoute->name] = $processedRoute;
         }
 
-        // Notify parent collection about updates via callback
-        if (!empty($updatedRoutes)) {
-            ($this->updateCallback)('routes_update', $this->name, [
-                'updatedRoutes' => $updatedRoutes
+        // Notify parent collection about updates via existing 'group_change' mechanism
+        // This will trigger handleGroupConfigurationChange() which properly handles route updates
+        if (!empty($routeNames)) {
+            ($this->updateCallback)('group_change', $this->name, [
+                'group' => $this,
+                'operation' => $changeType,
+                'routeNames' => $routeNames
             ]);
         }
     }
