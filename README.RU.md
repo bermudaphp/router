@@ -354,26 +354,6 @@ $request = $notFoundHandler->withExceptionModeAttribute($request, true);
 $isExceptionMode = $notFoundHandler->getExceptionMode($request);
 ```
 
-### Настройка обработчика 404
-
-```php
-// JSON ответ для API
-$notFoundHandler = new RouteNotFoundHandler(
-    $responseFactory,
-    exceptionMode: false, // возвращать JSON вместо исключения
-    customMessage: 'Запрошенный ресурс не найден'
-);
-
-// Режим исключений для обработки в middleware
-$notFoundHandler = new RouteNotFoundHandler(
-    $responseFactory,
-    exceptionMode: true // выбрасывать RouteNotFoundException
-);
-
-// Динамический режим через атрибуты запроса
-$request = $notFoundHandler->withExceptionModeAttribute($request, true);
-```
-
 ### Интеграция в middleware pipeline
 
 ```php
