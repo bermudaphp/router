@@ -308,7 +308,7 @@ $pipeline = new Pipeline();
 $factory = new MiddlewareFactory($container, $responseFactory);
 
 // Middleware for route matching
-$pipeline->pipe($factory->make(MatchRouteMiddleware::class));
+$pipeline->pipe($factory->makeMiddleware(MatchRouteMiddleware::class));
 
 // Create 404 handler
 $notFoundHandler = new RouteNotFoundHandler($responseFactory);
