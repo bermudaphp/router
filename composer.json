@@ -17,6 +17,7 @@
     "php": "^8.4",
     "bermudaphp/psr15factory": "^3.0",
     "bermudaphp/var-export": "^2.0.1",
+    "bermudaphp/number": "^2.0",
     "bermudaphp/config-provider": "^1.0",
     "fig/http-message-util": "^1.1",
     "psr/http-message": "^2.0",
